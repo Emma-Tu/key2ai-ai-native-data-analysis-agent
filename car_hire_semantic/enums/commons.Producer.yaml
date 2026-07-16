@@ -1,0 +1,199 @@
+# AUTO-GENERATED from proto/commons.proto.
+enum: Producer
+package: commons
+source_file: commons.proto
+group: shared
+desc: "Light header doesn't contain a Producer, so you should add a dedicated field for it if needed."
+values:
+  - num: 0
+    name: JACQUARD
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: SKIPPY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: SCAFFOLDING
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: SKYSCANNER_APP
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: HOTEL_BLS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: TKG_ACDYM
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: DEPLOY_EVENTS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: TRAVEL_ALERTS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 8
+    name: HOTELSCATALOGUES
+    meaning: ""   # TODO 待确认业务含义
+  - num: 9
+    name: SKYMETRICS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 10
+    name: GRAFANA
+    meaning: ""   # TODO 待确认业务含义
+  - num: 11
+    name: GRAPHITE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 12
+    name: SLINGSHOT
+    meaning: ""   # TODO 待确认业务含义
+  - num: 13
+    name: TIANXUN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 14
+    name: TRAVELPRO
+    meaning: ""   # TODO 待确认业务含义
+  - num: 15
+    name: DFP
+    meaning: "DoubleClick for Publishers"
+  - num: 16
+    name: FLIGHTS_PRICING_SERVICE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 17
+    name: GAP
+    meaning: "Metrics Originating from GAP Collectors"
+  - num: 18
+    name: B2B_API
+    meaning: "From B2B API"
+  - num: 19
+    name: B2B_WHITE_LABEL
+    meaning: "From B2B Whitelabel"
+  - num: 20
+    name: FLIGHTS_LIVE_UPDATE_SERVICE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 21
+    name: CONNECT_BACKEND_API
+    meaning: ""   # TODO 待确认业务含义
+  - num: 22
+    name: TRAVEL_API
+    meaning: ""   # TODO 待确认业务含义
+  - num: 23
+    name: HOTEL_PARTNER_SORTING
+    meaning: ""   # TODO 待确认业务含义
+  - num: 24
+    name: TOLOMUCO_ROUTE_SCRAPING_SYSTEM
+    meaning: ""   # TODO 待确认业务含义
+  - num: 25
+    name: BUSINESS_APPLICATIONS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 26
+    name: GRAPPLER_SAMZA
+    meaning: ""   # TODO 待确认业务含义
+  - num: 27
+    name: SLIPSTREAM
+    meaning: ""   # TODO 待确认业务含义
+  - num: 28
+    name: B2B_GATEWAY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 29
+    name: DQL_SEARCH
+    meaning: ""   # TODO 待确认业务含义
+  - num: 30
+    name: RABBITMQ_SHOVELS
+    meaning: "Logs from CLDOPS's Rabbit Shovels"
+  - num: 31
+    name: B2B_WIDGETS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 32
+    name: FACEBOOK_MESSENGER_BOT
+    meaning: ""   # TODO 待确认业务含义
+  - num: 33
+    name: FAB_HYDRA
+    meaning: ""   # TODO 待确认业务含义
+  - num: 34
+    name: MSHELL
+    meaning: ""   # TODO 待确认业务含义
+  - num: 35
+    name: GRAPPLER_LOGGER_SDK
+    meaning: ""   # TODO 待确认业务含义
+  - num: 36
+    name: YOUR_JOURNEY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 37
+    name: TID
+    meaning: ""   # TODO 待确认业务含义
+  - num: 38
+    name: FLIGHTS_DAYVIEW
+    meaning: ""   # TODO 待确认业务含义
+  - num: 39
+    name: TRAVEL_CONTENT_PLATFORM
+    meaning: ""   # TODO 待确认业务含义
+  - num: 40
+    name: LOMO
+    meaning: ""   # TODO 待确认业务含义
+  - num: 41
+    name: URL_MANAGEMENT_SERVICE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 42
+    name: PAGE_BUILDER
+    meaning: ""   # TODO 待确认业务含义
+  - num: 43
+    name: TEMPLATE_SERVICE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 44
+    name: PQS_SERVICE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 45
+    name: PQS_DATA_LOADER
+    meaning: ""   # TODO 待确认业务含义
+  - num: 46
+    name: PQS_SCORING_ENGINE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 47
+    name: PQS_INCIDENT_DETECTION
+    meaning: ""   # TODO 待确认业务含义
+  - num: 48
+    name: HOTELS_FE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 49
+    name: TRAVEL_RANKINGS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 50
+    name: SHAREDINFX
+    meaning: ""   # TODO 待确认业务含义
+  - num: 51
+    name: MATER
+    meaning: "Flights and hotels SEO ESI service"
+  - num: 52
+    name: SHARED_CONTAINER_PLATFORM
+    meaning: "Container instance and service metrics"
+  - num: 53
+    name: DEALER
+    meaning: ""   # TODO 待确认业务含义
+  - num: 54
+    name: HYPERDRIVE_HAPROXY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 55
+    name: STRINGS_AS_A_SERVICE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 56
+    name: RAIL_DBOOKING
+    meaning: "Rail direct booking event producer"
+  - num: 57
+    name: HOTELS_DBOOK
+    meaning: ""   # TODO 待确认业务含义
+  - num: 58
+    name: REQUEST_HANDLER
+    meaning: "Request Handler service"
+  - num: 59
+    name: CAR_HIRE_DBOOK
+    meaning: ""   # TODO 待确认业务含义
+  - num: 60
+    name: ITINERARY_PROXY_SERVICE
+    meaning: "Proxy for Itinerary Service <-> FPS compatibility"
+  - num: 61
+    name: REDIRECTS_UI
+    meaning: "skippy request from redirects_ui"
+  - num: 62
+    name: AFFILIATE_GATEWAY
+    meaning: "Affiliate gateway redirects"
+  - num: 63
+    name: AFFILIATES_LINK_API
+    meaning: "Affiliates link API referral link requests"

@@ -1,0 +1,108 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireQuoteSelected
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "前端：用户选中了某条具体报价（点击进入预订流程），漏斗中的点选环节。"   # curated (overlay.yaml)
+grain: "一行 = 一次 search_guid 下的一次报价选中"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: quote
+    type: Quote
+    number: 2
+    ref: Quote
+    desc: "This item tells us the specific quote the user selected"
+  - name: index
+    type: uint32
+    number: 3
+    desc: "The index numbers tell you the position of the itinerary in the group"
+  - name: booking_panel_option_guid
+    type: string
+    number: 4
+    desc: "unique guid attached to deep link of quote"
+  - name: car_hire_filter_and_sort
+    type: CarHireFilterAndSort
+    number: 5
+    ref: CarHireFilterAndSort
+    desc: "The state of the filtering and sorting options at the time this event was fired."
+  - name: pickup_type
+    type: PickupType
+    number: 6
+    ref: PickupType
+    desc: "This item tells us the quote pickup type"
+  - name: pickup_method
+    type: PickupMethod
+    number: 7
+    ref: PickupMethod
+    desc: "This item tells us the quote pickup method"
+  - name: page_index
+    type: uint32
+    number: 8
+    desc: "The index number tell you the quote in which page, start from 0"
+  - name: group_index
+    type: uint32
+    number: 9
+    desc: "The index number tell you the group position in the page, start from 0"
+  - name: car_class
+    type: CarCategory
+    number: 10
+    ref: CarCategory
+    desc: "The car class of the quote"
+  - name: initial_group_index
+    type: uint32
+    number: 11
+    desc: "The index number tell you the initial group position in the page, start from 0"
+  - name: search_guid
+    type: string
+    number: 12
+    desc: "associate it with search"
+  - name: mini_search_guid
+    type: string
+    number: 13
+    desc: "associate it with mini search"
+  - name: event_type
+    type: UIEventType
+    number: 14
+    ref: UIEventType
+    desc: "event type maybe RENDERED/VIEWED/SELECTED"
+  - name: vehicle_type
+    type: vehicle.VehicleType
+    number: 15
+    ref: vehicle.VehicleType   # 外部类型，见 generated/external_refs.yaml
+    desc: "vehicle type"
+  - name: itinerary_id
+    type: string
+    number: 16
+    desc: "The contents of the car hire itinerary that are presented to the user."
+  - name: recommended_ranking_index
+    type: uint32
+    number: 17
+    desc: "The index number tell you the recommended position in total results, start from 0"
+  - name: price_index
+    type: uint32
+    number: 18
+    desc: "The index representing the itinerary's position when sorted by price (original sort order)"
+  - name: is_compare_checked
+    type: bool
+    number: 19
+    desc: "Whether the quote is under comparing"
+  - name: quote_placement
+    type: QuotePlacement
+    number: 20
+    ref: QuotePlacement
+    desc: "The placement of the quote, default null means it is put in the inventory card"
+  - name: is_compare_ai_recommended
+    type: bool
+    number: 21
+    desc: "Whether the quote is recommended by compare ai"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

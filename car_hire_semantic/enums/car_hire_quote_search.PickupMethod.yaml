@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire_quote_search.proto.
+enum: PickupMethod
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+desc: "car pick up method"
+values:
+  - num: 0
+    name: UNSET_PICKUP_METHOD
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: KEYLESS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: KEY_AND_GO
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: NORMAL
+    meaning: ""   # TODO 待确认业务含义

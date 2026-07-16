@@ -1,0 +1,70 @@
+# AUTO-GENERATED skeleton from proto/commons.proto. Enrich desc / relationships by hand.
+message: MiniHeader
+package: commons
+source_file: commons.proto
+group: shared
+description: "Binary compatible with LightHeader, but even lighter."
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: guid
+    type: string
+    number: 1
+    desc: "Event GUID"
+  - name: client_timestamp
+    type: commons.DateTime
+    number: 2
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "Timestamp for the event"
+  - name: traveller_identity
+    type: commons.TravellerIdentity
+    number: 3
+    ref: commons.TravellerIdentity   # 外部类型，见 generated/external_refs.yaml
+    desc: "As the property says."
+  - name: producer_name
+    type: string
+    number: 5
+    desc: "The name of the service logging the related event"
+  - name: sequence_number
+    type: uint64
+    number: 9
+    desc: ""   # TODO 待补充业务含义
+  - name: device_guid
+    type: string
+    number: 11
+    desc: ""   # TODO 待补充业务含义
+  - name: experiment_allocation_id
+    type: string
+    number: 12
+    desc: ""   # TODO 待补充业务含义
+  - name: producer_version
+    type: string
+    number: 13
+    desc: ""   # TODO 待补充业务含义
+  - name: client_ip
+    type: string
+    number: 14
+    desc: ""   # TODO 待补充业务含义
+  - name: user_agent
+    type: string
+    number: 15
+    desc: ""   # TODO 待补充业务含义
+  - name: user_preferences_guid
+    type: string
+    number: 16
+    desc: ""   # TODO 待补充业务含义
+  - name: user_context
+    type: CultureSettings
+    number: 17
+    ref: CultureSettings
+    desc: ""   # TODO 待补充业务含义
+  - name: jekyll_hyde_analytics_token
+    type: string
+    number: 18
+    desc: ""   # TODO 待补充业务含义
+  - name: client_context
+    type: ClientContext
+    number: 19
+    ref: ClientContext
+    desc: ""   # TODO 待补充业务含义

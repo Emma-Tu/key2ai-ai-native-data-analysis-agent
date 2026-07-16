@@ -1,0 +1,53 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireResponseQuotes
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "后端：发给前端的分页响应报价记录（是否经过 CaPS 模型）。"   # curated (overlay.yaml)
+grain: "一行 = 一次响应的一页报价"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 2
+    desc: "link to one search operation"
+  - name: mini_search_guid
+    type: string
+    number: 3
+    desc: "associate to CarHireMiniSearch"
+  - name: page_index
+    type: uint32
+    number: 4
+    desc: "page index"
+  - name: page_details
+    type: repeated CarHirePageDetails
+    number: 5
+    ref: CarHirePageDetails
+    desc: ""   # TODO 待补充业务含义
+  - name: card_signature
+    type: string
+    number: 6
+    desc: "concat all card field values"
+  - name: caps_model_preference
+    type: string
+    number: 7
+    desc: "record which CAPS model this response quote was generated from"
+  - name: is_caps
+    type: bool
+    number: 8
+    desc: "Mark whether this response went through CaPS."
+  - name: filter_search_guid
+    type: string
+    number: 9
+    desc: "link to one filter search operation"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

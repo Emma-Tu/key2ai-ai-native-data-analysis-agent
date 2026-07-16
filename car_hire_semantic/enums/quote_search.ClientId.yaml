@@ -1,0 +1,25 @@
+# AUTO-GENERATED from proto/quote_search.proto.
+enum: ClientId
+package: quote_search
+source_file: quote_search.proto
+group: shared
+desc: "报价搜索调用方：普通租车搜索/SEO 调度/价格竞争力/B2B/旅行排序。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_CLIENT_ID
+    meaning: "Default value"
+  - num: 1
+    name: CLIENT_ID_CARHIRE_SEARCH
+    meaning: "normal carhire search, include web, app, desktop home page"
+  - num: 2
+    name: CLIENT_ID_CARHIRE_SCHEDULER
+    meaning: "SEO search price"
+  - num: 3
+    name: CLIENT_ID_CARHIRE_PRICE_COMPETITIVERNESS
+    meaning: "price competitiveness fetch price"
+  - num: 4
+    name: CLIENT_ID_CARHIRE_B2B
+    meaning: "serving carhire data to our B2B partners"
+  - num: 5
+    name: CLIENT_ID_CARHIRE_TRAVEL_RANKING
+    meaning: "client id for car hire travel ranking"

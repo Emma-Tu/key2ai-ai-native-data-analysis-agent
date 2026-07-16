@@ -1,0 +1,16 @@
+# AUTO-GENERATED from proto/quote_search.proto.
+enum: QuoteSource
+package: quote_search
+source_file: quote_search.proto
+group: shared
+desc: "报价来源：实时更新(LIVE_UPDATE,默认)/自动刷新(AUTO_REFRESH)。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_QUOTE_SOURCE
+    meaning: "Default value"
+  - num: 1
+    name: LIVE_UPDATE
+    meaning: "LIVE_UPDATE is set as default to save space"
+  - num: 2
+    name: AUTO_REFRESH
+    meaning: "Auto refresh"

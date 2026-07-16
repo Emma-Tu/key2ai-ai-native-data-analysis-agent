@@ -1,0 +1,53 @@
+# AUTO-GENERATED from proto/commons.proto.
+enum: BusinessDomain
+package: commons
+source_file: commons.proto
+group: shared
+desc: "\"业务域枚举，租车相关值用于区分事件所属垂直。\"   # CONFIRM 具体取值"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: FLIGHT
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: HOTEL
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: CAR_HIRE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: B2B
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: NONE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: AIRPORT_TRANSFER
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: CAMPERVAN_HIRE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: ADVERTISING
+    meaning: "Use MEDIA instead"
+    deprecated: true
+  - num: 8
+    name: RAIL
+    meaning: ""   # TODO 待确认业务含义
+  - num: 9
+    name: TRIPS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 10
+    name: EXPLORE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 11
+    name: COMBINED_SEARCH
+    meaning: ""   # TODO 待确认业务含义
+  - num: 12
+    name: PACKAGE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 13
+    name: DATA_SERVICES
+    meaning: ""   # TODO 待确认业务含义
+  - num: 14
+    name: MEDIA
+    meaning: ""   # TODO 待确认业务含义

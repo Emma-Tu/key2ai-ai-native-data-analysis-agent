@@ -1,0 +1,40 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireScheduledSearch
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "后端：定时任务触发的租车搜索事件。"   # curated (overlay.yaml)
+grain: "一行 = 一次定时搜索"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: origin
+    type: commons.Location
+    number: 2
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: "carhire pickup location"
+  - name: destination
+    type: commons.Location
+    number: 3
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: "carhire dropoff location"
+  - name: start_timestamp
+    type: commons.DateTime
+    number: 4
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "carhire pickup time"
+  - name: end_timestamp
+    type: commons.DateTime
+    number: 5
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "carhire dropoff time"

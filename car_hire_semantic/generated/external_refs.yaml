@@ -1,0 +1,300 @@
+# External types referenced by car_hire protos (defined in shared protos).
+# Modelled subset is controlled by scope.yaml.
+
+booking.BookingEvent:
+  used_by_count: 1
+  - booking.proto:BookingStitchedEvent.booking_booking_event
+
+car_hire.AirportTransferItinerary:
+  used_by_count: 1
+  - redirects.proto:Redirect.Request.airport_transfer_itinerary
+
+car_hire.CarCategory:
+  used_by_count: 1
+  - clients.proto:CarHireGroupVisibleProperties.car_category
+
+car_hire.CarHireBookingExtra:
+  used_by_count: 1
+  - booking.proto:BookingEvent.car_hire_extra
+
+car_hire.CarHireItinerary:
+  used_by_count: 2
+  - car_hire.proto:CarHireBookingExtra.car_hire_itinerary
+  - redirects.proto:Redirect.Request.car_itinerary
+
+car_hire.CarHireSearchResultsOption:
+  used_by_count: 1
+  - clients.proto:SearchResultsOption.car_hire_search_results_option
+
+car_hire.CarType:
+  used_by_count: 1
+  - clients.proto:CarHireGroupVisibleProperties.car_type
+
+car_hire.GroupCardType:
+  used_by_count: 1
+  - clients.proto:CarHireGroupVisibleProperties.card_type
+
+car_hire.MapState:
+  used_by_count: 1
+  - clients.proto:CarHireFilterAndSort.map_state
+
+car_hire.Quote.ValueAdds:
+  used_by_count: 1
+  - clients.proto:SearchResultSelected.value_adds
+
+car_hire.Transmission:
+  used_by_count: 1
+  - clients.proto:CarHireGroupVisibleProperties.transmission
+
+clients.CarHireFilterAndSort:
+  used_by_count: 3
+  - car_hire_app.proto:CarHireMiniSearch.car_hire_filter_and_sort
+  - car_hire_app.proto:QuickFilterApplyInformation.filter_and_sort
+  - car_hire_app.proto:UserAction.filter_and_sort
+
+clients.CarHireGroupVisibleProperties:
+  used_by_count: 1
+  - car_hire_app.proto:ViewHistoryTapResultInformation.car_hire_search_result_selected
+
+commons.BusinessDomain:
+  used_by_count: 4
+  - car_hire.proto:Quote.domain
+  - clients.proto:Search.business_domain
+  - clients.proto:SearchResultsPage.business_domain
+  - redirects.proto:Redirect.Request.business_domain
+
+commons.ClientDetails:
+  used_by_count: 3
+  - booking.proto:BookingEvent.client_details
+  - clients.proto:SystemInfo.client_details
+  - redirects.proto:RedirectCompleted.client_details
+
+commons.CultureSettings:
+  used_by_count: 7
+  - b2b_carhire_indicative.proto:IndicativeQuery.culture
+  - b2b_carhire_live.proto:Query.culture
+  - car_hire.proto:CarHireDroppedQuotes.culture
+  - car_hire.proto:CarhireChatEvent.culture
+  - clients.proto:BookingPanelOption.culture_settings
+  - unified_search_service.proto:CreateExploreRequest.culture_settings
+  - unified_search_service.proto:CreateSearchRequest.culture_settings
+
+commons.Date:
+  used_by_count: 8
+  - car_hire.proto:CarHireSearchControlChanged.date
+  - unified_search_service.proto:CreateSearchRequest.departure_date
+  - unified_search_service.proto:CreateSearchRequest.return_date
+  - unified_search_service.proto:DateRange.range_end
+  - unified_search_service.proto:DateRange.range_start
+  - unified_search_service.proto:FlexibleDate.date
+  - unified_search_service.proto:TripElement.from_date
+  - unified_search_service.proto:TripElement.to_date
+
+commons.DateTime:
+  used_by_count: 98
+  - b2b_carhire_indicative.proto:IndicativeQuery.drop_off_date_timestamp
+  - b2b_carhire_indicative.proto:IndicativeQuery.pick_up_date_timestamp
+  - b2b_carhire_live.proto:Query.drop_off_date_timestamp
+  - b2b_carhire_live.proto:Query.pick_up_date_timestamp
+  - booking.proto:BookingEvent.booking_timestamp
+  - booking.proto:BookingEvent.grappler_receive_timestamp
+  - car_hire.proto:AirportTransferItinerary.dropoff_timestamp
+  - car_hire.proto:AirportTransferItinerary.pickup_timestamp
+
+commons.DownstreamPartner:
+  used_by_count: 3
+  - booking.proto:BookingEvent.downstream_partner
+  - car_hire.proto:Quote.provider
+  - redirects.proto:Redirect.Request.downstream_partner
+
+commons.DownstreamTarget:
+  used_by_count: 2
+  - booking.proto:BookingEvent.downstream_target
+  - redirects.proto:Redirect.Request.downstream_target
+
+commons.EventHeader:
+  used_by_count: 5
+  - car_hire.proto:Quote.event_header
+  - commons.proto:Exception.event_header
+  - redirects.proto:Redirect.Request.event_header
+  - redirects.proto:Redirect.Response.event_header
+  - redirects.proto:Redirect.event_header
+
+commons.Geo:
+  used_by_count: 3
+  - car_hire_app.proto:SearchAreaInformation.map_center
+  - unified_search_service.proto:FilterValue.area
+  - unified_search_service.proto:GeoProximity.centre
+
+commons.HTTPMethod:
+  used_by_count: 1
+  - redirects.proto:Redirect.Response.TargetInformation.method
+
+commons.LightHeader:
+  used_by_count: 16
+  - booking.proto:BookingEvent.header
+  - booking.proto:BookingStitchedEvent.header
+  - car_hire.proto:CarHireMcpcQueryEvent.header
+  - car_hire.proto:CarHireMissingVendor.header
+  - car_hire.proto:CarhireChatEvent.header
+  - car_hire.proto:CarhireFeedbackEvent.header
+  - car_hire.proto:CarhireVendorMappingSearch.header
+  - car_hire_indicative_price.proto:CarHireIndicativePriceSearchEvent.header
+
+commons.Location:
+  used_by_count: 40
+  - booking.proto:BookingEvent.destination
+  - car_hire.proto:AirportTransferItinerary.dropoff_location
+  - car_hire.proto:AirportTransferItinerary.pickup_location
+  - car_hire.proto:AirportTransferSearch.dropoff_location
+  - car_hire.proto:AirportTransferSearch.pickup_location
+  - car_hire.proto:CampervanSearch.dropoff_location
+  - car_hire.proto:CampervanSearch.pickup_location
+  - car_hire.proto:CampervanSearch.residence_location
+
+commons.LocationAttribute:
+  used_by_count: 1
+  - clients.proto:HotelsSearchResultsOption.entity_id
+
+commons.MiniHeader:
+  used_by_count: 45
+  - car_hire.proto:CarGroupCardEvent.header
+  - car_hire.proto:CarHireAdCardAction.header
+  - car_hire.proto:CarHireAutosuggestItemAction.header
+  - car_hire.proto:CarHireDroppedQuotes.header
+  - car_hire.proto:CarHireFilterResult.header
+  - car_hire.proto:CarHireMiniSearch.header
+  - car_hire.proto:CarHireNoImageCar.header
+  - car_hire.proto:CarHireNoQuoteSample.header
+
+commons.Money:
+  used_by_count: 26
+  - booking.proto:BookingEvent.booking_revenue
+  - booking.proto:BookingEvent.booking_revenue_in_source_currency
+  - car_hire.proto:CarHireDroppedQuotes.price
+  - car_hire.proto:CarHireMcpcQueryEvent.cpc_value
+  - car_hire.proto:CarHireMcpcQueryEvent.cpc_value_gbp
+  - car_hire.proto:CarHirePartnerScrapeInfo.pay_on_arrival_price
+  - car_hire.proto:CarHirePartnerScrapeInfo.prepaid_price
+  - car_hire.proto:CarHirePartnerScrapeInfo.total_price
+
+commons.Platform:
+  used_by_count: 6
+  - car_hire.proto:CarHirePartnerScrapeInfo.platform
+  - car_hire.proto:CarHireRanking.platform
+  - clients.proto:SearchResultSelected.platform
+  - unified_search_service.proto:CreateExploreRequest.platform
+  - unified_search_service.proto:CreateSearchRequest.platform
+  - unified_search_service.proto:PollSearchRequest.platform
+
+commons.Price:
+  used_by_count: 10
+  - booking.proto:BookingEvent.booking_price_in_source_currency
+  - car_hire.proto:CarGroupCardEvent.price
+  - car_hire.proto:CarHireSearchResultsOption.price
+  - car_hire.proto:MarkerCardEvent.price
+  - car_hire.proto:Quote.price
+  - car_hire_app.proto:CarGroupCardEvent.GroupCardInformation.price
+  - car_hire_app.proto:SavingBadgeInformation.price
+  - clients.proto:CarHireGroupVisibleProperties.price
+
+commons.Protocol:
+  used_by_count: 1
+  - redirects.proto:Redirect.Response.TargetInformation.protocol
+
+commons.Revenue:
+  used_by_count: 1
+  - booking.proto:BookingEvent.revenue
+
+commons.Time:
+  used_by_count: 1
+  - car_hire.proto:CarHireSearchControlChanged.time
+
+commons.TimeInterval:
+  used_by_count: 1
+  - clients.proto:ShieldsUpDismissed.time_on_screen
+
+commons.TravellerIdentity:
+  used_by_count: 2
+  - clients.proto:AuthenticationStatusChange.previous_traveller_identity
+  - commons.proto:MiniHeader.traveller_identity
+
+engines.SourceSystem:
+  used_by_count: 1
+  - redirects.proto:Redirect.Request.quote_sources
+
+flights.CabinClass:
+  used_by_count: 1
+  - clients.proto:FlightSearch.cabin_class
+
+flights.Carrier:
+  used_by_count: 2
+  - clients.proto:FlightsSearchResultsOption.Segment.marketing_carrier
+  - clients.proto:FlightsSearchResultsOption.Segment.operating_carrier
+
+flights.Itinerary:
+  used_by_count: 1
+  - redirects.proto:Redirect.Request.flight_itinerary
+
+flights.PassengerGroup:
+  used_by_count: 1
+  - clients.proto:FlightSearch.passenger_group
+
+flights.Search:
+  used_by_count: 1
+  - redirects.proto:Redirect.Request.flight_search
+
+flights_search.FlightSearch.Kind:
+  used_by_count: 1
+  - clients.proto:FlightSearch.search_kind
+
+hotel.HotelItinerary:
+  used_by_count: 1
+  - redirects.proto:Redirect.Request.hotel_itinerary
+
+hotel.HotelsBookingExtra:
+  used_by_count: 1
+  - booking.proto:BookingEvent.hotels_extra
+
+packages.PackageItinerary:
+  used_by_count: 1
+  - redirects.proto:Redirect.Request.package_itinerary
+
+quote_search.ClientId:
+  used_by_count: 1
+  - car_hire_quote_search.proto:CarHireQuoteSearchEvent.client_id
+
+quote_search.QuoteSource:
+  used_by_count: 1
+  - car_hire_quote_search.proto:CarHireQuoteSearchEvent.quote_source
+
+quote_search.TravelNode:
+  used_by_count: 2
+  - car_hire_quote_search.proto:CarHireQuoteSearchEvent.destination_info
+  - car_hire_quote_search.proto:CarHireQuoteSearchEvent.origin_info
+
+quote_search.TravellerContext:
+  used_by_count: 1
+  - car_hire_quote_search.proto:CarHireQuoteSearchEvent.traveller_context
+
+rail.RailBookingExtra:
+  used_by_count: 1
+  - booking.proto:BookingEvent.rail_extra
+
+redirects.Redirect:
+  used_by_count: 1
+  - booking.proto:BookingStitchedEvent.redirects_redirect
+
+unified_search_service.GeoLevel:
+  used_by_count: 1
+  - car_hire_indicative_price.proto:CarHireIndicativePriceSearchEvent.target_geo_level
+
+vehicle.VehicleCategory:
+  used_by_count: 1
+  - car_hire.proto:CarHireSearchResultsOption.vehicle_categories
+
+vehicle.VehicleType:
+  used_by_count: 2
+  - car_hire.proto:CarHireQuoteSelected.vehicle_type
+  - car_hire.proto:CarHireSearchResultsOption.vehicle_type
+

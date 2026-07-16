@@ -1,0 +1,159 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: UserAction
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "App 端细粒度交互事件（筛选/点标记/地图/底部面板等），用 oneof 携带具体动作数据。"   # curated (overlay.yaml)
+grain: "一行 = 一次 App 端用户交互（ActionType 决定 additional_information 分支）"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: user_action_type
+    type: ActionType
+    number: 2
+    ref: ActionType
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 3
+    desc: ""   # TODO 待补充业务含义
+  - name: filter_and_sort
+    type: clients.CarHireFilterAndSort
+    number: 4
+    oneof: additional_information
+    ref: clients.CarHireFilterAndSort   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: selected_marker
+    type: SelectedMarker
+    number: 5
+    oneof: additional_information
+    ref: SelectedMarker
+    desc: ""   # TODO 待补充业务含义
+  - name: marker_filter
+    type: MarkerFilter
+    number: 6
+    oneof: additional_information
+    ref: MarkerFilter
+    desc: ""   # TODO 待补充业务含义
+  - name: search_control
+    type: SearchControl
+    number: 7
+    oneof: additional_information
+    ref: SearchControl
+    desc: ""   # TODO 待补充业务含义
+  - name: map_interaction
+    type: MapInteraction
+    number: 8
+    oneof: additional_information
+    ref: MapInteraction
+    desc: ""   # TODO 待补充业务含义
+  - name: bottom_sheet_interaction
+    type: BottomSheetInteraction
+    number: 9
+    oneof: additional_information
+    ref: BottomSheetInteraction
+    desc: ""   # TODO 待补充业务含义
+  - name: search_area
+    type: SearchAreaInformation
+    number: 10
+    oneof: additional_information
+    ref: SearchAreaInformation
+    desc: ""   # TODO 待补充业务含义
+  - name: tap_quote
+    type: TapQuoteInformation
+    number: 11
+    oneof: additional_information
+    ref: TapQuoteInformation
+    desc: ""   # TODO 待补充业务含义
+  - name: vh_tap_manage
+    type: ViewHistoryTapManageInformation
+    number: 12
+    oneof: additional_information
+    ref: ViewHistoryTapManageInformation
+    desc: ""   # TODO 待补充业务含义
+  - name: vh_tap_result
+    type: ViewHistoryTapResultInformation
+    number: 13
+    oneof: additional_information
+    ref: ViewHistoryTapResultInformation
+    desc: ""   # TODO 待补充业务含义
+  - name: vh_change_save_state
+    type: ViewHistoryChangeSaveStateInformation
+    number: 14
+    oneof: additional_information
+    ref: ViewHistoryChangeSaveStateInformation
+    desc: ""   # TODO 待补充业务含义
+  - name: pill_type
+    type: QuickFilterPillInformation
+    number: 15
+    oneof: additional_information
+    ref: QuickFilterPillInformation
+    desc: ""   # TODO 待补充业务含义
+  - name: quick_filter_bottom_sheet_interaction
+    type: QuickFilterBottomSheetInteraction
+    number: 16
+    oneof: additional_information
+    ref: QuickFilterBottomSheetInteraction
+    desc: ""   # TODO 待补充业务含义
+  - name: apply_quick_filter_information
+    type: QuickFilterApplyInformation
+    number: 17
+    oneof: additional_information
+    ref: QuickFilterApplyInformation
+    desc: ""   # TODO 待补充业务含义
+  - name: car_group_card_information
+    type: CarGroupCardInformation
+    number: 19
+    oneof: additional_information
+    ref: CarGroupCardInformation
+    desc: ""   # TODO 待补充业务含义
+  - name: insurance_info
+    type: QuotesAdditions
+    number: 20
+    oneof: additional_information
+    ref: QuotesAdditions
+    desc: ""   # TODO 待补充业务含义
+  - name: supplier_rating_information
+    type: SupplierRatingInformation
+    number: 21
+    oneof: additional_information
+    ref: SupplierRatingInformation
+    desc: ""   # TODO 待补充业务含义
+  - name: autosuggest_item_information
+    type: AutosuggestItemInformation
+    number: 22
+    oneof: additional_information
+    ref: AutosuggestItemInformation
+    desc: ""   # TODO 待补充业务含义
+  - name: saving_badge_information
+    type: SavingBadgeInformation
+    number: 25
+    oneof: additional_information
+    ref: SavingBadgeInformation
+    desc: ""   # TODO 待补充业务含义
+  - name: mini_search_guid
+    type: string
+    number: 18
+    desc: "associate it with mini search"
+  - name: total_search_results
+    type: uint32
+    number: 23
+    desc: "Total number of group results"
+  - name: search_results_with_filter
+    type: uint32
+    number: 24
+    desc: "Total number of filtered group results"
+  - name: filter_search_guid
+    type: string
+    number: 26
+    desc: "associate it with filter search if exists"

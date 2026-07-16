@@ -1,0 +1,87 @@
+# AUTO-GENERATED skeleton from proto/clients.proto. Enrich desc / relationships by hand.
+message: CarHireGroupVisibleProperties
+package: clients
+source_file: clients.proto
+group: shared
+description: "呈现给用户的租车分组可见属性（车型/类别/变速箱/座位/行李/空调等），用于浏览历史等。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: itinerary_id
+    type: string
+    number: 1
+    desc: ""   # TODO 待补充业务含义
+  - name: car_type
+    type: car_hire.CarType
+    number: 2
+    ref: car_hire.CarType   # 外部类型，见 generated/external_refs.yaml
+    desc: "ACRISS car type"
+  - name: car_category
+    type: car_hire.CarCategory
+    number: 3
+    ref: car_hire.CarCategory   # 外部类型，见 generated/external_refs.yaml
+    desc: "ACRISS car category"
+  - name: transmission
+    type: car_hire.Transmission
+    number: 4
+    ref: car_hire.Transmission   # 外部类型，见 generated/external_refs.yaml
+    desc: "ACRISS transmission type"
+  - name: max_seats
+    type: uint32
+    number: 5
+    desc: "the maximum seats available to the user"
+  - name: max_bags
+    type: uint32
+    number: 6
+    desc: "the maximum number of bags available to the user"
+  - name: has_air_conditioning
+    type: bool
+    number: 7
+    desc: "does the rental have a/c"
+  - name: number_of_deals
+    type: uint32
+    number: 8
+    desc: "how many deals are in the group"
+  - name: group_score
+    type: float
+    number: 9
+    desc: "the deal score calculated for the group (visible in app and soon web)"
+  - name: price
+    type: commons.Price
+    number: 10
+    ref: commons.Price   # 外部类型，见 generated/external_refs.yaml
+    desc: "represented price of the option"
+  - name: sipp_code
+    type: string
+    number: 11
+    desc: "the code that encodes the ACRISS properties of the car in a string"
+  - name: initial_group_index
+    type: uint32
+    number: 12
+    desc: "The index number tell you the initial group position in total results, start from 0"
+  - name: recommended_ranking_index
+    type: uint32
+    number: 13
+    desc: "The index number tell you the recommended position in total results, start from 0"
+  - name: total_number_of_deals
+    type: uint32
+    number: 14
+    desc: "total deals count in the group"
+  - name: card_type
+    type: car_hire.GroupCardType
+    number: 15
+    ref: car_hire.GroupCardType   # 外部类型，见 generated/external_refs.yaml
+    desc: "card type of values NORMAL/HEARTED/HIGHLIGHT"
+  - name: car_name
+    type: string
+    number: 16
+    desc: "it is from group.car_name"
+  - name: vendor_id
+    type: sint32
+    number: 17
+    desc: "it comes from the key of group.vendors"
+  - name: vendor_name
+    type: string
+    number: 18
+    desc: "it comes from the value of group.vendors"

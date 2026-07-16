@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: FuelType
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "Fuel type (subset) to track GreenerChoices"
+values:
+  - num: 0
+    name: UNSET_FUEL_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: OTHER
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: ELECTRIC
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: HYBRID
+    meaning: ""   # TODO 待确认业务含义

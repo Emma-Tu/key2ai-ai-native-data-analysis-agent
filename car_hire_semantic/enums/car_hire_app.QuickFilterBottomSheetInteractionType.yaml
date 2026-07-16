@@ -1,0 +1,16 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: QuickFilterBottomSheetInteractionType
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "The quick filter bottom sheet interaction type"
+values:
+  - num: 0
+    name: UNSET_QUICK_FILTER_BOTTOM_SHEET_INTERACTION
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: TAP_QUICK_FILTER_CLOSE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: TAP_QUICK_FILTER_CLEAR
+    meaning: ""   # TODO 待确认业务含义

@@ -1,0 +1,25 @@
+# AUTO-GENERATED skeleton from proto/booking.proto. Enrich desc / relationships by hand.
+message: BookingStitchedEvent
+package: booking
+source_file: booking.proto
+group: conversion
+description: "拼接后的预订事件（把同一预订的多步/多来源缝合成一条）。"   # curated (overlay.yaml)
+grain: "一行 = 一次拼接后的预订"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.LightHeader
+    number: 1
+    ref: commons.LightHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: "Header with details about the creation of the \"stitched\" message."
+  - name: booking_booking_event
+    type: booking.BookingEvent
+    number: 2
+    ref: booking.BookingEvent   # 外部类型，见 generated/external_refs.yaml
+    desc: "The BookingEvent we are tracking."
+  - name: redirects_redirect
+    type: redirects.Redirect
+    number: 3
+    ref: redirects.Redirect   # 外部类型，见 generated/external_refs.yaml
+    desc: "The Redirect that led to the booking, including key meta-data."

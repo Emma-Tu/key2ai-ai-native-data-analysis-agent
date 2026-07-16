@@ -1,0 +1,19 @@
+# AUTO-GENERATED skeleton from proto/car_hire_quote_search.proto. Enrich desc / relationships by hand.
+message: AdditionalDrivers
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+description: "附加驾驶员信息building block（免费名额 + 需付费金额，欧元分）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: free
+    type: FreeAdditionalDriver
+    number: 1
+    ref: FreeAdditionalDriver
+    desc: "Free Additional Driver Information"
+  - name: paid_eur_cents
+    type: uint32
+    number: 2
+    desc: "The amount traveler needs to pay in euro-cents for additional drivers"

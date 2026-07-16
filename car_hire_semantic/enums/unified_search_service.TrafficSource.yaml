@@ -1,0 +1,46 @@
+# AUTO-GENERATED from proto/unified_search_service.proto.
+enum: TrafficSource
+package: unified_search_service
+source_file: unified_search_service.proto
+group: shared
+desc: "USS 流量来源（垂直搜索/B2B/组合搜索/组合 Explore/SEO/运营/生命周期营销/广告等）。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_TRAFFIC_SOURCE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: TRAFFIC_SOURCE_UNKNOWN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: TRAFFIC_SOURCE_VERTICAL_SEARCH
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: TRAFFIC_SOURCE_B2B
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: TRAFFIC_SOURCE_COMBINED_SEARCH
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: TRAFFIC_SOURCE_COMBINED_EXPLORE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: TRAFFIC_SOURCE_SEO
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: TRAFFIC_SOURCE_OPERATIONS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 8
+    name: TRAFFIC_SOURCE_LIFECYCLE_MARKETING
+    meaning: ""   # TODO 待确认业务含义
+  - num: 9
+    name: TRAFFIC_SOURCE_SEARCH_CONTROLS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 10
+    name: TRAFFIC_SOURCE_ADS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 11
+    name: TRAFFIC_SOURCE_EXPLORE_EVENTS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 12
+    name: TRAFFIC_SOURCE_CITY_DRAWER
+    meaning: ""   # TODO 待确认业务含义

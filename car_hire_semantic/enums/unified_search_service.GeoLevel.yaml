@@ -1,0 +1,31 @@
+# AUTO-GENERATED from proto/unified_search_service.proto.
+enum: GeoLevel
+package: unified_search_service
+source_file: unified_search_service.proto
+group: shared
+desc: "USS 地理层级：任意/国家/本地/区域/POI/城区。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_GEO_LEVEL
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: GEO_LEVEL_UNKNOWN
+    meaning: "Used when mini-event schema becomes outdated with USS schemas"
+  - num: 2
+    name: GEO_LEVEL_ANYWHERE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: GEO_LEVEL_COUNTRY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: GEO_LEVEL_LOCAL
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: GEO_LEVEL_REGION
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: GEO_LEVEL_POI
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: GEO_LEVEL_DISTRICT
+    meaning: ""   # TODO 待确认业务含义

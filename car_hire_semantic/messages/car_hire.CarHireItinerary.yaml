@@ -1,0 +1,55 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireItinerary
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "租车行程（SIPP/取还地点时间/车型/渠道/供应商）。被 redirects/booking 嵌套引用。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: sipp
+    type: string
+    number: 1
+    desc: ""   # TODO 待补充业务含义
+  - name: pickup_location
+    type: commons.Location
+    number: 2
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: pickup_timestamp
+    type: commons.DateTime
+    number: 3
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: dropoff_location
+    type: commons.Location
+    number: 4
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: dropoff_timestamp
+    type: commons.DateTime
+    number: 5
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: car_class
+    type: string
+    number: 6
+    desc: ""   # TODO 待补充业务含义
+  - name: channel
+    type: string
+    number: 7
+    desc: "field within a redirect that describes where that redirect came from."
+  - name: vendor
+    type: string
+    number: 8
+    desc: "a vendor provides the car for a quote. For example argus provides quotes for Avis' fleet. the website_id may be argus. The vendor will be Avis."
+  - name: extra_location_info
+    type: CarHireLocationExtra
+    number: 9
+    ref: CarHireLocationExtra
+    desc: "extra location information for car hire locations."
+  - name: vendor_id
+    type: uint32
+    number: 10
+    desc: "Car supplier assigned Skyscanner vendor_id for example vendor Avis has vendor_id 640."

@@ -1,0 +1,61 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireSearchControlChanged
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "前端：搜索控件被修改（取还地点/日期/时间/驾龄等），oneof 携带新值。"   # curated (overlay.yaml)
+grain: "一行 = 一次搜索控件变更"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 2
+    desc: "associate to clients.Search"
+  - name: mini_search_guid
+    type: string
+    number: 3
+    desc: "associate to CarHireMiniSearch"
+  - name: item
+    type: SearchControlItem
+    number: 4
+    ref: SearchControlItem
+    desc: "component type in search control"
+  - name: location
+    type: commons.Location
+    number: 5
+    oneof: value
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: "pickup/dropoff location"
+  - name: date
+    type: commons.Date
+    number: 6
+    oneof: value
+    ref: commons.Date   # 外部类型，见 generated/external_refs.yaml
+    desc: "pickup/dropoff date"
+  - name: time
+    type: commons.Time
+    number: 7
+    oneof: value
+    ref: commons.Time   # 外部类型，见 generated/external_refs.yaml
+    desc: "pickup/dropoff time"
+  - name: is_checked
+    type: bool
+    number: 8
+    oneof: value
+    desc: "checkbox status in search control"
+  - name: driver_age
+    type: uint32
+    number: 9
+    oneof: value
+    desc: "driver age in search control"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

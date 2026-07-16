@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package vehicle;
+option go_package = "github.com/skyscanner/go-schemas/vehicle";
+option java_package = "net.skyscanner.schemas";
+option objc_class_prefix = "SKYSchema";
+
+enum VehicleType {
+    // Skyscanner vehicle types
+    UNSET_VEHICLE_TYPE = 0;
+    ALL_TERRAIN_VEHICLE = 1;
+    COMMERCIAL_VAN = 2;
+    COMPACT = 3;
+    COMPACT_SUV = 4;
+    CONVERTIBLE = 5;
+    COUPE = 6;
+    ECONOMY = 7;
+    ECONOMY_SUV = 8;
+    ESTATE = 9;
+    FULLSIZE = 10;
+    FULLSIZE_ALL_TERRAIN_VEHICLE = 11;
+    FULLSIZE_COMMERCIAL_VAN = 12;
+    FULLSIZE_CONVERTIBLE = 13;
+    FULLSIZE_COUPE = 14;
+    FULLSIZE_ESTATE = 15;
+    FULLSIZE_LIMOUSINE = 16;
+    FULLSIZE_MOTOR_HOME = 17;
+    FULLSIZE_MOTORCYCLE = 18;
+    FULLSIZE_PASSENGER_VAN = 19;
+    FULLSIZE_PICK_UP_TRUCK = 20;
+    FULLSIZE_SPORTS_CAR = 21;
+    FULLSIZE_SUV = 22;
+    INTERMEDIATE = 23;
+    INTERMEDIATE_PASSENGER_VAN = 24;
+    INTERMEDIATE_SUV = 25;
+    LIMOUSINE = 26;
+    MINI = 27;
+    MINI_PASSENGER_VAN = 28;
+    MINI_SUV = 29;
+    MOTOR_HOME = 30;
+    MOTORCYCLE = 31;
+    PICK_UP_TRUCK = 32;
+    PREMIUM = 33;
+    PREMIUM_ALL_TERRAIN_VEHICLE = 34;
+    PREMIUM_COMMERCIAL_VAN = 35;
+    PREMIUM_CONVERTIBLE = 36;
+    PREMIUM_COUPE = 37;
+    PREMIUM_ESTATE = 38;
+    PREMIUM_LIMOUSINE = 39;
+    PREMIUM_MOTOR_HOME = 40;
+    PREMIUM_MOTORCYCLE = 41;
+    PREMIUM_PASSENGER_VAN = 42;
+    PREMIUM_PICK_UP_TRUCK = 43;
+    PREMIUM_SPORTS_CAR = 44;
+    PREMIUM_SUV = 45;
+    SPORTS_CAR = 46;
+    STANDARD = 47;
+    STANDARD_PASSENGER_VAN = 48;
+    STANDARD_SUV = 49;
+}
+
+enum VehicleCategory {
+    // Skyscanner vehicle categories
+    UNSET_VEHICLE_CATEGORY = 0;
+    LARGE = 1;
+    LUXURY = 2;
+    MEDIUM = 3;
+    PEOPLE_CARRIER = 4;
+    SMALL = 5;
+    SUV = 6;
+    VAN = 7;
+}

@@ -1,0 +1,18 @@
+# AUTO-GENERATED skeleton from proto/car_hire_quote_search.proto. Enrich desc / relationships by hand.
+message: FreeAdditionalDriver
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+description: "免费附加驾驶员building block（数量 + 最低年龄）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: num
+    type: uint32
+    number: 1
+    desc: "Number of free additional drivers included"
+  - name: min_age
+    type: uint32
+    number: 2
+    desc: "Minimum age required for a free additional driver"

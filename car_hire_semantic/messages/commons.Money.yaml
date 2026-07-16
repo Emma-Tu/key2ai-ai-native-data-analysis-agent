@@ -1,0 +1,32 @@
+# AUTO-GENERATED skeleton from proto/commons.proto. Enrich desc / relationships by hand.
+message: Money
+package: commons
+source_file: commons.proto
+group: shared
+description: "金额类型：{currency, amount(int64), unit}。unit: CENTI=0/MILLI=1/MICRO=2/WHOLE=3。"   # curated (overlay.yaml)
+grain: "值类型"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: currency
+    type: string
+    number: 1
+    desc: ""   # TODO 待补充业务含义
+  - name: amount
+    type: int64
+    number: 2
+    desc: ""   # TODO 待补充业务含义
+  - name: unit
+    type: Unit
+    number: 3
+    ref: Unit
+    desc: ""   # TODO 待补充业务含义
+
+nested_enums:
+  - name: Unit
+    values:
+      0: CENTI   # The cent
+      1: MILLI
+      2: MICRO
+      3: WHOLE   # A whole pound, euro, etc.
+      4: UNSPECIFIED

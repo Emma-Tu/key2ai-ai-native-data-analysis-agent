@@ -1,0 +1,20 @@
+# AUTO-GENERATED skeleton from proto/b2b_carhire_live.proto. Enrich desc / relationships by hand.
+message: PickupDropOff
+package: b2b_carhire_live
+source_file: b2b_carhire_live.proto
+group: b2b
+description: "B2B 实时查询的取还地点building block（实体 id + `纬度;经度` 坐标）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: entity_id
+    type: string
+    number: 1
+    oneof: item
+    desc: "Entity ID - representing a city, airport, district or train station."
+  - name: coordinates
+    type: string
+    number: 2
+    oneof: item
+    desc: "Coordinates in format `latitude;longitude`"

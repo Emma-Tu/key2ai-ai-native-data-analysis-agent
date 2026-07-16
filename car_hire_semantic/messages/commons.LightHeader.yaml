@@ -1,0 +1,54 @@
+# AUTO-GENERATED skeleton from proto/commons.proto. Enrich desc / relationships by hand.
+message: LightHeader
+package: commons
+source_file: commons.proto
+group: shared
+description: "YOU CAN USE THESE MESSAGES IN YOUR SCHEMAS HEADER Light header to be used in all event related messages - RECOMMENDED TO START USING THIS HEADER INSTEAD OF THE HEAVIER ONE. The fields that have been removed are: produced_by, producer_version, app_build_kind, ab_tests, client_details, traveller_culture_settings, utm_source, utm_medium, utm_campaign, utm_content, utm_term, associate_id, service_name, hostname, service_instance_fingerprint"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: guid
+    type: string
+    number: 1
+    desc: "Event GUID"
+  - name: event_timestamp
+    type: DateTime
+    number: 2
+    ref: DateTime
+    desc: "Timestamp for the event"
+  - name: traveller_identity
+    type: TravellerIdentity
+    number: 3
+    ref: TravellerIdentity
+    desc: "Last known unauthenticated utid, authenticated utid (if known), cookie preference string (legacy)"
+  - name: touchpoints
+    type: repeated Touchpoint
+    number: 4
+    ref: Touchpoint
+    desc: "Filled automatically and used for data lineage. Each touchpoint represents the event of one component of the data pipeline touching the message."
+  - name: service_name
+    type: string
+    number: 5
+    desc: "Used instead of the old Producer field, field containing the name of the service logging the related event"
+  - name: event_name
+    type: string
+    number: 6
+    desc: "Name of the event sent"
+  - name: service_instance_fingerprint
+    type: ServiceInstanceFingerprint
+    number: 7
+    ref: ServiceInstanceFingerprint
+    desc: "Machine identifier, it should be filled automatically by the logging library"
+  - name: correlation_id
+    type: string
+    number: 8
+    desc: "Correlate requests - use X-CorrelationID header to transmit"
+  - name: sequence_number
+    type: uint64
+    number: 9
+    desc: "Sequence number, must be unique and consecutive per ServiceInstanceFingerprint values"
+  - name: request_id
+    type: string
+    number: 10
+    desc: "Request id provided per page load."

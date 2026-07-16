@@ -1,0 +1,31 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: DayViewEvent
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "App 端 day-view 事件（结果加载，oneof 携带具体信息）。"   # curated (overlay.yaml)
+grain: "一行 = 一次 day-view 事件"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: event_type
+    type: DayViewEventType
+    number: 2
+    ref: DayViewEventType
+    desc: "Type of the event being tracked"
+  - name: result_loaded
+    type: DayViewLoadedInformation
+    number: 3
+    oneof: additional_information
+    ref: DayViewLoadedInformation
+    desc: "Log for `RESULTS_LOADED` type"

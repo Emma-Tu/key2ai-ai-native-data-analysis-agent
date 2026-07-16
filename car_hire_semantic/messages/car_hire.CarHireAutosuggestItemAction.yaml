@@ -1,0 +1,59 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireAutosuggestItemAction
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "前端：自动补全条目动作（实体 id/类型/位置/输入串 + UIEventType）。"   # curated (overlay.yaml)
+grain: "一行 = 一次自动补全条目动作"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 2
+    desc: "associate it with clients.search"
+  - name: mini_search_guid
+    type: string
+    number: 3
+    desc: "associate it with CarHireMiniSearch"
+  - name: entity_id
+    type: string
+    number: 4
+    desc: "autosuggest entity id eg. 95565047"
+  - name: entity_type
+    type: LocationType
+    number: 5
+    ref: LocationType
+    desc: "autosuggest entity type eg. City/Airport"
+  - name: entity_value
+    type: string
+    number: 6
+    desc: "autosuggest entity valye eg. London"
+  - name: group_type
+    type: AutosuggestGroupType
+    number: 7
+    ref: AutosuggestGroupType
+    desc: "autosuggest group type"
+  - name: position
+    type: uint32
+    number: 8
+    desc: "autosuggest item position in the group list"
+  - name: query_string
+    type: string
+    number: 9
+    desc: "autosuggest input query string"
+  - name: event_type
+    type: UIEventType
+    number: 10
+    ref: UIEventType
+    desc: "autosuggest item event type, eg. RENDERED/VIEWED/SELECTED"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

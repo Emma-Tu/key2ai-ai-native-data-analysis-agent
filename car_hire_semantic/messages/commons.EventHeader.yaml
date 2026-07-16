@@ -1,0 +1,187 @@
+# AUTO-GENERATED skeleton from proto/commons.proto. Enrich desc / relationships by hand.
+message: EventHeader
+package: commons
+source_file: commons.proto
+group: shared
+description: "DEPRECATED MESSAGES EVENT HEADER IS IN THE DEPRECATION PATH: We recommend the usage of LightHeader in new messages and then add the rest of fields that were contained in the old header if needed. The fields that have been removed are: produced_by, producer_version, app_build_kind, ab_tests, client_details, traveller_culture_settings, utm_source, utm_medium, utm_campaign, utm_content, utm_term, associate_id, service_name, hostname, service_instance_fingerprint"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: guid
+    type: string
+    number: 1
+    desc: "Event GUID"
+  - name: produced_by
+    type: Producer
+    number: 2
+    ref: Producer
+    desc: "Name of the service that produced the event. See enum above for current services. If you have a new service you want to log data from then it add to the above enum."
+  - name: producer_version
+    type: string
+    number: 3
+    desc: "Version number of the producer service. May differ by service so set as string for flexibility"
+  - name: created_on
+    type: DateTime
+    number: 4
+    ref: DateTime
+    desc: "Timestamp for the event"
+  - name: ab_tests
+    type: map<string,string>
+    number: 5
+    desc: "Key is test name, Value is test variant"
+  - name: traveller_identity
+    type: TravellerIdentity
+    number: 6
+    ref: TravellerIdentity
+    desc: "Last known unauthenticated utid, authenticated utid (if known), cookie preference string (legacy)"
+  - name: client_details
+    type: ClientDetails
+    number: 7
+    ref: ClientDetails
+    desc: ""   # TODO 待补充业务含义
+  - name: traveller_culture_settings
+    type: CultureSettings
+    number: 8
+    ref: CultureSettings
+    desc: ""   # TODO 待补充业务含义
+  - name: app_build_kind
+    type: AppBuildKind
+    number: 9
+    ref: AppBuildKind
+    desc: "**DEPRECATED** Use Apps.apps_build_kind field instead"
+  - name: utm_source
+    type: string
+    number: 10
+    desc: ""   # TODO 待补充业务含义
+  - name: utm_medium
+    type: string
+    number: 11
+    desc: ""   # TODO 待补充业务含义
+  - name: utm_campaign
+    type: string
+    number: 12
+    desc: ""   # TODO 待补充业务含义
+  - name: utm_content
+    type: string
+    number: 13
+    desc: ""   # TODO 待补充业务含义
+  - name: associate_id
+    type: string
+    number: 14
+    desc: "**DEPRECATED** The UrlTrackingParameters message type should be used for this"
+  - name: associate_id_parameters
+    type: string
+    number: 22
+    desc: "**DEPRECATED** The UrlTrackingParameters message type should be used for this"
+  - name: associate_id_timestamp
+    type: DateTime
+    number: 23
+    ref: DateTime
+    desc: "**DEPRECATED** Datetime the associate id was seen in url which is no longer in use"
+  - name: utm_term
+    type: string
+    number: 15
+    desc: "UTM term is used for keyword based channels, for example paid search"
+  - name: service_name
+    type: string
+    number: 16
+    desc: "used to identify process which produced events"
+  - name: hostname
+    type: string
+    number: 17
+    desc: "hostname or ip of producer"
+  - name: service_instance_fingerprint
+    type: ServiceInstanceFingerprint
+    number: 18
+    ref: ServiceInstanceFingerprint
+    desc: "Use of this should be preferred over hostname."
+  - name: touchpoints
+    type: repeated Touchpoint
+    number: 19
+    ref: Touchpoint
+    desc: "Filled automatically and used for data lineage. Each touchpoint represents the event of one component of the data pipeline touching the message."
+  - name: correlation_id
+    type: string
+    number: 20
+    desc: "Correlate requests - use X-CorrelationID header to transmit"
+  - name: sequence_number
+    type: uint64
+    number: 21
+    desc: "Sequence number, must be unique and consecutive per ServiceInstanceFingerprint values"
+
+nested_enums:
+  - name: Producer
+    values:
+      0: JACQUARD
+      1: SKIPPY
+      2: SCAFFOLDING
+      3: SKYSCANNER_APP
+      4: HOTEL_BLS
+      5: TKG_ACDYM
+      6: DEPLOY_EVENTS
+      7: TRAVEL_ALERTS
+      8: HOTELSCATALOGUES
+      9: SKYMETRICS
+      10: GRAFANA
+      11: GRAPHITE
+      12: SLINGSHOT
+      13: TIANXUN
+      14: TRAVELPRO
+      15: DFP   # DoubleClick for Publishers
+      16: FLIGHTS_PRICING_SERVICE
+      17: GAP   # Metrics Originating from GAP Collectors
+      18: B2B_API   # From B2B API
+      19: B2B_WHITE_LABEL   # From B2B Whitelabel
+      20: FLIGHTS_LIVE_UPDATE_SERVICE
+      21: CONNECT_BACKEND_API
+      22: TRAVEL_API
+      23: HOTEL_PARTNER_SORTING
+      24: TOLOMUCO_ROUTE_SCRAPING_SYSTEM
+      25: BUSINESS_APPLICATIONS
+      26: GRAPPLER_SAMZA
+      27: SLIPSTREAM
+      28: B2B_GATEWAY
+      29: DQL_SEARCH
+      30: RABBITMQ_SHOVELS   # Logs from CLDOPS's Rabbit Shovels
+      31: B2B_WIDGETS
+      32: FACEBOOK_MESSENGER_BOT
+      33: FAB_HYDRA
+      34: MSHELL
+      35: GRAPPLER_LOGGER_SDK
+      36: YOUR_JOURNEY
+      37: TID
+      38: FLIGHTS_DAYVIEW
+      39: TRAVEL_CONTENT_PLATFORM
+      40: LOMO
+      41: URL_MANAGEMENT_SERVICE
+      42: PAGE_BUILDER
+      43: TEMPLATE_SERVICE
+      44: PQS_SERVICE
+      45: PQS_DATA_LOADER
+      46: PQS_SCORING_ENGINE
+      47: PQS_INCIDENT_DETECTION
+      48: HOTELS_FE
+      49: TRAVEL_RANKINGS
+      50: SHAREDINFX
+      51: MATER
+      52: SHARED_CONTAINER_PLATFORM   # Container instance and service metrics
+      53: DEALER
+      54: HYPERDRIVE_HAPROXY
+      55: STRINGS_AS_A_SERVICE
+      56: RAIL_DBOOKING
+      57: HOTELS_DBOOK
+      58: REQUEST_HANDLER   # Request Handler service
+      59: CAR_HIRE_DBOOK
+      60: ITINERARY_PROXY_SERVICE   # Proxy for Itinerary Service <-> FPS compatibility
+      61: REDIRECTS_UI   # skippy request from redirects_ui
+      62: SKIPPY_CANARY   # Request from skippy canary
+      63: TRANSPORT_PRICING_SERVICE
+  - name: AppBuildKind
+    values:
+      0: ANDROID_MAIN
+      1: IOS_MAIN
+      2: IOS_HU
+      3: ANDROID_HU
+      4: IOS_TR
+      5: ANDROID_TR

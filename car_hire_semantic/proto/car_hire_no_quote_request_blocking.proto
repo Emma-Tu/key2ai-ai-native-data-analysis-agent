@@ -1,0 +1,18 @@
+syntax = "proto3";
+package car_hire_no_quote_request_blocking;
+option go_package = "github.com/skyscanner/go-schemas/car_hire_no_quote_request_blocking";
+option java_package = "net.skyscanner.schemas";
+import "commons.proto";
+
+// Car Hire No Quote Request Blocking Events
+message CarHireNoQuoteRequestBlocking {
+  commons.LightHeader header = 1;
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  string website_id = 2; // The website id of the car hire request
+  string market = 3; // The market of the car hire request
+  string pick_up_office_id = 4; // The office id of the pick-up location
+  string search_request_id = 5; // The search request id of the car hire search
+  bool is_blocked = 6; // True if the request is blocked, false if the request is not blocked
+  bool is_holdout_dataset = 7; // True if the request is in holdout dataset, which means the request is always non-blocked
+}

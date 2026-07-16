@@ -1,0 +1,25 @@
+# ============================================================================
+# PHYSICAL MAPPING — proto -> warehouse tables/columns.
+# DEFERRED for now (物理层暂不关心). Fill this in once the warehouse is chosen.
+# Until then the agent works at the LOGICAL level and MUST NOT assume:
+#   - exact table names
+#   - enum storage (int vs string)
+#   - how nested/repeated fields are physicalised (STRUCT/ARRAY vs flattened vs child table)
+# ============================================================================
+
+dialect: TBD           # e.g. bigquery | clickhouse | snowflake
+enum_storage: TBD      # int | string  (per-table override allowed)
+
+messages: []
+# Template to fill later:
+# messages:
+#   - proto: car_hire_quote_search.CarHireQuoteSearchEvent
+#     physical_table: <db.schema.table>
+#     nested_strategy: STRUCT|FLATTEN|CHILD_TABLE
+#     field_map:
+#       - proto_field: quotes
+#         column: quotes
+#         note: ARRAY<STRUCT> -> UNNEST(quotes)
+#       - proto_field: header.guid
+#         column: header_guid
+#     enum_storage: int

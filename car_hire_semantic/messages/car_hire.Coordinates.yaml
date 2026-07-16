@@ -1,0 +1,18 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: Coordinates
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "经纬度坐标building block（float latitude/longitude）。"   # curated (overlay.yaml)
+grain: "值类型"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: latitude
+    type: float
+    number: 1
+    desc: ""   # TODO 待补充业务含义
+  - name: longitude
+    type: float
+    number: 2
+    desc: ""   # TODO 待补充业务含义

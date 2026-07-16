@@ -1,0 +1,24 @@
+# AUTO-GENERATED skeleton from proto/redirects.proto. Enrich desc / relationships by hand.
+message: RedirectEnrichedForInsights
+package: redirects
+source_file: redirects.proto
+group: conversion
+description: "为分析富化后的跳转事件（跳转 + 合作方报价 ID 等），供 insights 使用。"   # curated (overlay.yaml)
+grain: "一行 = 一次富化后的跳转"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.LightHeader
+    number: 1
+    ref: commons.LightHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: "The light event header"
+  - name: redirect
+    type: Redirect
+    number: 2
+    ref: Redirect
+    desc: "Redirect event"
+  - name: partner_quote_ids
+    type: repeated string
+    number: 3
+    desc: "Partner Quote ID received from the Scrapes"

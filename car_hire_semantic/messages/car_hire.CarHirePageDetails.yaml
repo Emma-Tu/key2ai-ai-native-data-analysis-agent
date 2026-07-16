@@ -1,0 +1,23 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHirePageDetails
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "响应报价的单页明细building block（card_id + 页内序号 + quote_brief 列表）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: card_id
+    type: string
+    number: 1
+    desc: "card id"
+  - name: index_in_page
+    type: uint32
+    number: 2
+    desc: "card index in page"
+  - name: quote_brief
+    type: repeated CarHireQuoteBrief
+    number: 3
+    ref: CarHireQuoteBrief
+    desc: "quote id and index"

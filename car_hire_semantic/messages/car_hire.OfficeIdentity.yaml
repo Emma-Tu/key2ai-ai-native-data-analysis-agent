@@ -1,0 +1,74 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: OfficeIdentity
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "门店标识building block：website_id + 取还门店 office（坐标/IATA/国家码）+ 缓存/返回报价数。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: website_id
+    type: string
+    number: 1
+    desc: "website id identity a provider"
+  - name: pickup_office_id
+    type: string
+    number: 2
+    desc: "office id identity a office in a provider"
+  - name: dropoff_office_id
+    type: string
+    number: 3
+    desc: "may different from pickup office id because some partners support return car in another place"
+  - name: cache_quote_count
+    type: uint32
+    number: 4
+    desc: "car quotes return directly from cache"
+  - name: return_quote_count
+    type: uint32
+    number: 5
+    desc: "car quotes return to frontend"
+  - name: coordinates
+    type: Coordinates
+    number: 6
+    ref: Coordinates
+    desc: "office coordinates"
+  - name: airport_iata
+    type: string
+    number: 7
+    desc: "the airport iata to which the office belongs"
+  - name: country_code
+    type: string
+    number: 8
+    desc: "the country code to which the office belongs"
+  - name: pickup_office
+    type: Office
+    number: 9
+    ref: Office
+    desc: "pickup office"
+  - name: dropoff_office
+    type: Office
+    number: 10
+    ref: Office
+    desc: "dropoff office"
+
+nested_messages:
+  - name: Office
+    fields:
+      - name: office_id
+        type: string
+        number: 1
+        desc: "office id identity a office in a provider"
+      - name: coordinates
+        type: Coordinates
+        number: 2
+        ref: Coordinates
+        desc: "office coordinates, including longitude and latitude"
+      - name: airport_iata
+        type: string
+        number: 3
+        desc: "office airport IATA code, e.g. LHR for London's Heathrow Airport"
+      - name: country_code
+        type: string
+        number: 4
+        desc: "office country code, 2-letter ISO country code e.g. FR"

@@ -1,0 +1,24 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: SelectedMarker
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "Marker info message"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: price
+    type: commons.Money
+    number: 1
+    ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: is_callout_displayed
+    type: bool
+    number: 2
+    desc: ""   # TODO 待补充业务含义
+  - name: marker_type
+    type: MarkerType
+    number: 3
+    ref: MarkerType
+    desc: ""   # TODO 待补充业务含义

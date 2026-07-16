@@ -1,0 +1,48 @@
+# AUTO-GENERATED skeleton from proto/commons.proto. Enrich desc / relationships by hand.
+message: DownstreamPartner
+package: commons
+source_file: commons.proto
+group: shared
+description: "DOWNSTREAM PARTNER"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: partner_identifier
+    type: string
+    number: 1
+    desc: "Currently known as WebsiteID char(4) e.g. 'eduk'"
+  - name: kind
+    type: Kind
+    number: 2
+    ref: Kind
+    desc: "From above enum"
+  - name: sage_account_identifier
+    type: string
+    number: 3
+    desc: "Account ID as held in our Sage accounting/billing system"
+  - name: sage_account_name
+    type: string
+    number: 4
+    desc: "Account name as held in our Sage accounting/billing system"
+  - name: is_bws
+    type: bool
+    number: 5
+    desc: "Identifies if the partner is a Book with Skyscanner partner"
+  - name: partner_id_fallback
+    type: int32
+    number: 100
+    desc: ""   # TODO 待补充业务含义
+
+nested_enums:
+  - name: Kind
+    values:
+      0: TRAVEL_AGENT
+      1: AIRLINE
+      2: CAR_HIRE
+      3: HOTEL
+      4: AIRPORT_TRANSFER
+      5: INTERNAL_TEST   # Used for the Jacquard healthcheck and other internal non-partner based traffic
+      6: AFFILIATE   # Affiliate tracking partners like Zanox, Performance Horizon and Trade Doubler to ingest data they track for us
+      7: UNKNOWN_DOWNSTREAM_PARTNER
+      8: PACKAGE   # Used for Package vertical partners

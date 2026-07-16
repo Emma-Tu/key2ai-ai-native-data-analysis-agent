@@ -1,0 +1,122 @@
+// Owner: Nessie Squad (Slack: #tracking; Email: NessieSquad@skyscanner.net).
+// Schema for business messages around the consolidation of bookings in the hotels vertical.
+syntax = "proto3";
+
+package booking;
+option go_package = "github.com/skyscanner/go-schemas/booking";
+option java_package = "net.skyscanner.schemas";
+
+import "commons.proto";
+import "hotels.proto";
+import "redirects.proto";
+import "rail.proto";
+import "car_hire.proto";
+
+// An enum describing the current state of a booking (drawing on an equivalent enum found in direct_booking.proto).
+enum BookingState {
+  NEW = 0;
+  PENDING = 1;
+  UPDATED = 2;
+  INVALID = 3;
+  CONFIRMED = 4;
+  UNCONFIRMED = 5;
+  SECURE_REDIRECT = 6;
+  READY = 7;
+  UNAVAILABLE = 8;
+  FAILED = 9;
+  PROVIDER_ERROR = 10;
+  ACCEPTED = 11;
+  CANCELLED = 12;
+  PENDING_REDIRECT = 13;
+}
+
+message BookingStep {
+  // An enum describing the event from which step in the hotel dbook funnel
+  enum BookingStepType {
+    UNSET_BOOKING_STEP_TYPE = 0;
+    RESERVATION =1;                 // the reservation step
+    PAYMENT = 2;                    // the payment step
+    PAYMENT_AUTH = 3;               // the 3DS step
+    POST_BOOKING_SCHEDULE = 4;      // the schedule to update booking state post booking
+    POST_BOOKING_INCREMENTAL = 5;   // the incremental job to update booking state post booking
+    POST_BOOKING_OTHER = 6;         // the other behavior to update booking state post booking
+    PENDING_REDIRECT = 7;           // the createPayOrder step(Trip Payment Platform)
+    POST_BOOKING_V3_UPDATED = 8;     // the getBookingV3 step to request Trip's order detail api
+  }
+
+  // An enum describing the mode of the 3DS step
+  enum PaymentAuthMode {
+    UNSET_PAYMENT_AUTH_MODE = 0;
+    PREAUTH_FRICTIONLESS = 1;     // require collecting device info in 3DS Pre-Authentication Mode
+    PREAUTH_CHALLENGE = 2;        // require challenge in 3DS Pre-Authentication Mode
+    REDIRECT_FRICTIONLESS = 3;    // require collecting device info in 3DS Redirect Mode
+    REDIRECT_CHALLENGE = 4;       // require challenge in 3DS Redirect Mode
+  }
+  BookingStepType type = 1; // the event from which step in the hotel dbook funnel
+  string reason = 2;        // the failed reason for this step if failed
+  string result = 3;        // the result for this step, like success, failure, ...
+  PaymentAuthMode mode = 4; // only for PAYMENT_AUTH step
+}
+
+
+// An enum describing the funnel the booking was sourced from. Namely, pBook versus dBook.
+enum BookingSource {
+  UNKNOWN = 0;        // This default ensures producers must be explicit when logging this.
+  PARTNER_SITE = 1;   // Denotes a booking coming from pBook. I.e., from the partners' booking funnel.
+  DIRECT_BOOKING = 2; // Denotes a booking coming from dBook. I.e., from our Direct Booking funnel.
+}
+
+// An enum describing the lineage, data-source wise, of a given booking event.
+enum EventSource {
+  UNSET_EVENT_SOURCE = 0;           // This default ensures producers must be explicit when logging this.
+  SCRAPER_EVENT_SOURCE = 1;         // Denotes events sourced from a scraper. I.e., a third-party integration.
+  DIRECT_BOOKING_EVENT_SOURCE = 2;  // Denotes events sourced from an internal dBook data source under our control.
+}
+
+message BookingEvent {
+
+  // An enum describing whether we are treating this event as new booking, or an update to an existing one.
+  enum EventType {
+    NEW = 0;
+    UPDATE = 1;
+  }
+
+  commons.LightHeader header = 1;                             // Standard details on the event like producer and time.
+  commons.DateTime grappler_receive_timestamp = 1998;         // Grappler Receive Timestamp added by SDK ie., time when slipstream receives an event.
+  commons.DownstreamPartner downstream_partner = 2;           // Partner meta-data like the identifier.
+  commons.DownstreamTarget downstream_target = 3;             // Booking meta-data like market, language settings etc.
+  commons.ClientDetails client_details = 4 [deprecated=true]; // Details on the client like device type, user-agent etc.
+  commons.Location destination = 5 [deprecated=true];         // Meta-data on the destination e.g., the hotel booked.
+  EventType event_type = 6 [deprecated=true];                 // The type of event regarding booking consolidation.
+
+  string redirect_id = 10;        // The redirect associated with this booking.
+  string booking_id = 11;         // Internal booking identifier for use in consolidation as the 'primary key'.
+  string booking_reference = 12;  // External booking identifier for the booking (for if we require partner input).
+
+  BookingSource booking_source = 20;        // Which funnel was the source of this booking.
+  BookingState booking_state = 21;          // The current state of the booking (as reported in this event).
+  commons.DateTime booking_timestamp = 22;  // When the booking was created (not when we got this event).
+  string booking_error_type = 23;           // A field to classify an error from a failed booking.
+
+  commons.Price booking_price_in_source_currency = 30;                      // Total price as reported for this booking.
+  commons.Revenue revenue = 31;                                             // Booking revenue from Appraiser.
+  commons.Money booking_revenue = 32 [deprecated=true];                     // Revenue in a canonical currency.
+  commons.Money booking_revenue_in_source_currency = 33 [deprecated=true];  // Revenue in the original currency.
+  EventSource event_source = 34;                                            // The data-source of this booking event.
+  BookingStep booking_step = 35;                                            // A field to mark where is the booking_state from and why
+
+  // Vertical specific meta-data around the booking (multi-vertical support has since been dropped as a feature).
+  oneof product_extra {
+    hotel.HotelsBookingExtra hotels_extra = 100;                          // Extra attributes specific to a hotel.
+    rail.RailBookingExtra rail_extra = 101 [deprecated=true];             // Extra attributes specific to a train.
+    car_hire.CarHireBookingExtra car_hire_extra = 102 [deprecated=true];  // Extra attributes specific to a car.
+  }
+
+  string organisation_id = 1000 [deprecated=true];  // Ties a partner to a higher level grouping of related partners.
+}
+
+message BookingStitchedEvent {
+  commons.LightHeader header = 1;                   // Header with details about the creation of the "stitched" message.
+  booking.BookingEvent booking_booking_event = 2;   // The BookingEvent we are tracking.
+  redirects.Redirect redirects_redirect = 3;        // The Redirect that led to the booking, including key meta-data.
+}

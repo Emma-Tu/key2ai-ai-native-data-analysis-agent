@@ -1,0 +1,27 @@
+# AUTO-GENERATED skeleton from proto/car_hire_indicative_price.proto. Enrich desc / relationships by hand.
+message: Filter
+package: car_hire_indicative_price
+source_file: car_hire_indicative_price.proto
+group: core
+description: "指示性价格搜索所用筛选building block（约束 + 车型/供应商/合作方 id）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: filter_constraint
+    type: FilterConstraint
+    number: 1
+    ref: FilterConstraint
+    desc: "The filter constraint"
+  - name: car_types
+    type: string
+    number: 2
+    desc: "car type,Separate multiple with commas"
+  - name: supplier_ids
+    type: string
+    number: 3
+    desc: "supplier id，Separate multiple with commas"
+  - name: partner_ids
+    type: string
+    number: 4
+    desc: "partner id，Separate multiple with commas"

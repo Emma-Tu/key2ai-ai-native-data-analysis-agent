@@ -1,0 +1,18 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: SelectionValue
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "Checkbox style filter."
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: label
+    type: string
+    number: 1
+    desc: ""   # TODO 待补充业务含义
+  - name: is_checked
+    type: bool
+    number: 2
+    desc: ""   # TODO 待补充业务含义

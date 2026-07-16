@@ -1,0 +1,18 @@
+# AUTO-GENERATED skeleton from proto/car_hire_indicative_price.proto. Enrich desc / relationships by hand.
+message: Location
+package: car_hire_indicative_price
+source_file: car_hire_indicative_price.proto
+group: core
+description: "指示性价格取还地点building block（取车/还车 location 实体 id）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: pickup_location
+    type: string
+    number: 1
+    desc: "The location entity id where the car is picked up"
+  - name: dropoff_location
+    type: string
+    number: 2
+    desc: "The location entity id where the car is dropped off"

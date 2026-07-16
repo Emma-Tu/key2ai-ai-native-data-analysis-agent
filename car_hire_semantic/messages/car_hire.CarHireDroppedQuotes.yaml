@@ -1,0 +1,113 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireDroppedQuotes
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "后端：被丢弃的报价及原因（如 CMA 过滤、无图、超半径等）。数据质量/召回分析用。"   # curated (overlay.yaml)
+grain: "一行 = 一条被丢弃的报价（含 Reason）"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: request_id
+    type: string
+    number: 2
+    desc: "uuid for the request"
+  - name: culture
+    type: commons.CultureSettings
+    number: 3
+    ref: commons.CultureSettings   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: pick_up_location
+    type: string
+    number: 4
+    desc: "pick up entity id"
+  - name: drop_off_location
+    type: string
+    number: 5
+    desc: "drop of entity id"
+  - name: pick_up_date
+    type: string
+    number: 6
+    desc: "pick up date"
+  - name: drop_off_date
+    type: string
+    number: 7
+    desc: "drop off date"
+  - name: provider_id
+    type: string
+    number: 8
+    desc: "provider id"
+  - name: vendor_id
+    type: sint32
+    number: 9
+    desc: "car supplier assigned skyscanner vendor id"
+  - name: vendor_name
+    type: string
+    number: 10
+    desc: "car supplier name"
+  - name: reason
+    type: Reason
+    number: 11
+    ref: Reason
+    desc: "dropped reason"
+  - name: reason_description
+    type: string
+    number: 12
+    desc: "description for the reason"
+  - name: price
+    type: commons.Money
+    number: 13
+    ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+    desc: "quote price"
+  - name: sipp
+    type: string
+    number: 14
+    desc: "sipp code, the industry standard for describing vehicles"
+  - name: car_name
+    type: string
+    number: 15
+    desc: "car name"
+  - name: pick_up_office_id
+    type: string
+    number: 16
+    desc: "pick up office id"
+  - name: drop_off_office_id
+    type: string
+    number: 17
+    desc: "drop off office id"
+  - name: request_sequence
+    type: uint32
+    number: 18
+    desc: "request sequence"
+  - name: is_zero_excess
+    type: bool
+    number: 19
+    desc: "true if quote has zero-excess insurance product"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+
+nested_enums:
+  - name: Reason
+    values:
+      0: UNSET_REASON
+      1: CMA_FILTER   # CMA filter
+      2: INVALID_SIPP   # invalid SIPP
+      3: OUT_RADIUS   # out of search radius
+      4: SIMILAR_QUOTES   # similar quotes exist
+      5: NO_IMAGE   # no image
+      6: NON_AIRPORT   # pick up is non airport for airport search
+      7: INVALID_CARTYPE   # invalid cartype
+      8: INVALID_SEATS   # invalid seats
+      9: INVALID_TRANSMISSION   # invalid transmission
+      10: VENDOR_MISMATCH   # vendor mismatch
+      11: NO_VEHICLE_NAME   # no vehicle name
+      12: CAPS_SUPPRESSION   # quote suppressed by CaPS model (score = -1)
+      13: EXCLUSIVE_REMOVAL   # exclusive quote removed by experiment

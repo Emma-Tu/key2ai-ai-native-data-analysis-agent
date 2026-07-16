@@ -1,0 +1,14 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: ViewHistoryTapManageInformation
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "浏览历史‘管理’点击building block（是否点击工具栏管理按钮）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: is_on_toolbar
+    type: bool
+    number: 1
+    desc: "True if the manage button on top right is clicked. False otherwise"

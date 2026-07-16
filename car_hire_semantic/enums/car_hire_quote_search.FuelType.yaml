@@ -1,0 +1,25 @@
+# AUTO-GENERATED from proto/car_hire_quote_search.proto.
+enum: FuelType
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+desc: "Car full type"
+values:
+  - num: 0
+    name: UNSET_FUEL_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: PETROL
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: DIESEL
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: ELECTRIC
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: HYBRID
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: OTHER
+    meaning: ""   # TODO 待确认业务含义

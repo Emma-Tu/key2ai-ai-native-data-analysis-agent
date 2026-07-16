@@ -1,0 +1,58 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: MapState
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "前端：地图组件状态（可见/选中/隐藏的地点标记 + 地图边界）。"   # curated (overlay.yaml)
+grain: "一行 = 一次 search_guid 下的地图状态快照"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 2
+    desc: ""   # TODO 待补充业务含义
+  - name: visible_pins
+    type: repeated Pin
+    number: 3
+    ref: Pin
+    desc: "list of visible location markers displayed on the map"
+  - name: selected_pins
+    type: repeated Pin
+    number: 4
+    ref: Pin
+    desc: "selected location markers"
+  - name: map_bounds
+    type: MapBounds
+    number: 5
+    ref: MapBounds
+    desc: "the areas of the visible to the user"
+  - name: mini_search_guid
+    type: string
+    number: 6
+    desc: "associate it with mini search"
+  - name: hidden_pins
+    type: repeated Pin
+    number: 7
+    ref: Pin
+    desc: "list of hidden location markers displayed on the map"
+  - name: trigger_type
+    type: MapTriggerType
+    number: 8
+    ref: MapTriggerType
+    desc: "distinguish between trigger types"
+  - name: iqr_apply_status
+    type: IqrApplyStatus
+    number: 9
+    ref: IqrApplyStatus
+    desc: "IQR boundary optimization status for the map view"

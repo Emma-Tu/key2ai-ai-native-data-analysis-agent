@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: GroupCardType
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "分组卡片类型：基础/已收藏/顶部高亮。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_GROUP_CARD_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: BASIC
+    meaning: "the basic group card"
+  - num: 2
+    name: HEARTED
+    meaning: "the group card which is saved"
+  - num: 3
+    name: HIGHLIGHT
+    meaning: "the group card which highlight at top"

@@ -1,0 +1,64 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: CarCategory
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "ACRISS 官方车辆类别（Mini/Economy/Compact...Luxury/Oversize）。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_CAR_CATEGORY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: MINI
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: MINI_ELITE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: ECONOMY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: ECONOMY_ELITE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: COMPACT
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: COMPACT_ELITE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: INTERMEDIATE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 8
+    name: INTERMEDIATE_ELITE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 9
+    name: STANDARD
+    meaning: ""   # TODO 待确认业务含义
+  - num: 10
+    name: STANDARD_ELITE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 11
+    name: FULLSIZE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 12
+    name: FULLSIZE_ELITE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 13
+    name: PREMIUM
+    meaning: ""   # TODO 待确认业务含义
+  - num: 14
+    name: PREMIUM_ELITE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 15
+    name: LUXURY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 16
+    name: LUXURY_ELITE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 17
+    name: OVERSIZE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 18
+    name: SPECIAL_CATEGORY
+    meaning: ""   # TODO 待确认业务含义

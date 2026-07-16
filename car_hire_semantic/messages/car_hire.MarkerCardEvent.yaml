@@ -1,0 +1,70 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: MarkerCardEvent
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "前端：地图标记卡片事件（某地点的车辆数/价格/机场信息）。"   # curated (overlay.yaml)
+grain: "一行 = 一次地点标记卡片事件"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 2
+    desc: "associate it with search"
+  - name: mini_search_guid
+    type: string
+    number: 3
+    desc: "associate it with mini search"
+  - name: location_id
+    type: string
+    number: 4
+    desc: "display location id of loc.pu.key"
+  - name: vendor_ids
+    type: repeated uint64
+    number: 5
+    desc: "Array of vendor IDs"
+  - name: is_airport
+    type: bool
+    number: 6
+    desc: "display is airport"
+  - name: airport_full_name
+    type: string
+    number: 7
+    desc: "display airport's full_name"
+  - name: airport_iata_code
+    type: string
+    number: 8
+    desc: "display airport's iata code"
+  - name: non_airport_address
+    type: string
+    number: 9
+    desc: "display non-airport's address"
+  - name: distance
+    type: Distance
+    number: 10
+    ref: Distance
+    desc: "display the distance of the location id"
+  - name: quote_count
+    type: uint64
+    number: 11
+    desc: "number of available car hire quotes for this location; currently unused, reserved for future use"
+  - name: price
+    type: commons.Price
+    number: 12
+    ref: commons.Price   # 外部类型，见 generated/external_refs.yaml
+    desc: "display the price"
+  - name: group_count
+    type: uint64
+    number: 13
+    desc: "number of available car hire groups for this location"

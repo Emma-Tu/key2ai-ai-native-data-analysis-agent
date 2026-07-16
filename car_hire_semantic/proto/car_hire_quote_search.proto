@@ -1,0 +1,158 @@
+// Owner: Tiger (Slack: #tiger-public; Email: TigerSquad@skyscanner.net)
+// Schema for generating events for carHire quote search
+
+syntax = "proto3";
+package car_hire_quote_search;
+option go_package = "github.com/skyscanner/go-schemas/car_hire_quote_search";
+option java_package = "net.skyscanner.schemas";
+option objc_class_prefix = "SKYSchemaCarHireQuoteSearch";
+import "commons.proto";
+import "quote_search.proto";
+
+message CarHireQuoteSearchEvent {
+  commons.LightHeader header = 1;                                // Common header
+  quote_search.TravelNode origin_info = 2;                       // Origin information
+  quote_search.TravelNode destination_info = 3;                  // Destination information
+  repeated Quote quotes = 4;                                     // List of quotes item max will be 30-40 around
+  quote_search.TravellerContext traveller_context = 5;           // Traveller context
+  quote_search.QuoteSource quote_source = 6;                     // Quote source
+  quote_search.ClientId client_id = 7;                           // Client ID in the request
+  string search_request_id = 8;                                  // Unique ID for the search request
+  uint32 driver_age = 9;                                         // driver's age
+  commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+message Quote {
+  uint32 price_eur_cents = 1;                       // Quote price in euro-cents
+  string partner_id = 2;                            // Partner website ID
+  CarInfo car_info = 3;                             // Car information
+  PickupType pickup_type = 4;                       // Pickup type
+  FuelPolicy fuel_policy = 5;                       // Car fuel policy
+  PickupMethod pickup_method = 6;                   // Pickup method
+  LocationDetail pick_up_detail = 7;                // Pickup location detail
+  LocationDetail drop_off_detail = 8;               // Drop-off location detail
+  string vendor_name = 9;                           // vendor name
+  IncludedMileage included_mileage = 10;            // included mileage information
+  CancellationPolicy cancellation_policy = 11;      // cancellation policy information
+  PaymentType payment_type = 12;                    // Payment type
+  AdditionalDrivers additional_drivers = 13;        // Add additional driver information
+  InsurancePackage insurance_package = 14;          // Details of the insurance package
+}
+
+message AdditionalDrivers {
+  FreeAdditionalDriver free = 1; // Free Additional Driver Information
+  uint32 paid_eur_cents = 2;     // The amount traveler needs to pay in euro-cents for additional drivers
+}
+
+message FreeAdditionalDriver {
+  uint32 num = 1;                    // Number of free additional drivers included
+  uint32 min_age = 2;                // Minimum age required for a free additional driver
+}
+
+message InsurancePackage {
+  Insurance collision_damage_waiver = 1;            // Collision damage waiver coverage
+}
+
+message Insurance {
+  uint32 price_eur_cents = 1;  // The amount traveler needs to pay in euro-cents to buy insurance
+  uint32 excess_eur_cents = 2; // Max amount traveler pay in euro-cents to settle a claim when an accident occurs
+}
+
+message CancellationPolicy {
+  bool free_cancellation = 1;         // Indicates if free cancellation is available
+  uint32 latest_cancellation_hour = 2; // Hours before pick-up when free cancellation is still available
+}
+
+message IncludedMileage {
+  bool unlimited = 1;              // Indicates if mileage is unlimited
+}
+
+message Passengers {
+  uint32 adults = 1;             // Number of adults
+  uint32 children = 2;           // Number of children
+}
+
+message CarInfo {
+    string vehicle_name = 1;                          // Vehicle name
+    string sipp = 2;                                  // SIPP code representing car type
+    Doors doors = 3;                                  // Number of doors
+    Transmission transmission = 4;                    // Car transmission
+    bool is_air_conditioning = 5;                     // Whether air conditioning is available
+    Passengers passengers = 6;                        // Passenger information
+    Bags bags = 7;                                    // bags
+    FuelType fuel_type = 8;                           // Fuel type
+}
+
+// Number of car doors
+message Doors {
+  uint32 min = 1;
+  uint32 max = 2;
+  uint32 exact = 3;
+}
+
+// Luggage capacity
+message Bags {
+  uint32 large = 1;
+  uint32 small = 2;
+}
+
+// Car transmission
+enum Transmission {
+  UNSET_TRANSMISSION = 0;
+  MANUAL = 1;
+  AUTOMATIC = 2;
+}
+
+// Car full type
+enum FuelType {
+  UNSET_FUEL_TYPE = 0;
+  PETROL = 1;
+  DIESEL = 2;
+  ELECTRIC = 3;
+  HYBRID = 4;
+  OTHER = 5;
+}
+
+message LocationDetail {
+  double latitude = 1;   // Latitude
+  double longitude = 2;  // Longitude
+  string address = 3;    // Address
+}
+
+// Car pick up type
+enum PickupType {
+  UNSET_PICKUP_TYPE = 0;
+  TERMINAL_DESK = 1;
+  MEET_AND_GREET = 2;
+  SHUTTLE_BUS = 3;
+}
+
+// car pick up method
+enum PickupMethod {
+  UNSET_PICKUP_METHOD = 0;
+  KEYLESS = 1;
+  KEY_AND_GO = 2;
+  NORMAL = 3;
+}
+
+// Car fuel policy
+enum FuelPolicy {
+  UNSET_FUEL_POLICY = 0;
+  EMPTY_TO_EMPTY = 1;
+  QUARTER_TO_EMPTY = 2;
+  HALF_TO_EMPTY = 3;
+  FULL_TO_EMPTY = 4;
+  QUARTER_TO_QUARTER = 5;
+  HALF_TO_HALF = 6;
+  FULL_TO_FULL = 7;
+  SAME_TO_SAME = 8;
+  FREE_FULL_TANK = 9;
+}
+
+// Payment type
+enum PaymentType {
+  UNSET_PAYMENT_TYPE = 0;  // Unspecified payment type
+  PRE_PAY = 1;             // Pay online when booking
+  MIX_PAY = 2;             // Pay part when booking and the rest at pickup
+  ARRIVAL_PAY = 3;         // Pay when picking up the car
+}

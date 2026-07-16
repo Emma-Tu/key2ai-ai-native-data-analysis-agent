@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/quote_search.proto.
+enum: LocationReferenceType
+package: quote_search
+source_file: quote_search.proto
+group: shared
+desc: "地点 id 引用类型：租车=office_id / 酒店=hotel_id / 机票=route_id。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_LOCATION_REFERENCE_TYPE
+    meaning: "Default value"
+  - num: 1
+    name: LOCATION_REFERENCE_TYPE_OFFICE_ID
+    meaning: "office id type for carHire"
+  - num: 2
+    name: LOCATION_REFERENCE_TYPE_HOTEL_ID
+    meaning: "hotel_id type for hotel"
+  - num: 3
+    name: LOCATION_REFERENCE_TYPE_ROUTE_ID
+    meaning: "route_id type for flight"

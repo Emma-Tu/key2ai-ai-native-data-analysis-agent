@@ -1,0 +1,22 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: PickupType
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "取车类型：班车/见面交车/航站楼柜台/其他。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_PICKUP_TYPE
+    meaning: "Handling exceptions"
+  - num: 1
+    name: SHUTTLE
+    meaning: "pickup type is shuttle"
+  - num: 2
+    name: MEET_AND_GREET
+    meaning: "pickup type is meet and greet"
+  - num: 3
+    name: DESK_IN_TERMINAL
+    meaning: "pickup type is desk in terminal"
+  - num: 4
+    name: PICKUP_TYPE_OTHER
+    meaning: "default value if no pickup type value can be found"

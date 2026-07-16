@@ -1,0 +1,31 @@
+# AUTO-GENERATED from proto/vehicle.proto.
+enum: VehicleCategory
+package: vehicle
+source_file: vehicle.proto
+group: shared
+desc: "车辆尺寸类别：小型/中型/大型/豪华/多人车/SUV/厢式货车。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_VEHICLE_CATEGORY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: LARGE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: LUXURY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: MEDIUM
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: PEOPLE_CARRIER
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: SMALL
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: SUV
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: VAN
+    meaning: ""   # TODO 待确认业务含义

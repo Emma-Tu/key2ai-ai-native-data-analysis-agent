@@ -1,0 +1,87 @@
+# AUTO-GENERATED skeleton from proto/clients.proto. Enrich desc / relationships by hand.
+message: Search
+package: clients
+source_file: clients.proto
+group: shared
+description: "前端通用搜索事件；其 header.guid 即所有前端租车事件引用的 search_guid 之源。"   # curated (overlay.yaml)
+grain: "一行 = 一次前端搜索（跨垂直，oneof 区分业务）"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: business_domain
+    type: commons.BusinessDomain
+    number: 2
+    ref: commons.BusinessDomain   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: origin
+    type: commons.Location
+    number: 3
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: destination
+    type: commons.Location
+    number: 4
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: start_date
+    type: commons.DateTime
+    number: 5
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: end_date
+    type: commons.DateTime
+    number: 6
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: flight_search
+    type: FlightSearch
+    number: 7
+    oneof: search_details
+    ref: FlightSearch
+    desc: ""   # TODO 待补充业务含义
+  - name: hotel_search
+    type: HotelSearch
+    number: 8
+    oneof: search_details
+    ref: HotelSearch
+    desc: ""   # TODO 待补充业务含义
+  - name: car_hire_search
+    type: CarHireSearch
+    number: 9
+    oneof: search_details
+    ref: CarHireSearch
+    desc: ""   # TODO 待补充业务含义
+  - name: combined_search
+    type: CombinedSearch
+    number: 10
+    oneof: search_details
+    ref: CombinedSearch
+    desc: ""   # TODO 待补充业务含义
+  - name: packages_search
+    type: PackagesSearch
+    number: 11
+    oneof: search_details
+    ref: PackagesSearch
+    desc: ""   # TODO 待补充业务含义
+  - name: view_id
+    type: string
+    number: 12
+    desc: ""   # TODO 待补充业务含义
+  - name: previous_event_id
+    type: string
+    number: 13
+    desc: ""   # TODO 待补充业务含义
+  - name: request_id
+    type: string
+    number: 14
+    desc: ""   # TODO 待补充业务含义

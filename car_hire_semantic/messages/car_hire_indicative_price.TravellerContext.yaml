@@ -1,0 +1,22 @@
+# AUTO-GENERATED skeleton from proto/car_hire_indicative_price.proto. Enrich desc / relationships by hand.
+message: TravellerContext
+package: car_hire_indicative_price
+source_file: car_hire_indicative_price.proto
+group: core
+description: "指示性价格的旅客上下文building block（market/locale/currency）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: market
+    type: string
+    number: 1
+    desc: "Name of the country user has selected or Skyscanner domain being used. eg.UK"
+  - name: locale
+    type: string
+    number: 2
+    desc: "Four letter locale code used to set the language. eg. en-GB"
+  - name: currency
+    type: string
+    number: 3
+    desc: "Three letter currency code. eg.GBP"

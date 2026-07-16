@@ -1,0 +1,32 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: DimensionSourceValues
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "Original request values from which normalized dimensions are derived."
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: market
+    type: string
+    number: 1
+    desc: "From request.market (source for \"market\" dimension)."
+  - name: channel
+    type: string
+    number: 2
+    desc: "From request.channel (source for \"device\" dimension)."
+  - name: pickup_country_id
+    type: string
+    number: 3
+    desc: "From request.pickup_location.countryId (source for \"pickup_market\" dimension)."
+  - name: pickup_datetime_timestamp
+    type: commons.DateTime
+    number: 4
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "From request pickup datetime (source for \"length_of_rental\" dimension)."
+  - name: dropoff_datetime_timestamp
+    type: commons.DateTime
+    number: 5
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "From request dropoff datetime (source for \"length_of_rental\" dimension)."

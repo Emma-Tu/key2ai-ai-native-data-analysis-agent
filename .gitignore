@@ -1,0 +1,7 @@
+# Python virtualenv (only used locally to validate YAML)
+.venv/
+__pycache__/
+*.pyc
+
+# OS junk
+.DS_Store

@@ -1,0 +1,57 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: UIEvent
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "UI interactions, including component rendering"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: type
+    type: UIEventType
+    number: 2
+    ref: UIEventType
+    desc: ""   # TODO 待补充业务含义
+  - name: element_id
+    type: string
+    number: 3
+    desc: ""   # TODO 待补充业务含义
+  - name: element_type
+    type: string
+    number: 4
+    desc: ""   # TODO 待补充业务含义
+  - name: screen_id
+    type: string
+    number: 5
+    desc: ""   # TODO 待补充业务含义
+  - name: element_index
+    type: uint32
+    number: 6
+    desc: "First element is index 0"
+  - name: feature_name
+    type: string
+    number: 7
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 8
+    desc: "associate it with the Search"
+  - name: mini_search_guid
+    type: string
+    number: 9
+    desc: "associate it with the mini search"
+  - name: element_group
+    type: string
+    number: 10
+    desc: "Group of the element, eg: policies/pick-up/transmission.."
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

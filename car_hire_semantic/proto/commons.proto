@@ -1,0 +1,933 @@
+// Owner: Ziggy (Slack: #data-platform-support)
+// Common schema/types re-used across all mini events or events emitted to slipstream ex: header. 
+
+syntax = "proto3";
+
+package commons;
+option go_package = "github.com/skyscanner/go-schemas/commons";
+
+option java_package = "net.skyscanner.schemas";
+option objc_class_prefix = "SKYSchema";
+
+import "google/protobuf/descriptor.proto";
+
+// EXTENSIONS
+
+extend google.protobuf.FieldOptions {
+  string anonymisation_method = 50001 [deprecated = true];
+}
+
+// DATA TYPES
+
+// Represents day of year without time
+message Date {
+  int32 year = 1;
+  int32 month = 2;
+  int32 day = 3;
+}
+
+message DateTime {
+  // The following fields should be interpreted as:
+  // local_time_millis = unix_time_millis + timezone_offset_mins * 60000 + daylight_savings_offset_mins * 60000
+  int64 unix_time_millis = 1; // UNIX timestamp in MILLIS
+  int32 timezone_offset_mins = 2; // Timezone offset from UTC in minutes, For example UK = 0, NL = 60. Does not include any adjustment for daylight savings.
+  int32 daylight_savings_offset_mins = 3; // A countries daylight savings offset in minutes. Set only when a country observes daylights saving time. For Example: UK = 60, NL = 60
+  enum Precision {
+    //Precision enables us to specify open dates like months, years or seconds
+    MILLI = 0;
+    SECOND = 1;
+    DAY = 2;
+    WEEK = 4;
+    MONTH = 5;
+    YEAR = 6;
+    ANYTIME = 7; //Anytime is unspecified time
+    MINUTE = 8;
+  }
+  Precision date_time_kind = 4;
+}
+
+// Represents a time of day, independent of any particular day
+message Time {
+  uint32 milliseconds = 1;
+  uint32 seconds = 2;
+  uint32 minutes = 3;
+  uint32 hours = 4;
+  int32 timezone_offset_mins = 5; // Timezone offset from UTC in minutes, For example UK = 0, NL = 60
+  int32 daylight_savings_offset_mins = 6; // A countries daylight savings offset in minutes. Set only when a country observes daylights saving time. For Example: UK = 60, NL = 60
+}
+
+message TimeInterval {
+  int64 interval = 1; // Time interval value. The precision is defined by the time_interval_kind field.
+  enum TimeIntervalKind {
+    MILLI = 0;
+    SECOND = 1;
+    DAY = 2;
+    WEEK = 3;
+    MONTH = 4;
+    YEAR = 5;
+    HOUR = 6;
+    MINUTE = 7;
+  }
+  TimeIntervalKind time_interval_kind = 2; // Defines the precision of how elapsed time are measured (seconds, minutes)
+}
+
+message Money {
+  //Currency currency_obsolete = 1;
+  string currency = 1;
+  int64 amount = 2;
+  enum Unit {
+    CENTI = 0; //The cent
+    MILLI = 1;
+    MICRO = 2;
+    WHOLE = 3; //A whole pound, euro, etc.
+    UNSPECIFIED = 4;
+  }
+  Unit unit = 3;
+}
+
+message Price {
+  Money total_price = 1; // Total price of a booking
+  Money tax = 2; // Sum of all taxes applied to the booking
+  Money payment_card_fees = 3; // Sum of all payment card fees applied to the booking
+  Money insurance = 4; // Any insurance charges applied to the booking
+}
+
+// Stores granular tax item information
+message TaxItem {
+  Money amount = 1; // The tax value amount and currency
+  string tax_code = 2; // The tax code, usually 2 letter abbreviation e.g "L7", "UP"
+  string description = 3; // description of what the tax item is e.g Air passenger duty
+}
+
+// Accurately represents floating point numbers using integers with applied precision
+// See an example with a similar pattern in the GeoMeasurement message
+message DisplayMeasurement {
+  int32 amount = 1;
+  int32 precision = 2;
+}
+
+// Stores Lat Long values as integers with applied precision
+// Example: Latitude of Barcelona, Spain is 41.385064, encoded as "amount=41385064 precision=6"
+message GeoMeasurement {
+  sint64 amount = 1;
+  int32 precision = 2;
+}
+
+// COMMON ENUMS
+
+// Top level business vertical that the event is related to. Not relevant to all events so left
+// as a simple enum that can be used as and when you want in individual events.
+enum BusinessVertical {
+  UNSET_BUSINESS_VERTICAL = 0;
+  FLIGHT_VERTICAL = 1;
+  HOTEL_VERTICAL = 2;
+  CAR_HIRE_VERTICAL = 3;
+  B2B_VERTICAL = 4;
+  NO_VERTICAL = 5;
+  AIRPORT_TRANSFER_VERTICAL = 6;
+  CAMPERVAN_HIRE_VERTICAL = 7;
+  ADVERTISING_VERTICAL = 8 [deprecated = true]; // Use MEDIA_VERTICAL instead
+  RAIL_VERTICAL = 9;
+  TRIPS_VERTICAL = 10;
+  EXPLORE_VERTICAL = 11;
+  PACKAGE_VERTICAL = 12;
+  // Data products and services (e.g., Partner Services, Travel Insights, Travel Rankings).
+  DATA_SERVICES_VERTICAL = 13;
+  MEDIA_VERTICAL = 14;
+}
+
+enum SortingMode {
+  ASCENDING = 0;
+  DESCENDING = 1;
+  UNSORTED = 2;
+}
+
+// Light header doesn't contain a Producer, so you should add a dedicated field for it if needed.
+enum Producer {
+  JACQUARD = 0;
+  SKIPPY = 1;
+  SCAFFOLDING = 2;
+  SKYSCANNER_APP = 3;
+  HOTEL_BLS = 4;
+  TKG_ACDYM = 5;
+  DEPLOY_EVENTS = 6;
+  TRAVEL_ALERTS = 7;
+  HOTELSCATALOGUES = 8;
+  SKYMETRICS = 9;
+  GRAFANA = 10;
+  GRAPHITE = 11;
+  SLINGSHOT = 12;
+  TIANXUN = 13;
+  TRAVELPRO = 14;
+  DFP = 15; // DoubleClick for Publishers
+  FLIGHTS_PRICING_SERVICE = 16;
+  GAP = 17; // Metrics Originating from GAP Collectors
+  B2B_API = 18; // From B2B API
+  B2B_WHITE_LABEL = 19; // From B2B Whitelabel
+  FLIGHTS_LIVE_UPDATE_SERVICE = 20;
+  CONNECT_BACKEND_API = 21;
+  TRAVEL_API = 22;
+  HOTEL_PARTNER_SORTING = 23;
+  TOLOMUCO_ROUTE_SCRAPING_SYSTEM = 24;
+  BUSINESS_APPLICATIONS = 25;
+  GRAPPLER_SAMZA = 26;
+  SLIPSTREAM = 27;
+  B2B_GATEWAY = 28;
+  DQL_SEARCH = 29;
+  RABBITMQ_SHOVELS = 30; // Logs from CLDOPS's Rabbit Shovels
+  B2B_WIDGETS = 31;
+  FACEBOOK_MESSENGER_BOT = 32;
+  FAB_HYDRA = 33;
+  MSHELL = 34;
+  GRAPPLER_LOGGER_SDK = 35;
+  YOUR_JOURNEY = 36;
+  TID = 37;
+  FLIGHTS_DAYVIEW = 38;
+  TRAVEL_CONTENT_PLATFORM = 39;
+  LOMO = 40;
+  URL_MANAGEMENT_SERVICE = 41;
+  PAGE_BUILDER = 42;
+  TEMPLATE_SERVICE = 43;
+  PQS_SERVICE = 44;
+  PQS_DATA_LOADER = 45;
+  PQS_SCORING_ENGINE = 46;
+  PQS_INCIDENT_DETECTION = 47;
+  HOTELS_FE = 48;
+  TRAVEL_RANKINGS = 49;
+  SHAREDINFX = 50;
+  MATER = 51; // Flights and hotels SEO ESI service
+  SHARED_CONTAINER_PLATFORM = 52; // Container instance and service metrics
+  DEALER = 53;
+  HYPERDRIVE_HAPROXY = 54;
+  STRINGS_AS_A_SERVICE = 55;
+  RAIL_DBOOKING = 56; // Rail direct booking event producer
+  HOTELS_DBOOK = 57;
+  REQUEST_HANDLER = 58; // Request Handler service
+  CAR_HIRE_DBOOK = 59;
+  ITINERARY_PROXY_SERVICE = 60; //Proxy for Itinerary Service <-> FPS compatibility
+  REDIRECTS_UI = 61; //skippy request from redirects_ui
+  AFFILIATE_GATEWAY = 62; // Affiliate gateway redirects
+  AFFILIATES_LINK_API = 63; // Affiliates link API referral link requests
+}
+
+enum DataComponent {
+  UNSET = 0;
+  SAMZA = 1;
+  HEKA = 2;
+  LOGSTASH = 3;
+}
+
+// SegmentType of each Itinerary Segment which for generic usage
+enum SegmentType {
+  ST_TRAIN = 0;
+  ST_COACH = 1;
+  ST_SHIP = 2;
+  ST_FLIGHT = 3;
+  ST_TUBE = 4;
+  ST_WALK = 5;
+  ST_BUS = 6;
+  ST_FERRY = 7;
+  ST_HOVERCRAF = 8;
+  ST_UNDERGROUND = 9;
+  ST_METRO = 10;
+  ST_TAXI = 11;
+  ST_TRAM = 12;
+  ST_TRAMLINK = 13;
+  ST_TRANSFER = 14;
+  ST_PLATFORM = 15;
+  ST_OTHER = 16;
+}
+
+// Severity levels based on syslog https://en.wikipedia.org/wiki/Syslog#Severity_level
+enum Severity {
+  UNSET_SEVERITY = 0;
+  EMERG = 1;
+  ALERT = 2;
+  CRIT = 3;
+  ERR = 4;
+  WARN = 5;
+  NOTICE = 6;
+  INFO = 7;
+  DEBUG = 8;
+}
+
+// BUILDING BLOCKS FOR OTHER COMMONS MESSAGES
+
+// Used exclusively in location
+message Geo {
+  enum GeoKind {
+    COORDINATES = 0; // will have latitude, longitude and optionally elevation
+    SHAPE = 1;
+  }
+  GeoKind kind = 1; // either a point or a shape
+  // float type deprecated - use GeoMeasurement custom data types below
+  float latitude = 2 [deprecated = true]; // in decimal units
+  float longitude = 3 [deprecated = true]; // in decimal units
+  float elevation = 4 [deprecated = true]; // in meters
+  string box = 5; // https://schema.org/box
+  string circle = 6; // https://schema.org/circle
+  string line = 7; // https://schema.org/line
+  string polygon = 8; // https://schema.org/polygon
+  GeoMeasurement latitude_int = 9; // from decimal units
+  GeoMeasurement longitude_int = 10; // from decimal units
+  GeoMeasurement elevation_int = 11; // from meters
+}
+
+// Used exclusively in TravellerIdentity
+// For internal consumption by Identity squads
+// New fields added here should be named exactly as the corresponding configuration key (in Configuration service), except snake_cased
+// (e.g. Identity_TrustedAnonymousGlobalRollout -> identity_trustedanonymousglobalrollout)
+// These fields should be explicitly marked deprecated once the relevant configuration is completely removed (on both the client and backend)
+message IdentityConfiguration {
+  enum FeatureState {
+    UNSET_FEATURE_STATE = 0;
+    ON = 1;
+    OFF = 2;
+  }
+  bool identity_trustedanonymousglobalrollout = 1 [deprecated = true]; // DEPRECATED! use trusted_anonymous_global_rollout instead
+  FeatureState trusted_anonymous_global_rollout = 2; // Identity_TrustedAnonymousGlobalRollout configuration value as reported by the client
+  FeatureState google_yolo_android_homescreen = 3 [deprecated = true]; // DEPRECATED Identity_GoogleYoloAndroid_HomeScreen configuration value as reported by the client
+  FeatureState deferred_password_sign_up = 4; // Identity_DeferredPasswordSignUp configuration value as reported by the client
+}
+
+// Used exclusively in the header
+message TravellerIdentity {
+  enum AuthenticationStatus {
+    UNSET = 0;
+    UNAUTHENTICATED = 1;
+    AUTHENTICATED = 2;
+  }
+  string auth_utid = 1 [deprecated = true]; // Used to be TID (legacy auth system, now decommissioned) user identifier
+  string unauth_utid = 2 [deprecated = true]; // Used to be anonymous user identifier (random, assigned at first visit and persisted as e.g. cookie)
+  string preference_string = 3; // Used to be legacy Contrail tracking user id, but Contrail was decommissioned. If present it's likely set to the anonymous user identifier.
+  string user_status = 4 [deprecated = true]; // Used to be TID (legacy auth system, now decommissioned) authentication status. E.g. authenticated, not authenticated
+  string utid = 5; // If the authentication_status is authenticated, then this will contain the user's permanent/static user identifier from SID. Otherwise, it will be a per-platform randomly generated semi-persisted (e.g. cookie) GUID-like value.
+  string ga_cid = 6; //the 'cid' value from the ga cookie - the user ID equivalent for Google Analytics. This is useful to be able to join up data logged in Grappler with GA data and send Grappler data to GA (e.g. to log revenue in GA.). You can find this in the content of the '_ga' cookie as the final two dot delimited values. E.g. if cookie content = 'GA1.2.1532533765.1446247952' then cid = '1532533765.1446247952'.
+  string sstrack = 7 [deprecated = true]; // The deprecated sstrack cookie value.
+  string mixpanel_id = 8 [deprecated = true]; // The distinct ID created by Mixpanel. Found in the Mixpanel cookie under 'distinct_id'
+  string facebook_messenger_id = 9 [deprecated = true]; // A per page unique user ID generated by Facebook Messenger
+  string session_id = 10; // Opaque identifier for a single traveller session, typically generated by client-facing applications or the session management layer. Expected to remain stable for the duration of the session and to be present on all traveller-facing events emitted to Slipstream. Design review / documentation: https://skyscanner.atlassian.net/wiki/x/ZQQvh
+  string sssession_id = 11 [deprecated = true]; // Deprecated in line with sstrack cookie.
+  AuthenticationStatus authentication_status = 12;
+  bool is_trusted = 13; // utid has been verified using a jwt and is thus trusted (server-side only e.g. from identity service)
+  IdentityConfiguration configuration = 14; // Store Identity-scoped configuration/experiment values. Counterpart to EventHeader.ab_tests (which is not available in MiniHeader for example)
+}
+
+// Used exclusively in the header
+message Touchpoint {
+  DateTime read_timestamp = 1; // Timestamp of when this component read the input message
+  DateTime write_timestamp = 4; // Timestamp of when this component output the new message
+  string name = 2; // Unique name for the component, i.e. "DeviceAtlas Enrichment"
+  DataComponent component = 3; // Type of the component, i.e. Samza
+  string output_topic = 5; // The name of the topic this touchpoint is outputting to, blank if not sending to a topic
+}
+
+// Used exclusively in the MiniHeader
+message ClientContext {
+  string page_name = 1; // The name of the 'page'/'screen' emitting the event
+}
+
+message LocationAttribute {
+  enum LocationAttributeEncoding {
+    option allow_alias = true;
+    DDB_ID = 0; // id is int32 internally
+    ENTITY_ID = 0; // ENTITY_ID == DDB_ID
+    IATA = 1; // IATA airport code
+    SS_GEO2_ID = 2; // skyscanner GEO V2 ID (used for route nodes mainly)
+    ICAO = 3;
+    SS_GEO1_ID = 4; //legacy skyscanner place identification system
+    THIRD_PARTY = 5; // partner supplied encoding
+    //PLACE_NAME = 6; // name of the place in english
+
+  }
+  //enum LocationADM {
+  //        option allow_alias = true;
+  //        CONTINENT = 0;
+  //        COUNTRY = 1; // e.g. US
+  //        NATION = 1; // Alias for COUNTRY. These are interchangeable for our purposes
+  //        FIRST_ADMINISTRATIVE_DIVISION = 2; // e.g. California
+  //        SECOND_ADMINISTRATIVE_DIVISION = 3; // e.g. Orange County
+  //        THIRD_ADMINISTRATIVE_DIVISION = 4; // see https://en.wikipedia.org/wiki/Table_of_administrative_divisions_by_country for examples
+  //        FOURTH_ADMINISTRATIVE_DIVISION = 5; // Wikipedia article above includes 4 levels so probably worth including all in the enum for completeness?
+  //        CITY = 6;
+  //    }
+  LocationAttributeEncoding location_attribute_encoding = 1; // attribute selector
+  //LocationADM location_administrative_boundary = 2; // relevant administrative boundary type
+
+  string location_id = 3; // The place's reference value (ENTITY_ID/DDB_ID, IATA Code, etc.)
+  // The next two fields are essentially a key/value pair that give you the most detailed description of the location being logged.
+  // The location_name is simply the most descriptive name for the location. e.g. if it is an airport it might be 'London Heathrow'
+  // The location_descriptor_level details the type of location that this location is. For example, AIRPORT.
+  // ***IMPORTANT*** Wherever possible this descriptor should match a value in the DDB to avoid fragmentation of geographical data.
+
+  string location_name = 4; // The name of the place. May be duplicated in location_descriptors
+  string location_descriptor_level = 5; // The level/type of location being referred to. May be duplicated in descriptors
+  //This map is an optional set of key, value pairs that give more locational detail.
+  // For example, if the location being logged is London Heathrow airport then it might include <CITY, 'London'>,<COUNTRY, 'United Kingdom'>,<CONTINENT, 'Europe'> etc...
+  // ***IMPORTANT*** As for the location_name and location_descriptor, wherever possible these key, value pairs should match values in the DDB to avoid fragmentation of geographical data.
+
+  map<string, string> location_descriptors = 6; //Strongly advised to correspond with ADM divisions
+  //wherever possible. Consult examples folder for examples
+
+  string locale = 7; //The locale to indicate the language in which the location names are being logged e.g. 'en-GB'
+}
+
+// YOU CAN USE THESE MESSAGES IN YOUR SCHEMAS
+
+// HEADER
+
+// Light header to be used in all event related messages - RECOMMENDED TO START USING THIS HEADER INSTEAD OF THE HEAVIER ONE.
+// The fields that have been removed are: produced_by, producer_version, app_build_kind, ab_tests, client_details, traveller_culture_settings, utm_source, utm_medium, utm_campaign,
+// utm_content, utm_term, associate_id, service_name, hostname, service_instance_fingerprint
+message LightHeader {
+  string guid = 1; // Event GUID
+  DateTime event_timestamp = 2; // Timestamp for the event
+  TravellerIdentity traveller_identity = 3; // Last known unauthenticated utid, authenticated utid (if known), cookie preference string (legacy)
+  repeated Touchpoint touchpoints = 4; // Filled automatically and used for data lineage. Each touchpoint represents the event of one component of the data pipeline touching the message.
+  string service_name = 5; // Used instead of the old Producer field, field containing the name of the service logging the related event
+  string event_name = 6; // Name of the event sent
+  ServiceInstanceFingerprint service_instance_fingerprint = 7; // Machine identifier, it should be filled automatically by the logging library
+  string correlation_id = 8; // Correlate requests - use X-CorrelationID header to transmit
+  uint64 sequence_number = 9; // Sequence number, must be unique and consecutive per ServiceInstanceFingerprint values
+  string request_id = 10; // Request id provided per page load.
+  reserved 11, 12, 13, 14, 15, 16, 17, 18; // not used by light header, but reserved to stay compatible with the mini header.
+}
+
+// Binary compatible with LightHeader, but even lighter.
+message MiniHeader {
+  string guid = 1; // Event GUID
+  commons.DateTime client_timestamp = 2; // Timestamp for the event
+  commons.TravellerIdentity traveller_identity = 3; // As the property says.
+  string producer_name = 5; // The name of the service logging the related event
+  // Sequence number is a sequential increasing value across all events from a single client.
+  // I.e. Events [a:A, b:A, c:B], will have have values [a.1, b.2, c.3].
+  // Client are encouraged to keep sequences to run for as long as possible, but it is
+  // valid to wrap around, for example on a process restart.
+  // These are valid arrays: [1, 2, 3], [1, 1, 1, 1] and [1, 2, 3, 1, 2, 3, 4].
+  // This is NOT a valid array: [1, 2, 4, 5], this should indicate a data loss, and not a sequence
+  // generated on a client.
+  //
+  // Please note that, while [1, 1, 1], is a valid output, it's useless for data quality analysis. So
+  // please try to avoid that situation.
+  //
+  // If a client does not support sequences, this field with the proto zero value (0).
+  uint64 sequence_number = 9;
+  string device_guid = 11;
+  string experiment_allocation_id = 12;
+  // Version of producer sending this event. String for flexibility as
+  // version format may differ between producers.
+  string producer_version = 13;
+  // IP address of sender. This can be filled in by the client-side otherwise
+  // Slipstream will populate the value from the x-forwarded-for header or the remote IP.
+  string client_ip = 14;
+  // User agent provided as part of the request to Slipstream, if any. If the request is sent
+  // from server-side, the user agent of the original client request can be filled in here
+  // prior to sending to Slipstream.
+  string user_agent = 15;
+  // User Preference event GUID. It can be used to join any mini-event to the associated user preference event
+  // to get user country, locale, or currency.
+  string user_preferences_guid = 16;
+  CultureSettings user_context = 17;
+  // Used to know what experiment variants a user is allocated to
+  // see doc for more info: https://confluence.skyscannertools.net/x/EI_sJg
+  string jekyll_hyde_analytics_token = 18;
+  ClientContext client_context = 19;
+}
+
+// The base for mini events. All mini events must use
+// field 1 for the header. This allows operations like:
+// fullMessageBytes = contextMessage.toBytes + headerMessage.toBytes
+message BaseMiniEvent {
+  MiniHeader header = 1;
+}
+
+// CLIENT DETAILS
+
+message ClientDetails {
+  string ip_address = 1; // IP address of the user
+  string user_agent = 2; // User agent string of the user
+  // string user_country = 3; // User country code based on Geo-IP of user
+  Location user_location = 3; //location of the client. Can contain any kind of location type (geo coordinate, country, ddb ID...)
+  // Attributes from hereon down in the message can be sourced from DeviceAtlas data
+  string os_name = 4; // Operating system name (Windows, iOS etc..)
+  string os_version = 5; // Operating system version number
+  bool is_browser = 6; // If a user is on a desktop device with no specific device information and is only identified as a browser, this is set to TRUE
+  bool is_mobilephone = 7; // Set to TRUE if the device is a smartphone
+  bool is_tablet = 8; // Set to TRUE if the device is a tablet
+  string browser_name = 9; // Name of browser if applicable (Internet Explorer, Chrome etc...)
+  string browser_version = 10; // Version number of browser if applicable
+  string model_name = 11; // Device model name
+  string vendor_name = 12; // Device vendor name
+  string marketing_name = 13; // Device marketing name
+  bool is_robot = 14; // Identifies if the user is a known bot
+  string bot_name = 15; // If identified as a bot, the name of the bot
+  string primary_hardware_type = 16; // Whether a device is desktop, tablet, smartphone, games console etc...
+  int32 usable_display_width = 17; // width of the viewport in the browser i.e. not the screen width but the usable width for viewing the page
+  int32 usable_display_height = 18; // height of the viewport in the browser i.e. not the screen height but the usable height for viewing the page
+  // float type deprecated - use custom DisplayMeasurement data types below
+  float device_pixel_ratio = 19 [deprecated = true]; // The ratio between physical pixels and logical pixels. e.g. iPhone 4 has pixel ratio of 2. Physical resolution: 960 x 640, logical resolution: 480 x 320
+  float diagonal_screen_size = 20 [deprecated = true]; // Diagonal screen size in inches
+  int32 display_height = 21; // Full height of the screen in pixels
+  int32 display_width = 22; //  Full width of the screen in pixels
+  int32 display_ppi = 23; // Pixels per inch. A measure of pixel density
+  string referrer_url = 24; //domain and page of referrer - essential for identifying new vs. existing 'sessions'
+  DisplayMeasurement device_pixel_ratio_int = 25;
+  DisplayMeasurement diagonal_screen_size_int = 26;
+}
+
+// CULTURE SETTINGS
+
+message CultureSettings {
+  string country = 1; // It should be the market code as returned by culture service. e.g. HU, DE
+  string currency = 2; // It should be the currency code as returned by culture service. e.g. USD
+  string locale = 4; // It should be the locale as returned by culture service. e.g. en-US, en-GB
+}
+
+// DOWNSTREAM PARTNER
+message DownstreamPartner {
+  string partner_identifier = 1; // Currently known as WebsiteID char(4) e.g. 'eduk'
+  enum Kind {
+    TRAVEL_AGENT = 0;
+    AIRLINE = 1;
+    CAR_HIRE = 2;
+    HOTEL = 3;
+    AIRPORT_TRANSFER = 4;
+    INTERNAL_TEST = 5; // Used for the Jacquard healthcheck and other internal non-partner based traffic
+    AFFILIATE = 6; // Affiliate tracking partners like Zanox, Performance Horizon and Trade Doubler to ingest data they track for us
+    UNKNOWN_DOWNSTREAM_PARTNER = 7;
+    PACKAGE = 8; // Used for Package vertical partners
+  }
+  // Type of partner. In legacy systems this is TRAVA, AIRLI, CARHI, HOTEL, AIRTR
+  Kind kind = 2; // From above enum
+  string sage_account_identifier = 3; // Account ID as held in our Sage accounting/billing system
+  string sage_account_name = 4; // Account name as held in our Sage accounting/billing system
+  bool is_bws = 5; // Identifies if the partner is a Book with Skyscanner partner
+  //*Should not* be used, but is an important fallback for abnormal partners whose web_id cannot be found
+  int32 partner_id_fallback = 100;
+}
+
+// DOWNSTREAM TARGET
+
+message DownstreamTarget {
+  string partner_tracking_tech = 1; // Formerly tracking_type. The downstream partner's tracking tech (tradedoubler, google, airtrade etc...)
+  string market = 2;
+  string language = 3;
+  string cabin_class = 4;
+  string route_group = 5;
+  string device_type = 6; // Currently known as the tracking 'Platform'/'Channel' this should be deprecated but required for now.
+  BusinessDomain tracking_product_id = 7; // Currently logged as A,C,H,T in Contrail
+  enum DealKind {
+    CPC = 0;
+    CPA = 1;
+    FLOOR = 2;
+    UNKNOWN_DEAL_KIND = 3; // Set if the deal type does not conform to any of the other options
+    CPM = 4; // Cost per thousand impressions, commonly used for advertisement campaigns
+    REVENUE_SHARE = 5; // Skyscanner takes a share of the partner profit margin
+    AFFILIATE = 6; // Partner tells us what they are going to pay
+    AUCTIONEER = 7; // Used for Hotels, partners use Auctioneer platform to perform CPC bids on their properties
+  }
+  DealKind deal_kind = 8;
+  enum ClickKind {
+    option allow_alias = true;
+    PRICED_EXIT = 0; // Formerly 'flights', 'cars', 'hotels', 'airportran'
+    UNPRICED_EXIT = 1; // Formerly 'flights_np'
+    FOOTER = 2; // Formerly 'alsoflies'
+    TOP_ROUTE_OPERATORS = 3; // Formerly 'routespons'
+    COMPARE_UNITS = 4; // Formerly 'compare'
+    DYNAMIC_ADS = 5; // Exit source for dynamic advertising, formerly 'dynads'
+    INLINE_ADS = 6; //  Exit source for inline advertising, formerly 'inlineads'
+    FILTERED_DV = 8; //  Alias of exit source for itineraries in the sponsored filtered view of Day View
+    SPN_FIL_DV = 8; //  Exit source for itineraries in the sponsored filtered view of Day View, formerly 'filtered_dv'
+    UNKNOWN_CLICK_KIND = 7 [deprecated = true]; // Some legacy contrail events seems to have empty strings
+    BP_ADS = 9; // Exit source for itineraries that has a sponsored booking panel pricing option
+  }
+  ClickKind click_kind = 9; // 'source'/'src' in current Contrail logging. click_type is a better description. Whether someone clicked an alsoflies link on the rhs of the web screen (alsoflies) or flights 'Select' button (flights) for example
+  bool is_monetised = 10; // Whether the redirect is monetised or not. Previously logged as 'redirect type' in Contrail where 'D' = unmonetised, 'A' = monetised
+  int32 website_link_id = 11; // The tracking row from FlightStore, tbWebsiteLinks.WebsiteLinkID
+}
+
+// SERVICE INSTANCE FINGERPRINT
+
+// ServiceInstanceFingerprint can, When included in the header, used to
+// identify or pinpoint which machine a message originates from.
+message ServiceInstanceFingerprint {
+  // DataCenter is a list of data centers, value higher than 63
+  // are non cloud data centers.
+  enum DataCenter {
+    EU_WEST_1 = 0;
+    EU_CENTRAL_1 = 1;
+    AP_SOUTHEAST_1 = 2;
+    AP_NORTHEAST_1 = 3;
+    CA_CENTRAL_1 = 4;
+    UK_1 = 64;
+    UK_2 = 65;
+    NL_1 = 66;
+    SG_1 = 67;
+    HK_1 = 68;
+    UNKNOWN = 100;
+  }
+  // The data center where the service runs/ran.
+  DataCenter data_center = 1;
+  // IP is the raw machine network address
+  bytes ip = 2;
+  // A string identifier, some services may need more than
+  // an ip to locate a machine or service instance.
+  string name = 3;
+  // Identifier is a the numerical value for identifying an instance of a service.
+  // As number compresses better on the wire, using attribute should be preferred
+  // over name, when possible.
+  int32 identifier = 4;
+  // Version tag should be a small piece of text identifying the version
+  // of the service emitting the event.
+  string version_tag = 5;
+  // Version identifier is a numerical representation of the version
+  // of the service emitting the event. Preferred overs tags.
+  // I.e. build numbers are good candidates here.
+  int32 version_identifier = 6;
+  string os_name = 7;
+  string os_version = 8;
+  uint32 process_id = 9;
+}
+
+// LOCATION
+
+message Location {
+  LocationAttribute location_attribute = 1; // attributes that characterise this location
+  Geo geo = 2; // the geographical data for this location
+}
+
+// EXCEPTION
+
+message ExceptionBase {
+  string type = 1; // name of the exception
+  string message = 2; // description of the exception
+  string traceback = 3; // stack strace of the exception
+  string severity = 4 [deprecated = true]; // This is now **DEPRECATED**. Severity should form part of the exception/log, e.g. applog.proto.
+  string id = 5; // other identifier for exception
+  repeated string args = 6; // for args in exceptions e.g. in Python
+}
+
+// HTTP RESPONSE
+
+message HTTPResponse {
+  string url = 1;
+  int32 status = 2;
+  string method = 3;
+  string remote_address = 4;
+  int64 content_length = 5;
+  string content_type = 6;
+  string body = 7;
+  uint64 response_time_ms = 8;
+  repeated HTTPHeader headers = 9;
+}
+
+message HTTPHeader {
+  string name = 1;
+  string value = 2;
+}
+
+// URL TRACKING PARAMETERS
+
+message UrlTrackingParameters {
+  //Moved from above, above could be deprecated?
+  string utm_source = 1;
+  string utm_medium = 2;
+  string utm_campaign = 3;
+  string utm_content = 4;
+  string utm_term = 5;
+  //Additional utm parameters coming from view events
+  string utm_id = 6;
+  string utm_name = 7;
+  string utm_keyword = 8;
+  //Miscellaneous tracking params
+  string ksh_id = 9; // example "ksh_id=87bbcd00-1275-4b92-b15a-5f494e4eec33"
+  string gclid = 10;
+  string yclid = 11;
+  string _ga = 12;
+  //associate id and upstream tracking fields
+  string acquisition_id = 13; //this is a legacy value used to confirm and manage reporting.
+  string associate_id = 14; // moving this out of event header as it is now deprecated.
+  string associate_id_parameters = 15; // previously known as acquisition data in Contrail model.
+  DateTime associate_id_timestamp = 16 [deprecated = true]; // **DEPRECATED** Datetime the associate id was seen in url which is no longer in use
+}
+
+// PARTNER QUERY OUTCOME
+
+message PartnerQueryOutcome {
+  DownstreamPartner partner_info = 1;
+  double response_time_ms = 2;
+  enum Result {
+    SUCCESS = 0;
+    TIMEOUT = 1;
+    ERROR = 2;
+  }
+  Result result = 3;
+  string error_message = 4;
+}
+
+// ALERT with status and tags
+
+message Alert {
+  enum Status {
+    UNKNOWN_STATUS = 0;
+    NORMAL = 1;
+    WARNING = 2;
+    CRITICAL = 3;
+  }
+  string name = 1;
+  Status status = 2;
+  map<string, string> tags = 3;
+}
+
+// DEPRECATED MESSAGES
+
+// EVENT HEADER IS IN THE DEPRECATION PATH: We recommend the usage of LightHeader in new messages and then add the rest of fields that were contained in the old header if needed.
+// The fields that have been removed are: produced_by, producer_version, app_build_kind, ab_tests, client_details, traveller_culture_settings, utm_source, utm_medium, utm_campaign,
+// utm_content, utm_term, associate_id, service_name, hostname, service_instance_fingerprint
+message EventHeader {
+  enum Producer {
+    JACQUARD = 0;
+    SKIPPY = 1;
+    SCAFFOLDING = 2;
+    SKYSCANNER_APP = 3;
+    HOTEL_BLS = 4;
+    TKG_ACDYM = 5;
+    DEPLOY_EVENTS = 6;
+    TRAVEL_ALERTS = 7;
+    HOTELSCATALOGUES = 8;
+    SKYMETRICS = 9;
+    GRAFANA = 10;
+    GRAPHITE = 11;
+    SLINGSHOT = 12;
+    TIANXUN = 13;
+    TRAVELPRO = 14;
+    DFP = 15; // DoubleClick for Publishers
+    FLIGHTS_PRICING_SERVICE = 16;
+    GAP = 17; // Metrics Originating from GAP Collectors
+    B2B_API = 18; // From B2B API
+    B2B_WHITE_LABEL = 19; // From B2B Whitelabel
+    FLIGHTS_LIVE_UPDATE_SERVICE = 20;
+    CONNECT_BACKEND_API = 21;
+    TRAVEL_API = 22;
+    HOTEL_PARTNER_SORTING = 23;
+    TOLOMUCO_ROUTE_SCRAPING_SYSTEM = 24;
+    BUSINESS_APPLICATIONS = 25;
+    GRAPPLER_SAMZA = 26;
+    SLIPSTREAM = 27;
+    B2B_GATEWAY = 28;
+    DQL_SEARCH = 29;
+    RABBITMQ_SHOVELS = 30; // Logs from CLDOPS's Rabbit Shovels
+    B2B_WIDGETS = 31;
+    FACEBOOK_MESSENGER_BOT = 32;
+    FAB_HYDRA = 33;
+    MSHELL = 34;
+    GRAPPLER_LOGGER_SDK = 35;
+    YOUR_JOURNEY = 36;
+    TID = 37;
+    FLIGHTS_DAYVIEW = 38;
+    TRAVEL_CONTENT_PLATFORM = 39;
+    LOMO = 40;
+    URL_MANAGEMENT_SERVICE = 41;
+    PAGE_BUILDER = 42;
+    TEMPLATE_SERVICE = 43;
+    PQS_SERVICE = 44;
+    PQS_DATA_LOADER = 45;
+    PQS_SCORING_ENGINE = 46;
+    PQS_INCIDENT_DETECTION = 47;
+    HOTELS_FE = 48;
+    TRAVEL_RANKINGS = 49;
+    SHAREDINFX = 50;
+    MATER = 51;
+    SHARED_CONTAINER_PLATFORM = 52; // Container instance and service metrics
+    DEALER = 53;
+    HYPERDRIVE_HAPROXY = 54;
+    STRINGS_AS_A_SERVICE = 55;
+    RAIL_DBOOKING = 56;
+    HOTELS_DBOOK = 57;
+    REQUEST_HANDLER = 58; // Request Handler service
+    CAR_HIRE_DBOOK = 59;
+    ITINERARY_PROXY_SERVICE = 60; //Proxy for Itinerary Service <-> FPS compatibility
+    REDIRECTS_UI = 61; //skippy request from redirects_ui
+    SKIPPY_CANARY = 62; // Request from skippy canary
+    TRANSPORT_PRICING_SERVICE = 63;
+  }
+  enum AppBuildKind {
+    ANDROID_MAIN = 0;
+    IOS_MAIN = 1;
+    IOS_HU = 2;
+    ANDROID_HU = 3;
+    IOS_TR = 4;
+    ANDROID_TR = 5;
+  }
+  string guid = 1; // Event GUID
+  Producer produced_by = 2; // Name of the service that produced the event. See enum above for current services. If you have a new service you want to log data from then it add to the above enum.
+  string producer_version = 3; // Version number of the producer service. May differ by service so set as string for flexibility
+  DateTime created_on = 4; // Timestamp for the event
+  map<string, string> ab_tests = 5; // Key is test name, Value is test variant
+  TravellerIdentity traveller_identity = 6; // Last known unauthenticated utid, authenticated utid (if known), cookie preference string (legacy)
+  ClientDetails client_details = 7;
+  CultureSettings traveller_culture_settings = 8;
+  AppBuildKind app_build_kind = 9 [deprecated = true]; // **DEPRECATED** Use Apps.apps_build_kind field instead
+  string utm_source = 10;
+  string utm_medium = 11;
+  string utm_campaign = 12;
+  string utm_content = 13;
+  string associate_id = 14 [deprecated = true]; // **DEPRECATED** The UrlTrackingParameters message type should be used for this
+  string associate_id_parameters = 22 [deprecated = true]; // **DEPRECATED** The UrlTrackingParameters message type should be used for this
+  DateTime associate_id_timestamp = 23 [deprecated = true]; // **DEPRECATED** Datetime the associate id was seen in url which is no longer in use
+  string utm_term = 15; // UTM term is used for keyword based channels, for example paid search
+  string service_name = 16; // used to identify process which produced events
+  string hostname = 17; // hostname or ip of producer
+  ServiceInstanceFingerprint service_instance_fingerprint = 18; // Use of this should be preferred over hostname.
+  repeated Touchpoint touchpoints = 19; // Filled automatically and used for data lineage. Each touchpoint represents the event of one component of the data pipeline touching the message.
+  string correlation_id = 20; // Correlate requests - use X-CorrelationID header to transmit
+  uint64 sequence_number = 21; // Sequence number, must be unique and consecutive per ServiceInstanceFingerprint values
+}
+
+// NOTE: If you want to use an exception *type* use "ExceptionBase"!
+//       The below "Exception" message is an *event* and shouldn't be in commons.proto!
+message Exception {
+  //HEADER
+  commons.EventHeader event_header = 1; // Common grappler event header
+  string exception_type = 2; //name of the exception
+  string exception_message = 3; //description of the exception
+  string exception_stackstrace = 4; //stack strace of the exception
+  string exception_severity = 5; //severity of exception, e.g. warning
+  string exception_id = 6; //other identifier for exception
+}
+
+message CryptoSignature {
+  enum HashAlgorithm {
+    RSA_SHA256 = 0;
+  }
+  enum PaddingFormat {
+    PKCS1_V15 = 0;
+  }
+  string key_identifier = 1; // Key id used to calculate the hash (for example skippy_20171001)
+  HashAlgorithm hash_algorithm = 2;
+  PaddingFormat padding_format = 3;
+  bytes signature_hash = 4;
+}
+
+// Used to serialize/deserialize the signature header field in isolation from the type of message signed
+// Any message required to be signed must reserve the field number 1999 to be used by the signature
+message CryptoSignatureHeader {
+  CryptoSignature signature = 1999;
+}
+
+// A list of protocols that can be used in messages
+enum Protocol {
+  UNKNOWN_PROTOCOL = 0;
+  HTTP = 1;
+  HTTPS = 2;
+}
+
+// All HTTP methods
+enum HTTPMethod {
+  UNKNOWN_METHOD = 0;
+  GET = 1;
+  HEAD = 2;
+  POST = 3;
+  PUT = 4;
+  DELETE = 5;
+  CONNECT = 6;
+  OPTIONS = 7;
+  TRACE = 8;
+}
+
+// Billable revenue details of a tracking event
+message Revenue {
+  Money revenue = 1;
+  Money revenue_in_source_currency = 2;
+  DateTime billable_from = 3; // Specifies the date past which the associated event can billed to a partner
+  float cancellation_rate_percent = 4; // Fixed, average booking cancellation ratio applies to those partners that do not inform Skyscanner about updates/cancellations; managed by Appraiser; value between 0 and 100
+}
+
+// AWS Region
+enum Region {
+  UNSET_REGION = 0;
+  EU_WEST_1 = 1;
+  EU_CENTRAL_1 = 2;
+  AP_SOUTHEAST_1 = 3;
+  AP_NORTHEAST_1 = 4;
+  CA_CENTRAL_1 = 5;
+}
+
+enum OptionalBoolean {
+  UNSET_OPTIONAL_BOOLEAN = 0;
+  TRUE = 1;
+  FALSE = 2;
+  UNKNOWN_OPTIONAL_BOOLEAN = 3;
+}
+
+// This enum represents the different value propositions that quotes/bookings can have
+enum Proposition {
+  UNSET_PROPOSITION = 0;
+  DBOOK = 1;
+  BWS = 2;
+  PBOOK = 3;
+  META = 4; // equivalent to PBOOK (partner redirect) but in hotels
+}
+
+// DEPRECATED: BusinessDomain enum lacks a default value, and should not be used. Please use BusinessVertical going forward.
+// Top level business domain that the event is related to. Not relevant to all events so left as a simple enum that can be used as and when you want in individual events.
+enum BusinessDomain {
+  FLIGHT = 0;
+  HOTEL = 1;
+  CAR_HIRE = 2;
+  B2B = 3;
+  NONE = 4;
+  AIRPORT_TRANSFER = 5;
+  CAMPERVAN_HIRE = 6;
+  ADVERTISING = 7 [deprecated = true]; // Use MEDIA instead
+  RAIL = 8;
+  TRIPS = 9;
+  EXPLORE = 10;
+  COMBINED_SEARCH = 11;
+  PACKAGE = 12;
+  DATA_SERVICES = 13;
+  MEDIA = 14;
+}
+
+// This enum represents various Trip Types
+enum TripType {
+  UNSET_TRIP_TYPE = 0;
+  RETURN = 1;
+  ONE_WAY = 2;
+  MULTI_CITY = 3;
+}
+
+// This enum represents the Days of the Week.
+// The order corresponds to JavaScript's getDay return values.
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getDay
+enum DayOfWeek {
+  UNSET_DAY_OF_WEEK = 0;
+  SUNDAY = 1;
+  MONDAY = 2;
+  TUESDAY = 3;
+  WEDNESDAY = 4;
+  THURSDAY = 5;
+  FRIDAY = 6;
+  SATURDAY = 7;
+}
+
+enum Platform {
+  UNSET_PLATFORM = 0;
+  IOS = 1;
+  ANDROID = 2;
+  DESKTOP_WEB = 3;
+  MOBILE_WEB = 4;
+  UNKNOWN_WEB = 5; // Used when the client is unable to tell if the platform is Desktop or Mobile
+  TABLET_WEB = 6;
+}
+
+enum DeployColour {
+   UNSET_DEPLOY_COLOUR = 0;
+   BLUE = 1;
+   GREEN = 2;
+}
+
+// Default linking attribute for Business Events
+message LinkingGUID {
+  string id = 1; // The guid of the Business Event to which the event is linked
+}

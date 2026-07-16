@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: MapInteractionType
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "All the map interactions that can happen"
+values:
+  - num: 0
+    name: UNSET_MAP_INTERACTION_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: MOVE_MAP
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: ZOOM_MAP
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: SELECT_MARKER
+    meaning: ""   # TODO 待确认业务含义

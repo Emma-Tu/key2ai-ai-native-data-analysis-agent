@@ -1,0 +1,70 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: CarhirePageType
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "租车各类页面类型（首页/结果页/各类 SEO 落地页），注释含链接示例。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_CAR_HIRE_OTHER
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: CAR_HIRE_HOME
+    meaning: "car-hire-home : https://www.skyscanner.net/carhire"
+  - num: 2
+    name: CAR_HIRE_RESULTS
+    meaning: "car-hire-result : https://www.skyscanner.co.kr/carhire/results/27538638/27538638/2021-12-16T10:00/2021-12-17T10:00/30"
+  - num: 3
+    name: CAR_HIRE_ALL_AIRPORTS
+    meaning: "car-hire-all-airports : https://www.skyscanner.net/car-hire-from/all-airports.html"
+  - num: 4
+    name: CAR_HIRE_ALL_CITIES
+    meaning: "car-hire-all-cities : https://www.skyscanner.net/car-hire-in/all-cities.html"
+  - num: 5
+    name: CAR_HIRE_ALL_PROVIDERS
+    meaning: "car-hire-all-providers : https://www.skyscanner.net/car-hire-with/all-providers.html"
+  - num: 6
+    name: CAR_HIRE_ALL_COUNTRIES
+    meaning: "car-hire-all-country : https://www.skyscanner.net/car-hire-in/united-kingdom/29475375.html"
+  - num: 7
+    name: CAR_HIRE_FAQ
+    meaning: "car-hire-faq : https://www.skyscanner.net/car-hire-help/guide-to-hidden-charges.html"
+  - num: 8
+    name: CAR_HIRE_AIRPORT
+    meaning: "car-hire-airport : https://www.skyscanner.net/car-hire-from/agp/car-hire-from-malaga-airport.html"
+  - num: 9
+    name: CAR_HIRE_LOCATION
+    meaning: "car-hire-location : https://www.skyscanner.net/car-hire-in/car-hire-in-london/27544008.html"
+  - num: 10
+    name: CAR_HIRE_PROVIDER
+    meaning: "car-hire-provider : https://www.skyscanner.net/car-hire-with/hert/car-hire-with-hertz.html"
+  - num: 11
+    name: CAR_HIRE_COUNTRIES
+    meaning: "car-hire-all-countries : https://www.skyscanner.net/car-hire-in/all-countries.html"
+  - num: 12
+    name: CAR_HIRE_WITH_PROVIDER
+    meaning: "car-hire-with-provider : https://www.skyscanner.net/car-hire/car-hire-with-provider/hertz/672"
+  - num: 13
+    name: CAR_HIRE_TRAIN_STATION
+    meaning: "car-hire-train-station : https://www.skyscanner.net/car-hire/car-hire-from-train-station/edinburgh-waverley-station/207975465"
+  - num: 14
+    name: CAR_HIRE_COUNTRY
+    meaning: "car-hire-country :  https://www.skyscanner.net/car-hire-in/united-kingdom/29475375.html"
+  - num: 15
+    name: CAR_HIRE_NEIGHBOURHOOD
+    meaning: "car-hire-neighbourhood : https://www.skyscanner.net/car-hire/car-hire-in-neighbourhood/brooklyn/27562850"
+  - num: 16
+    name: CAR_HIRE_REGION
+    meaning: "car-hire-region : https://www.skyscanner.net/car-hire/car-hire-in-region/hawaii/44294303"
+  - num: 17
+    name: CAR_HIRE_PROVIDER_IN_CITY
+    meaning: "car-hire-provider-in-city : https://www.skyscanner.net/car-hire/provider-in-city/sxit/dublin/673/27540823"
+  - num: 18
+    name: CAR_HIRE_PROVIDER_AT_AIRPORT
+    meaning: "car-hire-provider-at-airport : https://www.skyscanner.net/car-hire/provider-at-airport/1501/dub"
+  - num: 19
+    name: CAR_HIRE_PROVIDER_IN_COUNTRY
+    meaning: "car-hire-provider-in-country : https://www.skyscanner.net/car-hire/provider-in-country/sixt/united-kingdom/673/29475375"
+  - num: 20
+    name: CAR_HIRE_CAR_TYPE
+    meaning: "car-hire-car-type : https://www.skyscanner.net/car-hire/car-type/mini/mini"

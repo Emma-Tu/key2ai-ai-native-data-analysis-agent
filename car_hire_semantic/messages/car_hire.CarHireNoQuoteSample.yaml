@@ -1,0 +1,44 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireNoQuoteSample
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "后端：无报价采样事件（合作方真实报价数、是否发送给合作方）。"   # curated (overlay.yaml)
+grain: "一行 = 一次无报价采样"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: provider_id
+    type: string
+    number: 2
+    desc: "request partner"
+  - name: market
+    type: string
+    number: 3
+    desc: "request market"
+  - name: pick_up_office_id
+    type: string
+    number: 4
+    desc: "request pick up office id"
+  - name: real_quote_count
+    type: sint32
+    number: 5
+    desc: "partner's real quote count from sample result, -1 for not sampled"
+  - name: is_sent_to_partner
+    type: bool
+    number: 6
+    desc: "send request to partner or not"
+  - name: request_id
+    type: string
+    number: 7
+    desc: "uuid for the request"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

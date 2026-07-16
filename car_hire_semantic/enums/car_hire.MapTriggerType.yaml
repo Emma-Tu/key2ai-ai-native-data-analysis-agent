@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: MapTriggerType
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "地图触发类型：数据驱动/用户驱动/初始化。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_TRIGGER_TYPE
+    meaning: "handling exceptions"
+  - num: 1
+    name: DATA_DRIVEN
+    meaning: "triggered by data updates"
+  - num: 2
+    name: USER_DRIVEN
+    meaning: "triggered by direct user interaction (e.g. drag map, zoom in/out)"
+  - num: 3
+    name: INITIALIZE
+    meaning: "triggered when the map is first loaded"

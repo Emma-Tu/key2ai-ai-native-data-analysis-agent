@@ -1,0 +1,19 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarhireAirportIndicativePricePanel
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "前端：机场指示性价格面板卡片（按 car_class 展示）。"   # curated (overlay.yaml)
+grain: "一行 = 一次机场指示价面板事件"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: car_class
+    type: string
+    number: 2
+    desc: "indicative price panel card carclass"

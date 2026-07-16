@@ -1,0 +1,445 @@
+// Owner: Delorean (Slack: #delorean; Email: DeLoreanSquad@skyscanner.net)
+// Schema for USS mini events
+syntax = "proto3";
+
+package unified_search_service;
+option go_package = "github.com/skyscanner/go-schemas/unified_search_service";
+option java_package = "net.skyscanner.schemas";
+
+import "commons.proto";
+
+message CreateSearchRequest {
+  // Commons
+  commons.LightHeader header = 1;
+  commons.Location origin = 2;
+  commons.Location destination = 3;
+  commons.Date departure_date = 4;
+  commons.Date return_date = 5;
+  commons.Platform platform = 6;
+  commons.CultureSettings culture_settings = 7;
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // Raw type
+  string uss_search_id = 8;
+  string session_id = 9;
+  string search_guid = 10;
+  uint32 traveller_count = 11;
+
+  // Other
+  TrafficSource traffic_source = 12;
+  KindOfSearch kind_of_search = 13;
+  PollingSessionStatus polling_status = 14;
+
+  // Repeated
+  repeated TripElement trip_elements = 15; // Max length 10 elements
+  repeated SearchInventory inventories = 16; // Max length 10 elements
+  repeated InventoryResponseSummary inventory_summaries = 17; // Max length 10 elements
+
+  enum KindOfSearch {
+    UNSET_KIND_OF_SEARCH = 0;
+    KIND_OF_SEARCH_UNKNOWN = 1; // Used when mini-event schema becomes outdated with USS schemas
+    KIND_OF_SEARCH_ONE_WAY = 2;
+    KIND_OF_SEARCH_ROUND_TRIP = 3;
+    KIND_OF_SEARCH_MULTI_CITY = 4;
+  }
+}
+
+message CreateExploreRequest {
+  // Commons
+  commons.LightHeader header = 1;
+  commons.Location origin = 2;
+  commons.Location refined_origin = 3;
+  commons.Platform platform = 4;
+  commons.CultureSettings culture_settings = 5;
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // Raw type
+  string uss_search_id = 6;  // prefix "uss_"
+  string session_id = 7;
+  string search_guid = 8;
+  uint32 traveller_count = 9;
+  string uss_batch_id = 20;  // prefix "uss-batch_"
+  string label = 21;
+  string channel_id = 22; // Channel ID, used to track where this request comes from (eg. GoogleHpa, ExploreHomepage, ...).
+
+  // Other
+  GeoLevel target_geo_level = 10;
+  LocationSortOrderType location_sort_order_type = 11;
+  TrafficSource traffic_source = 12;
+  MultiGeo destination = 13;
+  MultiGeo refined_destination = 14;
+  TravelDates travel_dates = 15;
+  TravelDates refined_travel_dates = 16;
+
+  // Repeated
+  repeated TripModifierType trip_modifiers = 17; // Max length 4 elements
+  repeated SearchInventory inventories = 18; // Max length 10 elements
+  repeated InventoryResponseSummary inventory_summaries = 19; // Max length 10 elements
+  repeated uint32 traveller_ages = 23; // Max length 10 elements
+  repeated UserConsentUsageType allowed_user_consents = 24; // Max length 10 elements
+}
+
+message PollSearchRequest {
+  // Commons
+  commons.LightHeader header = 1;
+  commons.Platform platform = 2;
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // Raw type
+  string uss_search_id = 3;
+  string session_id = 4;
+  string search_guid = 5;
+  int64 polling_iteration = 10;
+
+  // Other
+  TrafficSource traffic_source = 6;
+  PollingSessionStatus polling_status = 7;
+
+  // Repeated
+  repeated SearchInventory inventories = 8; // Max length 10 elements
+  repeated InventoryResponseSummary inventory_summaries = 9; // Max length 10 elements
+}
+
+message SearchInventory  {
+  // Raw type
+  string response_message_descriptor = 5 [deprecated = true];
+
+  // Other
+  SearchInventoryType type = 1;
+
+  // Repeated
+  repeated string options = 2; // Max length 10 elements
+  repeated Filter filters = 3; // Max length 5 elements
+  repeated Sort sorts = 4; // Max length 5 elements
+}
+
+message Filter {
+  // Raw type
+  uint32 values_size = 1; // Used to store filter values size without truncation
+
+  // Other
+  FilterType type = 2;
+  FilterConstraint constraint = 3;
+
+  // Repeated
+  repeated FilterValue values = 4; // Max length 10 elements
+}
+
+message FilterValue {
+  oneof kind {
+    // Commons
+    commons.Geo area = 1;
+
+    // Raw type
+    bool bool_value = 2;
+    string string_value = 3;
+    double double_value = 4;
+    sint32 integer_value = 5;
+
+    // Other
+    GeoProximity proximity = 6;
+    DoubleRange double_range = 7;
+    IntegerRange integer_range = 8;
+  }
+}
+
+message GeoProximity {
+  // Commons
+  commons.Geo centre = 1;
+
+  // Raw type
+  double radius = 2;
+}
+
+message DoubleRange {
+  // Raw type
+  double min_value = 1;
+  double max_value = 2;
+}
+
+message IntegerRange {
+  // Raw type
+  sint32 min_value = 1;
+  sint32 max_value = 2;
+}
+
+message Sort {
+  // Other
+  SortOrderType type = 1;
+}
+
+message TripElement {
+  // Commons
+  commons.Location origin = 1;
+  commons.Location destination = 2;
+  commons.Date from_date = 3;
+  commons.Date to_date = 4;
+
+  // Repeated
+  repeated commons.Location destination_transport_terminals = 5; // Max length 10 elements
+  repeated TripModifierType trip_modifiers = 6; // Max length 4 elements
+}
+
+message InventoryResponseSummary {
+  // Raw type
+  string session_id = 1;
+  uint32 items_count = 2;
+
+  // Other
+  ResultStatus result_status = 3;
+  SearchInventoryType inventory_type = 4;
+  GrpcStatusCode grpc_status = 5;
+
+  // Repeated
+  repeated ErrorReason error_reasons = 6; // Max length 6 elements
+  repeated DegradedResponseReason degraded_response_reasons = 7; // Max length 6 elements
+}
+
+message ErrorReason {
+  // Raw type
+  string description = 1;
+
+  // Other
+  ErrorReasonCode code = 2;
+}
+
+message DegradedResponseReason {
+  // Raw type
+  string description = 1;
+
+  // Other
+  DegradedReasonCode code = 2;
+}
+
+
+message TravelDates {
+  // Other
+  FlexibleDate departure_date = 1;
+  FlexibleDate return_date = 2;
+}
+
+message FlexibleDate {
+  oneof flexible_date {
+    // Commons
+    commons.Date date = 1;
+
+    // Raw type
+    bool is_anytime = 2;
+
+    // Other
+    DateRange date_range = 3;
+  }
+}
+
+message DateRange {
+  // Commons
+  commons.Date range_start = 1;
+  commons.Date range_end = 2;
+}
+
+message MultiGeo {
+  // Other
+  GeoLevel geo_level = 1;
+
+  // Repeated
+  repeated commons.Location location = 2; // Entity IDs of places, or empty when type is GEO_LEVEL_ANYWHERE, Max length 4 elements
+}
+
+enum GrpcStatusCode {
+  UNSET_GRPC_STATUS_CODE = 0;
+  GRPC_STATUS_CODE_UNKNOWN = 1;   // Used when mini-event schema becomes outdated with USS schemas
+  GRPC_STATUS_CODE_OK = 2;
+  GRPC_STATUS_CODE_CANCELLED = 3;
+  GRPC_STATUS_CODE_INVALID_ARGUMENT = 4;
+  GRPC_STATUS_CODE_DEADLINE_EXCEEDED = 5;
+  GRPC_STATUS_CODE_NOT_FOUND = 6;
+  GRPC_STATUS_CODE_ALREADY_EXISTS = 7;
+  GRPC_STATUS_CODE_PERMISSION_DENIED = 8;
+  GRPC_STATUS_CODE_UNAUTHENTICATED = 9;
+  GRPC_STATUS_CODE_RESOURCE_EXHAUSTED = 10;
+  GRPC_STATUS_CODE_FAILED_PRECONDITION = 11;
+  GRPC_STATUS_CODE_ABORTED = 12;
+  GRPC_STATUS_CODE_OUT_OF_RANGE = 13;
+  GRPC_STATUS_CODE_UNIMPLEMENTED = 14;
+  GRPC_STATUS_CODE_INTERNAL = 15;
+  GRPC_STATUS_CODE_UNAVAILABLE = 16;
+  GRPC_STATUS_CODE_DATA_LOSS = 17;
+}
+
+enum TrafficSource {
+  UNSET_TRAFFIC_SOURCE = 0;
+  // Used when mini-event schema becomes outdated with USS schemas
+  TRAFFIC_SOURCE_UNKNOWN = 1;
+  // Funnel pages for Flights, Hotels, Car-hire
+  TRAFFIC_SOURCE_VERTICAL_SEARCH = 2;
+  // B2B gateway
+  TRAFFIC_SOURCE_B2B = 3;
+  // Used by Radar for Combined results in apps and mobile web
+  TRAFFIC_SOURCE_COMBINED_SEARCH = 4;
+  // Used by Radar Combined explore experience
+  TRAFFIC_SOURCE_COMBINED_EXPLORE = 5;
+  // Used by IPBFF for indicative pricing backend for landing pages
+  TRAFFIC_SOURCE_SEO = 6;
+  // Used by development and testing tools
+  TRAFFIC_SOURCE_OPERATIONS = 7;
+  // Used to query travel-restrictions for traveller comms emails
+  TRAFFIC_SOURCE_LIFECYCLE_MARKETING = 8;
+  // Used by Fenryr to fetch search controls data
+  TRAFFIC_SOURCE_SEARCH_CONTROLS = 9;
+  // For inline ads
+  TRAFFIC_SOURCE_ADS = 10;
+  // Used by Explore Events
+  TRAFFIC_SOURCE_EXPLORE_EVENTS = 11;
+  TRAFFIC_SOURCE_CITY_DRAWER = 12;
+}
+
+enum SearchInventoryType {
+  UNSET_SEARCH_INVENTORY_TYPE = 0;
+  SEARCH_INVENTORY_TYPE_UNKNOWN = 1; // Used when mini-event schema becomes outdated with USS schemas
+  SEARCH_INVENTORY_TYPE_FLIGHTS = 2;
+  SEARCH_INVENTORY_TYPE_HOTELS = 3;
+  SEARCH_INVENTORY_TYPE_CAR_HIRE = 4;
+  SEARCH_INVENTORY_TYPE_SPACEY = 5;
+  SEARCH_INVENTORY_TYPE_FLIGHTS_INDICATIVE = 6; // TAPS
+  SEARCH_INVENTORY_TYPE_TEST = 7; // Inventory Type to enable backends to test their integration
+  SEARCH_INVENTORY_TYPE_LOCATION_IMAGES = 8;
+  SEARCH_INVENTORY_TYPE_HOTELS_INDICATIVE = 9;
+  SEARCH_INVENTORY_TYPE_ALTERNATIVE_FLIGHTS = 10;
+  SEARCH_INVENTORY_TYPE_ADVERTS = 11;
+  SEARCH_INVENTORY_TYPE_CAR_HIRE_INDICATIVE = 12;
+  SEARCH_INVENTORY_TYPE_CAR_HIRE_SUPPLIER = 13;
+  SEARCH_INVENTORY_TYPE_RAIL = 14;
+  SEARCH_INVENTORY_TYPE_VIBES = 15;
+  SEARCH_INVENTORY_TYPE_ROUTE_SUMMARY = 16;
+  SEARCH_INVENTORY_TYPE_PRICE_INSIGHTS = 17;
+  SEARCH_INVENTORY_TYPE_UNIFIED_CAR_HIRE_INDICATIVE = 18;
+}
+
+enum GeoLevel {
+  UNSET_GEO_LEVEL = 0;
+  GEO_LEVEL_UNKNOWN = 1; // Used when mini-event schema becomes outdated with USS schemas
+  GEO_LEVEL_ANYWHERE = 2;
+  GEO_LEVEL_COUNTRY = 3;
+  GEO_LEVEL_LOCAL = 4;
+  GEO_LEVEL_REGION = 5;
+  GEO_LEVEL_POI = 6;
+  GEO_LEVEL_DISTRICT = 7;
+}
+
+enum ResultStatus {
+  UNSET_RESULT_STATUS = 0;
+  RESULT_STATUS_UNKNOWN = 1; // Used when mini-event schema becomes outdated with USS schemas
+  RESULT_STATUS_COMPLETE = 2;
+  RESULT_STATUS_INCOMPLETE = 3;
+  RESULT_STATUS_FAILED = 4;
+}
+
+enum PollingSessionStatus {
+  UNSET_POLLING_SESSION_STATUS = 0;
+  POLLING_SESSION_STATUS_UNKNOWN = 1;  // Used when mini-event schema becomes outdated with USS schemas
+  POLLING_SESSION_STATUS_ONGOING = 2;
+  POLLING_SESSION_STATUS_ENDED = 3;
+}
+
+enum LocationSortOrderType {
+  UNSET_LOCATION_SORT_ORDER_TYPE = 0;
+  LOCATION_SORT_ORDER_TYPE_UNKNOWN = 1; // Used when mini-event schema becomes outdated with USS schemas
+  LOCATION_SORT_ORDER_TYPE_RELEVANCE = 2;
+  LOCATION_SORT_ORDER_TYPE_POPULARITY = 3;
+  LOCATION_SORT_ORDER_TYPE_CHEAPEST_FLIGHTS = 4;
+}
+
+enum TripModifierType {
+  UNSET_TRIP_MODIFIER_TYPE = 0;
+  TRIP_MODIFIER_TYPE_ACCOMMODATION_UNKNOWN = 1; // Used when mini-event schema becomes outdated with USS schemas
+  TRIP_MODIFIER_TYPE_GENERAL_FILTER_PILL = 2;
+  TRIP_MODIFIER_TYPE_GENERAL_AGENT_PREFERENCE = 3;
+  TRIP_MODIFIER_TYPE_GENERAL_CARRIER_ID_PREFERENCE = 4;
+  TRIP_MODIFIER_TYPE_GENERAL_ADD_ALTERNATIVE_ORIGINS = 5;
+  TRIP_MODIFIER_TYPE_GENERAL_ADD_ALTERNATIVE_DESTINATIONS = 6;
+  TRIP_MODIFIER_TYPE_FLIGHTS_CABIN_CLASS = 7;
+  TRIP_MODIFIER_TYPE_FLIGHTS_PREFER_DIRECT_ONLY = 8;
+  TRIP_MODIFIER_TYPE_FLIGHTS_HAS_PRICE = 9;
+  TRIP_MODIFIER_TYPE_ACCOMMODATION_NUMBER_OF_ROOMS = 10;
+  TRIP_MODIFIER_TYPE_ACCOMMODATION_HOTEL_STARS = 11;
+  TRIP_MODIFIER_TYPE_ACCOMMODATION_HOTEL_CHAIN = 12;
+  TRIP_MODIFIER_TYPE_ACCOMMODATION_HOTEL_GROUP = 13;
+}
+
+enum ErrorReasonCode {
+  UNSET_ERROR_REASON_CODE = 0;
+  ERROR_REASON_CODE_UNKNOWN = 1; // Used when mini-event schema becomes outdated with USS schemas
+  ERROR_REASON_CODE_INVALID_REQUEST = 2;
+  ERROR_REASON_CODE_UNSUPPORTED_REQUEST = 3;
+}
+
+enum DegradedReasonCode {
+  UNSET_DEGRADED_REASON_CODE = 0;
+  DEGRADED_REASON_CODE_UNKNOWN = 1; // Used when mini-event schema becomes outdated with USS schemas
+  DEGRADED_REASON_CODE_UNSUPPORTED_DESTINATION = 2;
+  DEGRADED_REASON_CODE_DATA_QUALITY = 3;
+  DEGRADED_REASON_CODE_TRUNCATED_DESTINATIONS = 4;
+}
+
+enum UserConsentUsageType {
+  UNSET_USER_CONSENT_USAGE_TYPE = 0;
+  USER_CONSENT_USAGE_TYPE_INFORMATION_UNKNOWN = 1; // Used when mini-event schemas becomes outdated with USS schemas
+  USER_CONSENT_USAGE_TYPE_INFORMATION = 2; // User can be tracked to improve experience (sometimes referred as optimisation)
+  USER_CONSENT_USAGE_TYPE_ADVERTS = 3; // User can be tracked to customize advertising (sometimes referred as personalisation)
+}
+
+enum FilterType {
+  UNSET_FILTER_TYPE = 0;
+  FILTER_TYPE_HOTEL_STAR_RATING = 1;
+  FILTER_TYPE_HOTEL_CHAIN_ID = 2;
+  FILTER_TYPE_HOTEL_GROUP_ID = 3;
+  FILTER_TYPE_FLIGHTS_CARRIER_ID = 4;
+  FILTER_TYPE_HOTEL_PARTNER_ID = 5;
+  FILTER_TYPE_HOTEL_PRICE_RANGE = 6;
+  FILTER_TYPE_HOTEL_AMENITY = 7;
+  FILTER_TYPE_HOTEL_GUEST_TYPE = 8;
+  FILTER_TYPE_HOTEL_ACCOMMODATION_TYPE = 9;
+  FILTER_TYPE_HOTEL_MEAL_PLAN = 10;
+  FILTER_TYPE_HOTEL_CANCELLATION = 11;
+  FILTER_TYPE_HOTEL_GUEST_RATING = 12;
+  FILTER_TYPE_HOTEL_GUEST_RATING_CLEANLINESS = 13;
+  FILTER_TYPE_HOTEL_GUEST_RATING_LOCATION = 14;
+  FILTER_TYPE_HOTEL_GUEST_RATING_SERVICE = 15;
+  FILTER_TYPE_HOTEL_GUEST_RATING_ROOMS = 16;
+  FILTER_TYPE_HOTEL_GUEST_RATING_FACILITY = 17;
+  FILTER_TYPE_HOTEL_GUEST_RATING_SLEEP_QUALITY = 18;
+  FILTER_TYPE_HOTEL_GUEST_RATING_VALUE_FOR_MONEY = 19;
+  FILTER_TYPE_CAR_HIRE_SUPPLIER_ID = 20;
+  FILTER_TYPE_HOTEL_PAYMENT_TYPE = 21;
+  FILTER_TYPE_HOTEL_DISCOUNT_TYPE = 22;
+  FILTER_TYPE_HOTEL_REVIEW_COUNT = 23;
+  FILTER_TYPE_CAR_HIRE_CAR_TYPE = 24;
+  FILTER_TYPE_DISTRICT_ID = 25;
+  FILTER_TYPE_GEO_AREA = 26;
+  FILTER_TYPE_FLIGHTS_FARE_ATTRIBUTES = 27;
+  FILTER_TYPE_CAR_HIRE_PARTNER_ID = 28;
+}
+
+enum FilterConstraint {
+  UNSET_FILTER_CONSTRAINT = 0;
+  FILTER_CONSTRAINT_EQUALS_TO = 1;
+  FILTER_CONSTRAINT_NOT_EQUALS_TO = 2;
+  FILTER_CONSTRAINT_LESS_THAN_OR_EQUAL_TO = 3;
+  FILTER_CONSTRAINT_GREATER_THAN_OR_EQUAL_TO = 4;
+}
+
+enum SortOrderType {
+  UNSET_SORT_ORDER_TYPE = 0;
+  SORT_ORDER_TYPE_BEST = 1;
+  SORT_ORDER_TYPE_PRICE = 2;
+  SORT_ORDER_TYPE_FLIGHT_DURATION = 3;
+  SORT_ORDER_TYPE_HOTEL_GUEST_RATING = 4;
+  SORT_ORDER_TYPE_HOTEL_PROXIMITY = 5;
+  SORT_ORDER_TYPE_CAR_HIRE_POPULAR = 6;
+  SORT_ORDER_TYPE_CAR_HIRE_SUPPLIER_RATING = 7;
+  SORT_ORDER_TYPE_HOTEL_STAR_RATING = 8;
+  SORT_ORDER_TYPE_HOTEL_INDICATIVE_CHEAPEST_PRICE = 9;
+  SORT_ORDER_TYPE_HOTEL_INDICATIVE_AVERAGE_PRICE = 10;
+  SORT_ORDER_TYPE_HOTEL_INDICATIVE_MEDIAN_PRICE = 11;
+  SORT_ORDER_TYPE_HOTEL_DISCOUNT = 12;
+}

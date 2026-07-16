@@ -1,0 +1,13 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: MapEventType
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "Types of event for the downtown map"
+values:
+  - num: 0
+    name: UNSET_MAP_EVENT
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: LOADED
+    meaning: ""   # TODO 待确认业务含义

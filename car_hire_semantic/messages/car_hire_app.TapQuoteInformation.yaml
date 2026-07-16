@@ -1,0 +1,67 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: TapQuoteInformation
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "Information about the quote for the `TAP_QUOTE` action"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: booking_type
+    type: BookingType
+    number: 1
+    ref: BookingType
+    desc: "The booking type of the quote dBook or standard"
+  - name: deeplink_url
+    type: string
+    number: 2
+    desc: "The deeplink_url a field in the quote response"
+  - name: provider_name
+    type: string
+    number: 3
+    desc: "The provider name in the provider information in the api response"
+  - name: provider_id
+    type: string
+    number: 4
+    desc: "The provider id in the provider information in the response"
+  - name: provider_rating
+    type: uint32
+    number: 5
+    desc: "The provider rating in the provider information in the response"
+  - name: vendor_name
+    type: string
+    number: 6
+    desc: "The vendor name in quote response"
+  - name: pickup_method
+    type: PickupMethod
+    number: 7
+    ref: PickupMethod
+    desc: "The pickup method in enum PickupMethod"
+  - name: fuel_type
+    type: FuelType
+    number: 8
+    ref: FuelType
+    desc: "The fuel type of the car (electric/hybrid/other)"
+  - name: index
+    type: uint32
+    number: 9
+    desc: "The position of the car hire itinerary in the quote search"
+  - name: insurance_info
+    type: QuotesAdditions
+    number: 10
+    ref: QuotesAdditions
+    desc: "Use `QuotesAdditions insurance_info = 20;` in UserAction instead."
+  - name: total_price
+    type: commons.Money
+    number: 11
+    ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+    desc: "The amount in quote response"
+  - name: search_results_option_guid
+    type: string
+    number: 12
+    desc: "associate clients.BookingPanelOption in bumblebee"
+  - name: booking_panel_option_guid
+    type: string
+    number: 13
+    desc: "unique guid attached to deep link of quote"

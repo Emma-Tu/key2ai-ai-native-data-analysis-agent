@@ -1,0 +1,497 @@
+// Owner: Autobot (Slack: #autobot; Email: autobotsquad@skyscanner.net)
+// Schema for Car Hire App mini events
+
+syntax = "proto3";
+
+package car_hire_app;
+option go_package = "github.com/skyscanner/go-schemas/car_hire_app";
+option java_package = "net.skyscanner.schemas";
+option objc_class_prefix = "SKYSchema";
+import "commons.proto";
+import "clients.proto";
+
+// Amount of markers on the map when search is completed
+message MapEvent {
+  commons.MiniHeader header = 1;
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // Type of event
+  MapEventType event_type = 2;
+
+  // The guid of the search event that caused this set of search results
+  string search_guid = 3;
+
+  oneof additional_information {
+    // Data for the loaded event
+    MapLoadedEvent map_loaded = 4;
+  }
+}
+
+// Types of event for the downtown map
+enum MapEventType {
+  UNSET_MAP_EVENT = 0;
+  LOADED = 1;
+}
+
+// Event data for map loaded event
+message MapLoadedEvent {
+  // Amount of markers on the map currently
+  uint32 marker_count = 1;
+  // Amount of markers that permanently show the price
+  uint32 marker_with_price_count = 2;
+}
+
+// User action in the app for car hire.
+message UserAction {
+  commons.MiniHeader header = 1;
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // Type of the interaction
+  ActionType user_action_type = 2;
+
+  // The guid of the search event that caused this set of search results
+  string search_guid = 3;
+
+  oneof additional_information {
+    // Filters the user has selected when the action was logged. Used for APPLY_FILTER action
+    clients.CarHireFilterAndSort filter_and_sort = 4;
+    // Information about the marker that is tapped. Used for TAP_MARKER action
+    SelectedMarker selected_marker = 5;
+    //Information about the marker filter reset
+    MarkerFilter marker_filter = 6;
+    // Information about the search control
+    SearchControl search_control = 7;
+    // Information about map interaction
+    MapInteraction map_interaction = 8;
+    // Information about the bottom sheet
+    BottomSheetInteraction bottom_sheet_interaction = 9;
+    // Information about the area that is searched with `TAP_SEARCH_THIS_AREA` action
+    SearchAreaInformation search_area = 10;
+    // Information of `TAP_QUOTE` action
+    TapQuoteInformation tap_quote = 11;
+
+    // Information of `VH_TAP_MANAGE` action
+    ViewHistoryTapManageInformation vh_tap_manage = 12;
+    // Information of `VH_TAP_RESULT`
+    ViewHistoryTapResultInformation vh_tap_result = 13;
+    // Information of `VH_CHANGE_SAVE_STATE`
+    ViewHistoryChangeSaveStateInformation vh_change_save_state = 14;
+
+    // Information of `TAP_QUICK_FILTER_PILL` action
+    QuickFilterPillInformation pill_type = 15;
+    // Information of `INTERACT_QUICK_FILTER_BOTTOM_SHEET` action
+    QuickFilterBottomSheetInteraction quick_filter_bottom_sheet_interaction = 16;
+    // Information of `APPLY_QUICK_FILTER` action
+    QuickFilterApplyInformation apply_quick_filter_information= 17;
+    // Information of `VIEWED` action
+    CarGroupCardInformation car_group_card_information = 19;
+    // Insurance coverage information and whether to expand
+    QuotesAdditions insurance_info = 20;
+    // Supplier Rating information
+    SupplierRatingInformation supplier_rating_information = 21;
+    // Autosuggest Item Viewed
+    AutosuggestItemInformation autosuggest_item_information = 22;
+    // Information of `TAP_GROUP_CARD_SAVING_BADGE` action
+    SavingBadgeInformation saving_badge_information = 25;
+  }
+  string mini_search_guid = 18; // associate it with mini search
+  uint32 total_search_results = 23; //Total number of group results
+  uint32 search_results_with_filter = 24; //Total number of filtered group results
+  string filter_search_guid = 26; // associate it with filter search if exists
+
+}
+
+// User actions for car hire in the app
+enum ActionType {
+  UNSET_ACTION_TYPE = 0;
+  APPLY_FILTER = 1; // When a filter is applied from the filter screen
+  TAP_MARKER = 2; // When a marker is selected
+  RESET_MARKER_FILTER = 3; // When the selected marker is reset to `null`
+  TAP_SEARCH_CONTROL = 4; // When the search control is interacted with
+  INTERACT_MAP = 5; // When the map is moved/zoomed/select a marker
+  INTERACT_BOTTOM_SHEET = 6; // When the bottom sheet is moved.
+  TAP_FOCUS_RESULTS = 7; // Button to zoom back to all results and apply default zoom.
+  TAP_SEARCH_THIS_AREA = 8; // Button to do a search with coordinates for the current center of the map
+  TAP_QUOTE = 9; // Button to go to DBook or provider's site
+
+  /* View history actions */
+  VH_TAP_MANAGE = 10; // Button to manage View History data
+  VH_CHANGE_SAVE_STATE = 11; // Change the state of View History (Save or don't save)
+  VH_CLEAR_ALL_DATA = 12; // Clear all saved view history data
+  VH_TAP_EMPTY_VIEW_FIND_CARS = 13; // Button on empty view to cta the user
+  VH_TAP_RESULT = 14; // Selecting an item on the view history
+
+  /* Quick filter actions */
+  TAP_QUICK_FILTER_PILL = 15; // When a quick filter pill is selected
+  INTERACT_QUICK_FILTER_BOTTOM_SHEET = 16; // When the quick filter bottom sheet is closed/clear all
+  APPLY_QUICK_FILTER = 17; // When a filter is applied from the quick filter bottom sheet
+  TAP_INSURANCE_EXPANDABLE = 18; // when clicking insurance
+
+  VIEWED = 20; // Used when the event belongs to an exposure
+
+  TAP_SUPPLIER_RATING = 21;  // When user tap on the supplier rating cta
+
+  TAP_GROUP_CARD_SAVING_BADGE = 22; // When user taps the saving badge (e.g. "Save 18%") on a group card
+
+}
+
+// Marker types that are displayed on the map
+enum MarkerType {
+  UNSET_MARKER_TYPE = 0;
+  AIRPORT = 1;
+  DOWNTOWN = 2;
+}
+
+// Marker info message
+message SelectedMarker {
+  // Price linked to the marker
+  commons.Money price = 1;
+  // Indicate if the callout is always displayed for this marker
+  bool is_callout_displayed = 2;
+  // Type of marker that is tapped
+  MarkerType marker_type = 3;
+}
+
+// Map the reason for the marker filter reset
+enum ResetMarkerFilterReason {
+  UNSET_RESET_MARKER_FILTER_REASON = 0;
+  TAP_RESET_BUTTON = 1;
+  DESELECT_MARKER = 2;
+}
+
+// Information about the marker filter reset
+message MarkerFilter {
+  // Why the marker filter was removed
+  ResetMarkerFilterReason reset_filter_reason = 1;
+
+  // Total results
+  uint32 total_result_count = 2;
+
+  // Filtered results
+  uint32 filtered_result_count = 3;
+}
+
+// All the fields in the search control the user can interact with
+enum SearchControlField {
+  UNSET_SEARCH_CONTROL_FIELD = 0;
+  COMPACT_DATE = 1;
+  COMPACT_LOCATION = 2;
+  FILTER = 3;
+  PICK_UP_LOCATION = 4;
+  DROP_OFF_LOCATION = 5;
+  PICK_UP_TIME = 6;
+  DROP_OFF_TIME = 7;
+  DRIVER_AGE = 8;
+  CLOSE = 9;
+}
+
+// Information for the search control action
+message SearchControl {
+    SearchControlField field = 1;
+}
+
+// All the map interactions that can happen
+enum MapInteractionType {
+  UNSET_MAP_INTERACTION_TYPE = 0;
+  MOVE_MAP = 1;
+  ZOOM_MAP = 2;
+  SELECT_MARKER = 3;
+}
+
+// Information about the map interaction
+message MapInteraction {
+  // The type of interaction
+  MapInteractionType interaction_type = 1;
+  // Amount of markers on the map
+  uint32 marker_count = 2;
+}
+
+// All the bottom sheet interactions
+enum BottomSheetState {
+  UNSET_BOTTOM_SHEET_STATE = 0;
+  TIP = 1;
+  HALF = 2;
+  FULL = 3;
+}
+
+// Information about the bottom sheet interaction
+message BottomSheetInteraction {
+  // The previous state
+  BottomSheetState from_state = 1;
+  // The state we moved to
+  BottomSheetState to_state = 2;
+}
+
+// Information about the area that is searched with `TAP_SEARCH_THIS_AREA` action
+message SearchAreaInformation {
+  commons.Geo map_center = 1; // The center coordinates of the map, they should be set to precision of 2 decimal points
+}
+
+// Information about the quote for the `TAP_QUOTE` action
+message TapQuoteInformation {
+  BookingType booking_type = 1; // The booking type of the quote dBook or standard
+  string deeplink_url = 2; // The deeplink_url a field in the quote response
+  string provider_name = 3; // The provider name in the provider information in the api response
+  string provider_id = 4; // The provider id in the provider information in the response
+  uint32 provider_rating = 5; // The provider rating in the provider information in the response
+  string vendor_name = 6; // The vendor name in quote response
+  PickupMethod pickup_method = 7;  // The pickup method in enum PickupMethod
+  FuelType fuel_type = 8; // The fuel type of the car (electric/hybrid/other)
+  uint32 index = 9; // The position of the car hire itinerary in the quote search
+  QuotesAdditions insurance_info = 10 [deprecated=true]; // Use `QuotesAdditions insurance_info = 20;` in UserAction instead.
+  commons.Money total_price = 11; // The amount in quote response
+  string search_results_option_guid = 12; // associate clients.BookingPanelOption in bumblebee
+  string booking_panel_option_guid = 13; // unique guid attached to deep link of quote
+}
+
+// The booking type
+enum BookingType {
+  UNSET_BOOKING_TYPE = 0;
+  DIRECT = 1;
+  STANDARD = 2;
+}
+
+// All the pickup method
+enum PickupMethod {
+  UNSET_PICKUP_METHOD = 0;
+  NORMAL = 1;
+  KEYLESS = 2;
+  KEY_AND_GO = 3;
+  PICKUP_METHOD_OTHER = 4; // default value if no pickup method value can be found
+}
+
+// Fuel type (subset) to track GreenerChoices
+enum FuelType {
+  UNSET_FUEL_TYPE = 0;
+  OTHER = 1;
+  ELECTRIC = 2;
+  HYBRID = 3;
+}
+
+/* View history messages */
+message ViewHistoryTapManageInformation {
+  bool is_on_toolbar = 1; // True if the manage button on top right is clicked. False otherwise
+}
+
+message SupplierRatingInformation {
+  string vendor_name = 1; // The vendor name
+  double score = 2; // The vendor score
+}
+
+message ViewHistoryTapResultInformation {
+  bool is_valid = 1; // True of both pick-up and drop-off are in the future
+  clients.CarHireGroupVisibleProperties car_hire_search_result_selected = 2; // The contents of the car hire itinerary that are presented to the user.
+  uint32 index = 3; // The position of the car hire itinerary in the history itinerary list
+
+
+}
+
+message ViewHistoryChangeSaveStateInformation {
+  bool is_on = 1; // Track if saving view history is on or off
+}
+
+enum ViewHistoryEventType {
+  UNSET_VIEW_HISTORY_EVENT_TYPE = 0;  // Default unset
+  OPEN_VIEW_HISTORY_PAGE = 1;         // Open the view history page
+  QUOTE_EXPIRED = 2;                  // The quote that is tapped is expired (popup displayed)
+}
+
+message ViewHistoryEvent {
+  commons.MiniHeader header = 1;
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  ViewHistoryEventType event_type = 2; // Type of the event being tracked
+
+  oneof additional_information {
+    ViewHistoryOpenPageInformation open_view_history_page = 3; // Log for `OPEN_VIEW_HISTORY_PAGE` type
+    ViewHistoryQuoteExpiredInformation quote_expired = 4; // Log for `QUOTE_EXPIRED` type
+  }
+}
+
+message ViewHistoryOpenPageInformation {
+  uint32 search_count = 1; // Amount of searches on the page
+  uint32 group_count = 2; // Amount of groups on the page
+  uint32 quote_count = 3; // Amount of quotes on the page
+}
+
+message ViewHistoryQuoteExpiredInformation {
+  bool is_date_valid = 1; // True if the date was ok, but offer was gone
+}
+
+enum DayViewEventType {
+  UNSET_DAY_VIEW_EVENT_TYPE =  0;
+  RESULTS_LOADED = 1;
+}
+
+message DayViewEvent {
+  commons.MiniHeader header = 1;
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  DayViewEventType event_type = 2; // Type of the event being tracked
+
+  oneof additional_information {
+    DayViewLoadedInformation result_loaded = 3; // Log for `RESULTS_LOADED` type
+  }
+}
+
+message DayViewLoadedInformation {
+  uint32 total_count = 1; // Amount of results on the page
+  uint32 electric_count = 2; // Amount of electric results on the page
+  uint32 hybrid_count = 3; // Amount of hybrid results on the page
+  uint32 electric_percentage = 4; // Percentage of electric results on the page
+  uint32 hybrid_percentage = 5;// Percentage of hybrid results on the page
+}
+
+// All the quick filter types
+enum QuickFilterType {
+  UNSET_QUICK_FILTER_TYPE = 0;
+  CAR_TYPE = 1;
+  PICK_UP = 2;
+  SEATS = 3;
+  TRANSMISSION = 4;
+  ALL_FILTERS = 5;
+  SORTED_BY = 6;
+  PRICE_RANGE = 7;
+}
+
+// Information for the quick filter pill
+message QuickFilterPillInformation {
+  QuickFilterType type = 1;
+}
+
+// The quick filter bottom sheet interaction type
+enum QuickFilterBottomSheetInteractionType {
+  UNSET_QUICK_FILTER_BOTTOM_SHEET_INTERACTION = 0;
+  TAP_QUICK_FILTER_CLOSE = 1;
+  TAP_QUICK_FILTER_CLEAR = 2;
+}
+
+// Information for the quick filter bottom sheet interaction
+message QuickFilterBottomSheetInteraction {
+  QuickFilterBottomSheetInteractionType interaction_type = 1;
+  QuickFilterType quick_filter_type = 2;
+}
+
+// Information for the apply quick filter action
+message QuickFilterApplyInformation {
+  // Filters the user has selected
+  clients.CarHireFilterAndSort filter_and_sort = 1;
+  // The quick filter type
+  QuickFilterType quick_filter_type = 2;
+}
+
+enum FreeMileageType {
+    UNSET_MILEAGE_TYPE = 0;
+    MILES = 1; // miles
+    KILOMETERS = 2; // kilometers
+}
+
+message QuotesAdditions {
+  bool is_expanded = 1; // Whether to expand the insurance
+  bool is_free_cancellation = 2; //Cancellation Policy
+  FreeMileageType mileage = 3;         // included mileage (miles or kilometers)
+  bool is_unlimited = 4;  // Is it unlimited
+  bool is_collision_damage_waiver = 5; // collision damage waver insurance
+  commons.Money excess = 6;   // excess insurance
+  bool is_free_additional_driver = 7;
+  bool is_theft_protection_included = 8; // theft protection insurance
+  bool is_free_breakdown_assistance_included = 9; // free breakdown assistance insurance
+  bool is_third_party_cover_included = 10; // third party cover insurance
+}
+
+// Information about card exposure
+message CarGroupCardInformation {
+  string search_results_option_guid = 1; // associate clients.BookingPanelOption in bumblebee
+  uint32 group_index = 2; // The index number tell you the group position in the page, start from 0
+  uint32 initial_group_index = 3; // The index number tell you the initial group position in total results, start from 0
+  uint32 number_of_deals = 4; // how many deals are in the group
+  uint32 total_number_of_deals = 5; //The total number of deals which is the sum of all the quotes
+  string booking_panel_option_guid = 6;  // unique guid attached to deep link of quote
+  string itinerary_id = 7; // The only key that distinguishes the groups
+  uint32 exclusive_savings_pct = 8; // The card contains information about discounts.
+}
+
+// Information for the `TAP_GROUP_CARD_SAVING_BADGE` action, when the user taps
+message SavingBadgeInformation {
+  string itinerary_id = 1; // The only key that distinguishes the groups
+  string search_results_option_guid = 2; // associate clients.BookingPanelOption in bumblebee
+  uint32 group_index = 3; // The group position in the page, start from 0
+  uint32 saving_percentage = 4; // The saving percentage shown on the badge, e.g. 18 for "Save 18%"
+  commons.Price price = 5; // price on group card
+  
+}
+
+enum AutosuggestGroupType {
+  UNSET_AUTOSUGGEST_GROUP_TYPE = 0;
+  AUTOSUGGEST_GROUP = 1; // group type of autosuggest
+  RECENT_SEARCH_GROUP = 2; // group type of recent search
+  MOST_POPULAR_GROUP = 3; // group type of most popular
+}
+
+message AutosuggestItemInformation {
+  string entity_id = 1; // autosuggest entity id eg. 95565047
+  string entity_value = 2; // autosuggest entity valye eg. London
+  AutosuggestGroupType group_type = 3; // autosuggest group type
+  uint32 position = 4; // autosuggest item position in the group list
+  string query_string = 5; // autosuggest input query string
+}
+
+enum SearchType {
+  UNSET_SEARCH_TYPE = 0; // Default unset value
+  SEARCH = 1; // Standard search
+  MINI_SEARCH = 2; // Mini search
+}
+
+enum FreeCancellationType {
+  UNSET_FREE_CANCELLATION_TYPE = 0; // Default unset value
+  FREE_CANCELLATION = 1; // Free cancellation available
+  SOME_DEALS_FREE_CANCELLATION = 2; // Some deals have free cancellation
+  NO_FREE_CANCELLATION = 3; // No free cancellation available
+}
+
+message CarGroupCardEvent {
+
+  // Information about the group card
+  message GroupCardInformation {
+    string itinerary_id = 1; // The contents of the car hire itinerary that are presented to the user.
+    uint32 ranking_index = 2; // The index number tell you the recommended position in total results, start from 0
+    string search_results_option_guid = 3; // associate clients.BookingPanelOption in bumblebee
+    uint32 number_of_deals = 4; // how many deals are in the group
+    uint32 max_seats = 5; // the maximum seats available to the user
+    uint32 max_bags = 6; // the maximum number of bags available to the user
+    float group_score = 7; // The group score which is calculated by quotes at frontend
+    PickupMethod pickup_method = 8;// This item tells us the quote pickup method
+    string car_type = 9; // car type
+    string car_name = 10; // Car name
+    string vendor_id = 11; // Vendor ID
+    string transmission = 12; // Transmission type
+    bool has_ac = 13; // Indicates if the car has air conditioning
+    string seat_group = 14; // seat group values: 1-3, 4-5, 6+
+    string booking_panel_option_guid = 15;  // unique guid attached to deep link of quote
+    FuelType fuel_type = 16; // The fuel type of the car (electric/hybrid/other)
+    FreeCancellationType free_cancellation = 17; // The free cancellation type of the car
+    commons.Price price = 18; // price on group card
+    uint32 exclusive_savings_pct = 19; // The card contains information about discounts.
+
+  }
+  commons.MiniHeader header = 1;   // Common header
+  string search_guid = 2; // Search GUID
+  repeated GroupCardInformation group_card_information = 3; // The card group result list needs to record the information of the first top N groups
+  commons.DateTime grappler_receive_timestamp = 1998; // Grappler receive timestamp
+  SearchType search_type = 4; // Search type
+  string mini_search_guid = 5; // associate it with mini search
+}
+
+message CarHireMiniSearch {
+    commons.MiniHeader header = 1;
+    string search_guid = 2;  // associate it with search
+    string mini_search_guid = 3; // associate it with mini search if exists
+    clients.CarHireFilterAndSort car_hire_filter_and_sort = 4; // The state of the filtering and sorting options at the time this event was fired.
+    uint32 saved_cars_total_count = 5; // total count of saved cars
+    uint32 current_page_hearted_count = 6; // count of saved cars in current page
+    uint32 page_index = 7; // current page index start from 0
+    uint32 total_results_count = 8; // total results count
+    uint32 current_results_count = 9; // current results count
+    string filter_search_guid = 10; // associate it with filter search if exists
+    commons.DateTime grappler_receive_timestamp = 1998;
+}

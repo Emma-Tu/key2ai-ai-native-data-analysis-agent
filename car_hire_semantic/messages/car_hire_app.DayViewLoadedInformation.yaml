@@ -1,0 +1,30 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: DayViewLoadedInformation
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "day-view 结果加载明细（总数/电动数/混动数 + 占比）。绿色出行分析用。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: total_count
+    type: uint32
+    number: 1
+    desc: "Amount of results on the page"
+  - name: electric_count
+    type: uint32
+    number: 2
+    desc: "Amount of electric results on the page"
+  - name: hybrid_count
+    type: uint32
+    number: 3
+    desc: "Amount of hybrid results on the page"
+  - name: electric_percentage
+    type: uint32
+    number: 4
+    desc: "Percentage of electric results on the page"
+  - name: hybrid_percentage
+    type: uint32
+    number: 5
+    desc: "Percentage of hybrid results on the page"

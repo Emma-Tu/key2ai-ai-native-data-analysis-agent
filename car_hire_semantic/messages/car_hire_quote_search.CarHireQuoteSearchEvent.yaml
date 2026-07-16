@@ -1,0 +1,58 @@
+# AUTO-GENERATED skeleton from proto/car_hire_quote_search.proto. Enrich desc / relationships by hand.
+message: CarHireQuoteSearchEvent
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+description: "后端租车报价搜索事件：一次搜索请求返回的报价列表（约30-40条）。漏斗起点之一。"   # curated (overlay.yaml)
+grain: "一行 = 一次 search_request_id 的报价搜索"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.LightHeader
+    number: 1
+    ref: commons.LightHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: "Common header"
+  - name: origin_info
+    type: quote_search.TravelNode
+    number: 2
+    ref: quote_search.TravelNode   # 外部类型，见 generated/external_refs.yaml
+    desc: "Origin information"
+  - name: destination_info
+    type: quote_search.TravelNode
+    number: 3
+    ref: quote_search.TravelNode   # 外部类型，见 generated/external_refs.yaml
+    desc: "Destination information"
+  - name: quotes
+    type: repeated Quote
+    number: 4
+    ref: Quote
+    desc: "List of quotes item max will be 30-40 around"
+  - name: traveller_context
+    type: quote_search.TravellerContext
+    number: 5
+    ref: quote_search.TravellerContext   # 外部类型，见 generated/external_refs.yaml
+    desc: "Traveller context"
+  - name: quote_source
+    type: quote_search.QuoteSource
+    number: 6
+    ref: quote_search.QuoteSource   # 外部类型，见 generated/external_refs.yaml
+    desc: "Quote source"
+  - name: client_id
+    type: quote_search.ClientId
+    number: 7
+    ref: quote_search.ClientId   # 外部类型，见 generated/external_refs.yaml
+    desc: "Client ID in the request"
+  - name: search_request_id
+    type: string
+    number: 8
+    desc: "Unique ID for the search request"
+  - name: driver_age
+    type: uint32
+    number: 9
+    desc: "driver's age"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

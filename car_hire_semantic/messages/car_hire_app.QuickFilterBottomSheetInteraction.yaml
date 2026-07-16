@@ -1,0 +1,20 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: QuickFilterBottomSheetInteraction
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "Information for the quick filter bottom sheet interaction"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: interaction_type
+    type: QuickFilterBottomSheetInteractionType
+    number: 1
+    ref: QuickFilterBottomSheetInteractionType
+    desc: ""   # TODO 待补充业务含义
+  - name: quick_filter_type
+    type: QuickFilterType
+    number: 2
+    ref: QuickFilterType
+    desc: ""   # TODO 待补充业务含义

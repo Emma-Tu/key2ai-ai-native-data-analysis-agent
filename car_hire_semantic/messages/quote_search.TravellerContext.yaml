@@ -1,0 +1,22 @@
+# AUTO-GENERATED skeleton from proto/quote_search.proto. Enrich desc / relationships by hand.
+message: TravellerContext
+package: quote_search
+source_file: quote_search.proto
+group: shared
+description: "通用旅客上下文building block（market/locale/currency）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: market
+    type: string
+    number: 1
+    desc: "User-selected market (e.g., \"UK\")"
+  - name: locale
+    type: string
+    number: 2
+    desc: "Four-letter locale (e.g., \"en-GB\")"
+  - name: currency
+    type: string
+    number: 3
+    desc: "ISO currency code (e.g., \"GBP\")"

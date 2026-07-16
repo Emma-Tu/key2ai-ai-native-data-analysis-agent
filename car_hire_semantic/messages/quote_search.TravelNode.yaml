@@ -1,0 +1,28 @@
+# AUTO-GENERATED skeleton from proto/quote_search.proto. Enrich desc / relationships by hand.
+message: TravelNode
+package: quote_search
+source_file: quote_search.proto
+group: shared
+description: "通用行程节点building block：location_id 按业务含义不同（租车=office_id）+ 时间 + 地点引用类型 + GEO 实体 id。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: location_id
+    type: string
+    number: 1
+    desc: "office_id for carHire, hotel_id for hotel, route_id for flight"
+  - name: date_time
+    type: commons.DateTime
+    number: 2
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "pickup_date/drop_off_date for carHire, check_in_date/check_out_date for hotel, departure_date/arrival_date for flight"
+  - name: location_reference_type
+    type: LocationReferenceType
+    number: 3
+    ref: LocationReferenceType
+    desc: "location id reference type"
+  - name: entity_id
+    type: string
+    number: 4
+    desc: "Unique ID for GEO entity"

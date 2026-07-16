@@ -1,0 +1,31 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: SavingBadgeInformation
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "Information for the `TAP_GROUP_CARD_SAVING_BADGE` action, when the user taps"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: itinerary_id
+    type: string
+    number: 1
+    desc: "The only key that distinguishes the groups"
+  - name: search_results_option_guid
+    type: string
+    number: 2
+    desc: "associate clients.BookingPanelOption in bumblebee"
+  - name: group_index
+    type: uint32
+    number: 3
+    desc: "The group position in the page, start from 0"
+  - name: saving_percentage
+    type: uint32
+    number: 4
+    desc: "The saving percentage shown on the badge, e.g. 18 for \"Save 18%\""
+  - name: price
+    type: commons.Price
+    number: 5
+    ref: commons.Price   # 外部类型，见 generated/external_refs.yaml
+    desc: "price on group card"

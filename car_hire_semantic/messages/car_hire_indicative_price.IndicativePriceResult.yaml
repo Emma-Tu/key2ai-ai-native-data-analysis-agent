@@ -1,0 +1,27 @@
+# AUTO-GENERATED skeleton from proto/car_hire_indicative_price.proto. Enrich desc / relationships by hand.
+message: IndicativePriceResult
+package: car_hire_indicative_price
+source_file: car_hire_indicative_price.proto
+group: core
+description: "指示性价格的单条结果（取车/还车日期 + 预估价 + 地点）。"   # curated (overlay.yaml)
+grain: "一行 = 一个指示性价格结果（嵌套在事件的 indicative_price_results 数组）"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: pickup_date
+    type: string
+    number: 1
+    desc: "The pickup date in the actual indicative price data yyyy-MM-dd"
+  - name: dropoff_date
+    type: string
+    number: 2
+    desc: "The dropoff date in the actual indicative price data yyyy-MM-dd"
+  - name: indicative_price
+    type: double
+    number: 3
+    desc: "The indicative price"
+  - name: location
+    type: Location
+    number: 4
+    ref: Location
+    desc: "The location where the car is picked up and dropped off"

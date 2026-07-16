@@ -1,0 +1,22 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: LocationType
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "the entity type used in carhire autosuggest"
+values:
+  - num: 0
+    name: UNSET_LOCATION_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: CITY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: AIRPORT
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: TRAIN_STATION
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: DISTRICT
+    meaning: ""   # TODO 待确认业务含义

@@ -1,0 +1,16 @@
+# AUTO-GENERATED from proto/car_hire_indicative_price.proto.
+enum: FilterConstraint
+package: car_hire_indicative_price
+source_file: car_hire_indicative_price.proto
+group: core
+desc: "筛选约束：等于/不等于。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_FILTER_CONSTRAINT
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: FILTER_CONSTRAINT_EQUALS_TO
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: FILTER_CONSTRAINT_NOT_EQUALS_TO
+    meaning: ""   # TODO 待确认业务含义

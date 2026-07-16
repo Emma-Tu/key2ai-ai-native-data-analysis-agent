@@ -1,0 +1,45 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireAdCardAction
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "前端：租车广告卡片动作事件（出发/目的地/时间 + UIEventType 动作）。"   # curated (overlay.yaml)
+grain: "一行 = 一次广告卡片动作"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: search_start_timestamp
+    type: commons.DateTime
+    number: 2
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "search depart time"
+  - name: search_end_timestamp
+    type: commons.DateTime
+    number: 3
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "search return time"
+  - name: original_location
+    type: commons.Location
+    number: 4
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: "depart location"
+  - name: destination_location
+    type: commons.Location
+    number: 5
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: "destination location"
+  - name: action
+    type: UIEventType
+    number: 6
+    ref: UIEventType
+    desc: "action type of card eg: RENDERED/PRESSED"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

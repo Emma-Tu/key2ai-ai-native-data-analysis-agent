@@ -1,0 +1,37 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: ViewHistoryEvent
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "App 端浏览历史事件（打开历史页/报价过期，oneof 携带具体信息）。"   # curated (overlay.yaml)
+grain: "一行 = 一次浏览历史事件"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: event_type
+    type: ViewHistoryEventType
+    number: 2
+    ref: ViewHistoryEventType
+    desc: "Type of the event being tracked"
+  - name: open_view_history_page
+    type: ViewHistoryOpenPageInformation
+    number: 3
+    oneof: additional_information
+    ref: ViewHistoryOpenPageInformation
+    desc: "Log for `OPEN_VIEW_HISTORY_PAGE` type"
+  - name: quote_expired
+    type: ViewHistoryQuoteExpiredInformation
+    number: 4
+    oneof: additional_information
+    ref: ViewHistoryQuoteExpiredInformation
+    desc: "Log for `QUOTE_EXPIRED` type"

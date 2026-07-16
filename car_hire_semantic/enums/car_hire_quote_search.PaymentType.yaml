@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire_quote_search.proto.
+enum: PaymentType
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+desc: "Payment type"
+values:
+  - num: 0
+    name: UNSET_PAYMENT_TYPE
+    meaning: "Unspecified payment type"
+  - num: 1
+    name: PRE_PAY
+    meaning: "Pay online when booking"
+  - num: 2
+    name: MIX_PAY
+    meaning: "Pay part when booking and the rest at pickup"
+  - num: 3
+    name: ARRIVAL_PAY
+    meaning: "Pay when picking up the car"

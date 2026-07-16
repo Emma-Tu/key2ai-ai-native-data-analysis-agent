@@ -1,0 +1,16 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: ClientID
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "调用 vendor-mapping API 的业务方：Jacquard / Egressor。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_CLIENT_ID
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: CLIENT_ID_JACQUARD
+    meaning: "Jacquard"
+  - num: 2
+    name: CLIENT_ID_EGRESSOR
+    meaning: "Egressor"

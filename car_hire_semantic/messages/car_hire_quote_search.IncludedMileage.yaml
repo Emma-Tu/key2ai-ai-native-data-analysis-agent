@@ -1,0 +1,14 @@
+# AUTO-GENERATED skeleton from proto/car_hire_quote_search.proto. Enrich desc / relationships by hand.
+message: IncludedMileage
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+description: "含里程building block（是否无限里程）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: unlimited
+    type: bool
+    number: 1
+    desc: "Indicates if mileage is unlimited"

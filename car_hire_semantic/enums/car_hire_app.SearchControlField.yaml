@@ -1,0 +1,37 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: SearchControlField
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "All the fields in the search control the user can interact with"
+values:
+  - num: 0
+    name: UNSET_SEARCH_CONTROL_FIELD
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: COMPACT_DATE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: COMPACT_LOCATION
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: FILTER
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: PICK_UP_LOCATION
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: DROP_OFF_LOCATION
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: PICK_UP_TIME
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: DROP_OFF_TIME
+    meaning: ""   # TODO 待确认业务含义
+  - num: 8
+    name: DRIVER_AGE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 9
+    name: CLOSE
+    meaning: ""   # TODO 待确认业务含义

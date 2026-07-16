@@ -1,0 +1,146 @@
+# AUTO-GENERATED skeleton from proto/clients.proto. Enrich desc / relationships by hand.
+message: BookingPanelOption
+package: clients
+source_file: clients.proto
+group: shared
+description: "预订面板选项(BPO)：被 *_option_guid 字段引用的规范报价/deal 实体。"   # curated (overlay.yaml)
+grain: "复用型引用实体"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: price
+    type: commons.Money
+    number: 2
+    ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: search_results_option_guid
+    type: string
+    number: 3
+    desc: ""   # TODO 待补充业务含义
+  - name: index
+    type: uint32
+    number: 4
+    desc: ""   # TODO 待补充业务含义
+  - name: flights_booking_panel_option
+    type: FlightsBookingPanelOption
+    number: 5
+    oneof: booking_panel_option
+    ref: FlightsBookingPanelOption
+    desc: ""   # TODO 待补充业务含义
+  - name: car_hire_booking_panel_option
+    type: CarHireBookingPanelOption
+    number: 6
+    oneof: booking_panel_option
+    ref: CarHireBookingPanelOption
+    desc: ""   # TODO 待补充业务含义
+  - name: packages_booking_panel_option
+    type: PackagesBookingPanelOption
+    number: 24
+    oneof: booking_panel_option
+    ref: PackagesBookingPanelOption
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 8
+    desc: ""   # TODO 待补充业务含义
+  - name: config_page_guid
+    type: string
+    number: 9
+    desc: "guid of the config landing page event"
+  - name: linking_event_guid
+    type: string
+    number: 10
+    desc: "guid of the linking event to link back to a previous step in the funnel"
+  - name: linking_event_type
+    type: LinkingEventType
+    number: 11
+    ref: LinkingEventType
+    desc: "enum of the name of the event to link back to"
+  - name: culture_settings
+    type: commons.CultureSettings
+    number: 12
+    ref: commons.CultureSettings   # 外部类型，见 generated/external_refs.yaml
+    desc: "Country, locale, currency."
+  - name: correlation_id
+    type: string
+    number: 13
+    desc: "deprecated use flights_config_session_id instead"
+  - name: flights_config_session_id
+    type: string
+    number: 14
+    desc: "correlation id for tracking multiple polls"
+  - name: entry_kind
+    type: EntryKind
+    number: 15
+    ref: EntryKind
+    desc: "entry kind to booking panel"
+  - name: search_result_selected_guid
+    type: string
+    number: 16
+    desc: ""   # TODO 待补充业务含义
+  - name: itinerary_guid
+    type: string
+    number: 17
+    desc: "An itinerary is a set of prices that the user can select from. Link to the backend service."
+  - name: pricing_option_id
+    type: string
+    number: 18
+    desc: "used to join information that lives in the backend, specifically pricing options information"
+  - name: fare_attribute_option
+    type: FareAttributeOption
+    number: 19
+    ref: FareAttributeOption
+    desc: "Detailed fare information including baggage information - later may have seats, upsell etc."
+  - name: fps_session_id
+    type: string
+    number: 20
+    desc: "field to reference to the booking session id"
+  - name: is_upgraded_option
+    type: bool
+    number: 21
+    desc: "defines whether pricing option is one of the base displayed options or an upgrade/variant"
+  - name: fare_type
+    type: FareType
+    number: 22
+    ref: FareType
+    desc: "describe the fare which this pricing option represents e.g. base (cheapest) or a form of upgrade"
+  - name: has_transfer_protection
+    type: bool
+    number: 23
+    desc: "Deprecated and move the field under FlightsBookingPanelOption"
+  - name: itinerary_token
+    type: string
+    number: 25
+    desc: ""   # TODO 待补充业务含义
+
+nested_enums:
+  - name: LinkingEventType
+    values:
+      0: UNSET_EVENT_TYPE
+      1: SEARCH_RESULTS_OPTION
+      2: CONFIG_FARE_FAMILY_OPTION
+      3: CONFIG_PAGE_LANDING
+      4: FAREHUB_STITCHING_ID
+  - name: EntryKind
+    values:
+      0: UNSET_ENTRY_KIND
+      1: CONFIG_NO_FARE_FAMILIES   # booking panels opened from no fare families state on config page
+      2: CONFIG_FARE_FAMILIES   # booking panels opened from fare families state on config page
+      3: DAYVIEW   # booking panels opened from non-config flow (dayview -> booking panel)
+  - name: FareType
+    values:
+      0: UNSET_FARE_TYPE
+      1: BASE_FARE   # the cheapest available option from this parter for given itinerary i.e. most basic available to book
+      2: BRANDED_FARE_UPSELL   # an upgraded fare type offered by the partner (compared to base option) e.g. Economy Plus
+      3: CONSTRUCTED_BASE_FARE   # an upgraded option synthetically created by adding baggage (or other extras) to the base fare
+      4: CONSTRUCTED_BRANDED_FARE_UPSELL   # an upgraded option synthetically created by adding baggage (or other extras) to an upsell fare

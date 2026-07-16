@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: AutosuggestGroupType
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "自动补全分组类型：自动补全/最近搜索/最热门。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_AUTOSUGGEST_GROUP_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: AUTOSUGGEST_GROUP
+    meaning: "group type of autosuggest"
+  - num: 2
+    name: RECENT_SEARCH_GROUP
+    meaning: "group type of recent search"
+  - num: 3
+    name: MOST_POPULAR_GROUP
+    meaning: "group type of most popular"

@@ -1,0 +1,31 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: AutosuggestItemInformation
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "App 端自动补全条目信息building block（实体 id/值/分组类型/位置/查询串）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: entity_id
+    type: string
+    number: 1
+    desc: "autosuggest entity id eg. 95565047"
+  - name: entity_value
+    type: string
+    number: 2
+    desc: "autosuggest entity valye eg. London"
+  - name: group_type
+    type: AutosuggestGroupType
+    number: 3
+    ref: AutosuggestGroupType
+    desc: "autosuggest group type"
+  - name: position
+    type: uint32
+    number: 4
+    desc: "autosuggest item position in the group list"
+  - name: query_string
+    type: string
+    number: 5
+    desc: "autosuggest input query string"

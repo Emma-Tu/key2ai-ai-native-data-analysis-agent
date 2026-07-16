@@ -1,0 +1,209 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: Quote
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "租车报价的完整定义（价格/车型/供应商/取还地点时间/增值服务等）。被多个前端事件复用。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息，非独立事件表"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: price
+    type: commons.Price
+    number: 1
+    ref: commons.Price   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: sipp
+    type: string
+    number: 2
+    desc: "car descriptive sipp code www.car-hire-centre.co.uk/sipp-codes.html"
+  - name: seats
+    type: int32
+    number: 3
+    desc: "car number of seats"
+  - name: bags
+    type: int32
+    number: 4
+    desc: "car number of bags"
+  - name: provider
+    type: commons.DownstreamPartner
+    number: 5
+    ref: commons.DownstreamPartner   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: provider_star_ratings
+    type: double
+    number: 6
+    desc: ""   # TODO 待补充业务含义
+  - name: provider_number_of_reviews
+    type: int32
+    number: 7
+    desc: ""   # TODO 待补充业务含义
+  - name: vendor_name
+    type: string
+    number: 8
+    desc: "car supplier name"
+  - name: vendor_id
+    type: int32
+    number: 9
+    desc: "car supplier assigned skyscanner vendor id"
+  - name: pick_up_datetime
+    type: commons.DateTime
+    number: 10
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: pick_up_ddb_location
+    type: commons.Location
+    number: 11
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: "pick up ddb id; the location_descriptors map contains the jacquard id and city ddb id"
+  - name: drop_off_datetime
+    type: commons.DateTime
+    number: 12
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: drop_off_ddb_location
+    type: commons.Location
+    number: 13
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: "drop off ddb id; the location_descriptors map contains the jacquard id and city ddb id"
+  - name: driver_age
+    type: int32
+    number: 14
+    desc: ""   # TODO 待补充业务含义
+  - name: value_adds
+    type: ValueAdds
+    number: 15
+    ref: ValueAdds
+    desc: ""   # TODO 待补充业务含义
+  - name: value_score
+    type: double
+    number: 16
+    desc: "car quote overall score assigned by the api"
+  - name: domain
+    type: commons.BusinessDomain
+    number: 17
+    ref: commons.BusinessDomain   # 外部类型，见 generated/external_refs.yaml
+    desc: "CAR_HIRE"
+  - name: event_header
+    type: commons.EventHeader
+    number: 18
+    ref: commons.EventHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: cat_category
+    type: CarCategory
+    number: 19
+    ref: CarCategory
+    desc: "car category e.g. Mini, compact"
+  - name: fuel_type
+    type: FuelType
+    number: 20
+    ref: FuelType
+    desc: "fuel type e.g. electric, hybrid"
+  - name: transmission
+    type: Transmission
+    number: 21
+    ref: Transmission
+    desc: "transmission"
+  - name: has_air_conditioning
+    type: bool
+    number: 22
+    desc: "has air conditioning or not"
+  - name: child_seats
+    type: uint32
+    number: 23
+    desc: "number of child seats"
+  - name: adult_seats
+    type: uint32
+    number: 24
+    desc: "number of adult seats"
+  - name: provider_id
+    type: string
+    number: 25
+    desc: "it is from quote.prv_id, such as 'vipc'"
+  - name: provider_name
+    type: string
+    number: 26
+    desc: "it is from quote.provider.provider_name, such as 'VIPCars'."
+  - name: pickup_location
+    type: string
+    number: 27
+    desc: "it stores address information when it is city"
+  - name: pickup_location_entity_id
+    type: string
+    number: 28
+    desc: "stores entity id or iata code information."
+  - name: pay_type
+    type: PayType
+    number: 29
+    ref: PayType
+    desc: "pay type, it will return the pay_type, including 'ARRIVAL_PAY', 'PRE_PAY' and 'MIX_PAY'."
+  - name: dplink
+    type: string
+    number: 30
+    desc: "deep link for redirect."
+  - name: car_name
+    type: string
+    number: 31
+    desc: "car name, such as 'Ford Galaxy'."
+  - name: loc
+    type: LocationDetails
+    number: 32
+    ref: LocationDetails
+    desc: "pick-up and drop-off location information"
+
+nested_messages:
+  - name: ValueAdds
+    fields:
+      - name: pick_up_type
+        type: string
+        number: 1
+        desc: "car pick up type is no longer placed in ValueAdds, it is placed under Quote"
+      - name: fair_fuel_policy
+        type: bool
+        number: 2
+        desc: "car fail fuel is no longer placed in ValueAdds, it is placed under Group"
+      - name: fuel_policy
+        type: string
+        number: 3
+        desc: "reuse by: it called fair fuel policy when it is group level and the condition is met; it comes directly from quote.fuel_pol when it is quote level."
+      - name: free_cancellation
+        type: bool
+        number: 4
+        desc: "free cancellation, it comes from quote.adds.free_cancel. When it is false it means it is non_refundable."
+      - name: mileage
+        type: string
+        number: 5
+        desc: "included mileage ('unlimited' or the actual value)"
+      - name: mileage_unit
+        type: string
+        number: 6
+        desc: ""   # TODO 待补充业务含义
+      - name: collision_dmg_wvr
+        type: bool
+        number: 7
+        desc: "collision damage waver insurance"
+      - name: excess
+        type: commons.Money
+        number: 8
+        ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+        desc: "excess insurance"
+      - name: free_additional_driver
+        type: bool
+        number: 10
+        desc: ""   # TODO 待补充业务含义
+      - name: is_theft_protection_included
+        type: bool
+        number: 11
+        desc: "theft protection insurance"
+      - name: is_free_breakdown_assistance_included
+        type: bool
+        number: 12
+        desc: "free breakdown assistance insurance"
+      - name: is_third_party_cover_included
+        type: bool
+        number: 13
+        desc: "third party cover insurance"
+      - name: is_self_service_pickup
+        type: bool
+        number: 14
+        desc: "self-service pick-up, it means quote.pickup_method is one of ['keyless', 'key_and_go']"

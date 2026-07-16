@@ -1,0 +1,168 @@
+// Owner: Halo (Slack: #quotes; Email: HaloSquad@skyscanner.net)
+
+syntax = "proto3";
+// WARNING: DO NOT UPDATE THESE PACKAGE NAMES
+// https://skyscanner.atlassian.net/wiki/x/hNGBVQ
+// Slipstream maps this package name: https://github.com/Skyscanner/slipstream/blob/7cc8c71860f7480dddc24ef820c202c3e0d64dd3/validate/topic.go#L36
+// Changing this whilst this mapping still exists will cause data loss
+package redirects;
+option go_package = "github.com/skyscanner/go-schemas/redirects";
+option java_package = "net.skyscanner.schemas";
+
+import "commons.proto";
+import "flights.proto";
+import "hotels.proto";
+import "car_hire.proto";
+import "engines.proto";
+import "packages.proto";
+
+message Redirect {
+    commons.EventHeader event_header = 1;
+    commons.DateTime grappler_receive_timestamp = 1998; // Grappler Receive Timestamp added by SDK ie., time when slipstream receives an event.
+    message Request {
+        commons.EventHeader event_header = 1;
+        commons.BusinessDomain business_domain = 2; // Hotels, Flights, Car Hire etc...
+        commons.DownstreamPartner downstream_partner = 3; // Billing details
+        commons.DownstreamTarget downstream_target = 4; // Tracking details
+        commons.Price booking_price = 5; // Booking price uses the Price message from commons. Includes total price, tax, card charges and insurance. Each one is the Money type also specified in commons. In here you specify currency, precision etc...
+        commons.Money estimated_revenue = 6;
+        string deeplink_url = 7; // Skippy deeplink url
+        // extras depending on the vertical that the redirect came from. Currently only flights but need to add hotels and car hire data as well. Added hotels and cars as placeholders for now.
+        enum Platform {
+            WEBSITE = 0;
+            APP = 1;
+            B2B = 2;
+        }
+        Platform platform = 8; // This is distinct from the Producer in event header - the producer is Skippy but we also want to know if this redirect request came from an app, website or B2B API. Other info can be derived from fields such as OS, device data etc...
+        flights.Search flight_search = 9;
+        flights.Itinerary flight_itinerary = 10;
+        string request_id = 11; // Identifies the initial request (Page/App view or B2B API call) which resulted in this redirect
+        string app_id = 12; // Identifies a specific B2B partner integration (for external requests) or a specific microservice (for internal requests)
+
+        // hotels.Search hotel_search = 24;
+        // hotels.Itinerary hotel_itinerary = 25;
+        // cars.Search car_search = 26;
+        // cars.Itinerary car_itinerary = 27;
+
+        hotel.HotelItinerary hotel_itinerary = 28;
+        car_hire.CarHireItinerary car_itinerary = 29;
+
+        bool exclude_from_reporting = 30 [deprecated=true]; // A flag to Determine whether a redirect should be included in our statistics and reports. for example if the redirect was caused by Debug, PA, Manual tests etc.
+        bool should_be_logged = 31; // This flag should be set when a redirect should be included in reports and metrics.
+        bool should_be_tracked = 32; // This flag should be set when a redirect includes the tracking information required. it is usually evident of testing or non-user initiated redirects.
+        bool is_debug_redirect = 33; // This flag indicates when a redirect has been made solely for the purpose of debugging the redirect and it's tracking.
+        string acquisition_data = 34; // Acquisition data from upstream partners i.e. kenshoo tracking ids (ksh_id)
+
+        bool is_self_transfer_component = 35; // This flag should be set if the request is part of an non-protected transfer
+        bool is_multipart_booking_component = 36;  // This flag should be set if the request is part of a multipart booking
+
+        car_hire.AirportTransferItinerary airport_transfer_itinerary = 37;
+
+        string transfer_protection = 38; // This flag should be set if the request is part of a self-transfer flight
+        commons.Money estimated_revenue_in_source_currency = 39; // As booking price - uses Money type. estimated_revenue in source currency used in the transaction
+
+        string client_id = 40; // The client_id in the url. Who created this deeplink url
+
+        commons.Money actual_revenue = 41;
+
+        // The next two guid fields are used in the headers for linking different elements of the booking funnel before and after the redirect event and are logged in grappler
+        string search_guid = 42; // This links to an event called `clients.Search` and is where the route, dates, passenger group are stored
+        string booking_panel_option_guid = 43; // This links to an events called `clients.BookingPanelOption` and is the actual price that was clicked on and the partner selected
+
+        // the following two (deprecated) fields were part of the "new flights architecture" from 2020 that involved a quote store system (this architecture plan was cancelled).
+        repeated bytes quote_keys = 44 [deprecated=true]; // Unique identifiers to identify and supply key meta-data on quotes (e.g. routes, times).  This is repeated as the decryption library decrypts one quote at a time and splitting a byte string is unreliable.  The length is always equal to or less than the number of legs in the itinerary
+        repeated engines.SourceSystem quote_sources = 45 [deprecated=true]; // Identifies the source system (Jacquard, AQIS), of each quote. This is repeated as quotes may come from different sources. Each quote contain the price and the source represents where it was obtain from.
+
+        string ad_click_guid = 46; // This links to an event called `sponsored.AdClick` and is used to calculate the conversion of ad campaigns.
+
+        message Quote {
+            string quote_id = 1;                // ID to uniquely identify this quote throughout the stack
+            string partner_quote_id = 2;        // Id of the quote from the partner's side (may be empty for quotes that don't have have partner ids)
+        }
+
+        repeated Quote quotes = 47;     // Information about the quote(s) that this redirect was triggered from (this is optional -- not all skippy redirects will contain this information)
+        string fps_session_id = 48;     // Log the session id of flights pricing service
+        enum Source {
+            UNSET_SOURCE = 0;
+            SKIPPY = 1;
+            REDIRECTS_UI = 2;
+            // From App-to-App
+            APP_TO_APP = 3;
+        }
+        Source source = 49;             // The request source of redirect should be distinguished from skippy, redirects-ui or app-to-app.
+        packages.PackageItinerary package_itinerary = 50; // The package itinerary for the redirect
+    }
+    message Response {
+        commons.EventHeader event_header = 1;
+        string redirect_id = 2; // Business wide unique identifier - generated by deeplink service per redirect
+        enum Depth {
+            URL = 0;
+            HOMEPAGE = 1;
+            MONTH_VIEW = 2;
+            BROWSE_VIEW = 3;
+            DAY_VIEW = 4;
+            BOOKING_PAGE = 5;
+            FACILITATED_BOOKING = 6;
+            UNKNOWN = 7;
+            YEAR_VIEW = 8 [deprecated=true];  // This is purely for backfilling old contrail data
+        }
+        Depth target_depth = 3; // Target_depth is the depth we think we can achieve from the partner
+        Depth achieved_depth = 4; // If redirects are working properly, target should be the same as achieved
+        message Error {
+            string error_type = 1;
+            string error_context = 2;
+            string error_message = 3;
+        }
+        repeated Error error = 5;
+        bool used_cache = 6 [deprecated=true]; // Indicates that the redirect was able to used cached deeplink data (hence, did not trigger a rescrape)
+        enum DeeplinkDataSource {
+            UNKNOWN_DATASOURCE = 0;
+            CACHE = 1; // Relates to quote cache
+            RESCRAPE = 2;
+            QUERY = 3;
+            URL_DATASOURCE = 4;
+        }
+        DeeplinkDataSource deeplink_data_source = 7; // Indicates what was the source of the deeplink data
+        message TargetInformation {
+            commons.Protocol protocol = 1;
+            commons.HTTPMethod method = 2;
+        }
+        TargetInformation target_information = 8;
+        message Rank {
+            uint32 quote_rank = 1;
+            uint32 quote_count = 2;
+        }
+        Rank rank = 9; // Log what was rank of the quote we're redirecting to in the scrape results
+        string closed_user_group = 10; // User group to which the redirect has been attributed. This is used for revenue attribution
+        Depth requested_depth = 11; // Log the user's requested depth for the redirect
+        string target_url = 12; // Log the URL we are redirecting the user to.
+    }
+    Request request = 2;
+    Response response = 3;
+    string redirect_engine_name = 38;  // The shared redirect code behind this redirect
+    string scrape_engine_name = 39;  // The shared scrape code behind this redirect
+    repeated string scrape_engines = 40;  // Can use multiple engines we store them all here
+    repeated string redirect_engines = 41;  // Can use multiple engines we store them all here
+    reserved 1500 to 1997; // Reserved for data-tribe internal use
+}
+
+message RedirectCompleted {
+    commons.LightHeader header = 1; // The light event header
+    commons.ClientDetails client_details = 2; // IP address, user agent, browser details,...
+    string redirect_id = 3; // The same as the ID generated by Skippy contained in Redirect.response.redirect_id
+    string target_url = 4; // The URL where the user is going to be redirected to
+    bool is_default_target = 5; // Whether or not this is the default deeplink fallback target URL
+    string pre_redirect_id = 6; // The pre redirect id - used for identification before the actual redirect
+}
+
+message RedirectCompletedStitched {
+    commons.LightHeader header = 1; // Event header referring to creation of "stitched" message, not any of the underlying messages
+    Redirect redirect = 2; // The redirect event
+    RedirectCompleted redirect_completed = 3; // The redirect completed event
+}
+
+message RedirectEnrichedForInsights {
+    commons.LightHeader header = 1; // The light event header
+    Redirect redirect = 2; // Redirect event
+    repeated string partner_quote_ids = 3;  // Partner Quote ID received from the Scrapes
+}

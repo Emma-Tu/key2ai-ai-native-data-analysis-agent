@@ -1,0 +1,79 @@
+# AUTO-GENERATED from proto/car_hire_indicative_price.proto.
+enum: Scenario
+package: car_hire_indicative_price
+source_file: car_hire_indicative_price.proto
+group: core
+desc: "指示性价格场景（SEO 各类落地页 / XSELL 视图 / B2B 等）。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_SCENARIO
+    meaning: "Default value, scenario is not set"
+  - num: 1
+    name: SEO_HOME_PAGE
+    meaning: "Scenario for SEO home page"
+  - num: 2
+    name: SEO_CITY
+    meaning: "Scenario for SEO city"
+  - num: 3
+    name: SEO_AIRPORT
+    meaning: "Scenario for SEO airport"
+  - num: 4
+    name: SEO_COUNTRY
+    meaning: "Scenario for SEO country"
+  - num: 5
+    name: SEO_PROVIDER_IN_CITY
+    meaning: "Scenario for SEO provider in city"
+  - num: 6
+    name: SEO_PROVIDER_IN_AIRPORT
+    meaning: "Scenario for SEO provider in airport"
+  - num: 7
+    name: SEO_CAR_TYPE
+    meaning: "Scenario for SEO car type"
+  - num: 8
+    name: SEO_PROVIDER
+    meaning: "Scenario for SEO provider"
+  - num: 9
+    name: SEO_NEIGHBOURHOOD
+    meaning: "Scenario for SEO neighbourhood"
+  - num: 10
+    name: SEO_PROVIDER_IN_COUNTRY
+    meaning: "Scenario for SEO provider in country"
+  - num: 11
+    name: SEO_TRAIN_STATION
+    meaning: "Scenario for SEO train station"
+  - num: 12
+    name: SEO_REGION
+    meaning: "Scenario for SEO region"
+  - num: 13
+    name: SEO_ONE_WAY
+    meaning: "Scenario for SEO one way"
+  - num: 14
+    name: SEO_PARTNER
+    meaning: "Scenario for SEO partner"
+  - num: 15
+    name: XSELL_DAY_VIEW
+    meaning: "Scenario for XSELL day view"
+  - num: 16
+    name: XSELL_BOOKING_PANEL
+    meaning: "Scenario for XSELL booking panel"
+  - num: 17
+    name: XSELL_MONTH_VIEW
+    meaning: "Scenario for XSELL month view"
+  - num: 18
+    name: COMBINE_SEARCH_BUSINESS
+    meaning: "Scenario for combine search"
+  - num: 19
+    name: B2B_BUSINESS
+    meaning: "Scenario for b2b"
+  - num: 20
+    name: PAM
+    meaning: "Scenario for PAM"
+  - num: 21
+    name: SEO_HOTEL_DESTINATION
+    meaning: "Scenario for SEO hotel destination"
+  - num: 22
+    name: SEO_CAR_TYPE_IN_CITY
+    meaning: "Scenario for SEO car type in city"
+  - num: 99
+    name: INVALID
+    meaning: "Invalid scenario"

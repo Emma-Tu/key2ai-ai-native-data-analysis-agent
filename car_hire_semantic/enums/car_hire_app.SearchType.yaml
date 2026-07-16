@@ -1,0 +1,16 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: SearchType
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "搜索类型：标准搜索(SEARCH)/mini 搜索(MINI_SEARCH)。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_SEARCH_TYPE
+    meaning: "Default unset value"
+  - num: 1
+    name: SEARCH
+    meaning: "Standard search"
+  - num: 2
+    name: MINI_SEARCH
+    meaning: "Mini search"

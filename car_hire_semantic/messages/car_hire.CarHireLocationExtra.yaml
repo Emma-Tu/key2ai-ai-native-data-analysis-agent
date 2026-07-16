@@ -1,0 +1,18 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireLocationExtra
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "租车地点补充信息building block：取车/还车实体 id。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: pick_up_entity_id
+    type: string
+    number: 1
+    desc: "the entity id of pickup location."
+  - name: drop_off_entity_id
+    type: string
+    number: 2
+    desc: "the entity id of drop-off location."

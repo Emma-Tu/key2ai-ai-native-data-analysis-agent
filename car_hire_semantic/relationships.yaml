@@ -1,0 +1,226 @@
+# ============================================================================
+# CURATED business-logic layer — hand-authored, NOT generated from proto.
+# This is the knowledge the analysis agent cannot derive from the schema alone.
+# Verify every "# CONFIRM" line with the Tiger / Autobot squads before trusting.
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# 1. JOIN-KEY NAMESPACES  ★ most important section ★
+#    The car_hire events split into TWO join-key worlds. Mixing them is the
+#    single most common way an agent will produce a wrong query.
+# ----------------------------------------------------------------------------
+join_keys:
+  - key: search_request_id
+    type: string (uuid)
+    namespace: backend / server-side pipeline
+    used_by:
+      - car_hire_quote_search.CarHireQuoteSearchEvent.search_request_id
+      - car_hire_indicative_price.CarHireIndicativePriceSearchEvent.search_request_id
+      - car_hire_no_quote_request_blocking.CarHireNoQuoteRequestBlocking.search_request_id
+    note: >
+      Server-generated request id. Backend/blocking/quote-search events share it.
+      Also appears as `request_id` in several car_hire.proto backend events
+      (CarHireDroppedQuotes, CarHireOfficeSearch, CarHireNoQuoteSample) — # CONFIRM
+      whether request_id == search_request_id in the warehouse.
+
+  - key: search_guid
+    type: string (guid)
+    namespace: frontend / client-side app events
+    used_by:
+      - car_hire.proto  (CarHireQuoteSelected, CarGroupCardEvent, MapState, UIEvent,
+                         CarHireSeoEvent, CarHireMiniSearch, CarHireRanking, ...)
+      - car_hire_app.proto  (MapEvent.search_guid, UserAction.search_guid,
+                             CarGroupCardEvent.search_guid)
+    note: Client-generated. Ties together everything the user saw/did in one search session.
+
+  - key: mini_search_guid
+    type: string (guid)
+    namespace: frontend — filter/pagination sub-search within a search_guid
+    note: >
+      A search_guid can spawn many mini_search_guids (each filter/sort/pagination
+      re-query). Cardinality search_guid : mini_search_guid = 1:N.
+
+  - key: booking_panel_option_guid / search_results_option_guid
+    type: string (guid)
+    namespace: frontend — identifies a specific quote/deal card (BPO)
+    note: Associates a UI card to clients.BookingPanelOption. Quote-level join key.
+
+# ★ BRIDGE PROBLEM: backend (search_request_id) and frontend (search_guid) are
+#   different id spaces. No direct column links them inside the 6 core protos —
+#   BUT investigation across the wider schemas repo found the bridge events.
+bridge_backend_to_frontend:
+  status: "LIKELY SOLVED via USS — # CONFIRM join semantics with Delorean + Tiger squads"
+  # --- Primary bridge: Unified Search Service (USS) ---
+  primary_bridge:
+    proto: unified_search_service.proto        # Owner: Delorean squad
+    messages: [CreateSearchRequest, CreateExploreRequest, PollSearchRequest]
+    carries_together:
+      - uss_search_id     # backend USS search id (prefix "uss_")
+      - session_id        # user session id
+      - search_guid       # ★ SAME guid space as the frontend car_hire events
+    why_it_works: >
+      These USS messages contain uss_search_id, session_id AND search_guid in the
+      SAME row — so USS is the join hub between the backend search world and the
+      frontend search_guid world. car_hire_indicative_price.proto already imports
+      unified_search_service (uses GeoLevel), confirming car_hire is in USS's orbit.
+    join_path_hypothesis: |
+      backend car_hire event (search_request_id)
+        ??-> uss_search_id            # CONFIRM: is car_hire's search_request_id the uss_search_id?
+        --USS row--> search_guid
+        --> frontend car_hire events (search_guid)
+  # --- search_guid origin ---
+  search_guid_origin:
+    proto: clients.proto
+    message: clients.Search
+    note: >
+      clients.Search is the frontend search event; its header.guid IS the search_guid
+      that every frontend car_hire event references. redirects.proto field 42 comment
+      explicitly says "search_guid ... links to an event called clients.Search".
+  # --- other linking candidates found ---
+  other_candidates:
+    - proto: quote_search_session.proto
+      field: search_session_id
+      comment: '"Identity one search from the front-end page." — front-end search id, another possible link.'
+    - key: commons.LightHeader.correlation_id / request_id
+      note: present on backend events; grappler may use it for lineage.
+  open_questions:
+    - "Is car_hire's `search_request_id` equal to USS `uss_search_id`? (Tiger + Delorean)"
+    - "Is there a materialised USS dim table in the warehouse for the join?"
+  action: >
+    Confirm with Delorean (USS owner) whether search_request_id == uss_search_id, and
+    whether a USS search dimension table exists to join to search_guid.
+
+# ----------------------------------------------------------------------------
+# 2. THE CAR-HIRE FUNNEL  (event ordering + join edges)
+# ----------------------------------------------------------------------------
+funnel:
+  - stage: 1_indicative_price
+    event: car_hire_indicative_price.CarHireIndicativePriceSearchEvent
+    meaning: SEO/landing indicative prices shown before a real search.
+    key: search_request_id
+
+  - stage: 2_quote_search
+    event: car_hire_quote_search.CarHireQuoteSearchEvent
+    meaning: A real quote search returning up to ~30-40 quotes.
+    key: search_request_id
+    edge_from_prev:
+      join_on: search_request_id
+      note: "# CONFIRM whether indicative and quote_search share the same request id"
+
+  - stage: 2b_no_quote_blocking
+    event: car_hire_no_quote_request_blocking.CarHireNoQuoteRequestBlocking
+    meaning: Whether a partner request was blocked (no quotes returned).
+    key: search_request_id
+    fields_of_interest: [is_blocked, is_holdout_dataset, pick_up_office_id, market]
+    edge:
+      join_on: search_request_id
+      to: 2_quote_search
+      cardinality: N:1
+
+  - stage: 3_group_cards_shown  (frontend)
+    event: car_hire.CarGroupCardEvent   # and car_hire_app.CarGroupCardEvent
+    meaning: Grouped result cards rendered/viewed/pressed in the app.
+    key: search_guid (+ mini_search_guid)
+    event_type_field: "event_type (commons UIEventType: RENDERED/VIEWED/PRESSED)"
+
+  - stage: 4_quote_selected  (frontend)
+    event: car_hire.CarHireQuoteSelected
+    meaning: User selected a specific quote (click-through toward booking).
+    key: search_guid (+ booking_panel_option_guid)
+    edge:
+      join_on: search_guid
+      to: 3_group_cards_shown
+      cardinality: N:1
+
+  - stage: 5_app_interactions  (frontend, optional side events)
+    event: car_hire_app.UserAction
+    meaning: Fine-grained map/filter/tap interactions. oneof additional_information.
+    key: search_guid
+
+  # --- CONVERSION TAIL (outside the 6 core protos; see scope_extensions) ---
+  - stage: 6_redirect  (conversion)
+    event: redirects.proto  (Redirect message)
+    meaning: >
+      User clicked through to a partner. This is the pivotal conversion event: it
+      carries BOTH the frontend search_guid AND the redirect_id/revenue. It embeds
+      car_hire.CarHireItinerary (car_itinerary, field 29).
+    keys:
+      search_guid: field 42  # -> links back to clients.Search / frontend funnel
+      booking_panel_option_guid: field 43  # -> the specific quote/deal clicked
+      redirect_id: generated per redirect  # -> forward link to booking
+    revenue_fields:
+      - estimated_revenue_in_source_currency (commons.Money, field 39)
+      - actual_revenue (commons.Money, field 41)
+    edge:
+      join_on: search_guid / booking_panel_option_guid
+      to: 4_quote_selected
+      cardinality: N:1
+
+  - stage: 7_booking  (conversion end)
+    event: booking.proto  (Booking message)
+    meaning: Consolidated booking. Embeds car_hire.CarHireBookingExtra (deprecated path).
+    keys:
+      redirect_id: field 10   # -> join to stage 6 redirect
+      booking_id: field 11    # -> booking primary key
+    edge:
+      join_on: redirect_id
+      to: 6_redirect
+      cardinality: N:1
+    caveat: >
+      car_hire_extra in booking is marked deprecated — # CONFIRM current car-hire
+      booking source table with the booking/consolidation squad.
+
+# ★ FULL END-TO-END JOIN CHAIN (once USS bridge confirmed):
+#   quote_search(search_request_id) --USS--> search_guid
+#     --> CarGroupCardEvent/CarHireQuoteSelected(search_guid)
+#     --> Redirect(search_guid, redirect_id, revenue)
+#     --> Booking(redirect_id -> booking_id)
+
+# ----------------------------------------------------------------------------
+# 3. SHARED / EXTERNAL TYPES the agent will meet (subset actually used)
+#    Only the fields worth querying are listed. Full defs live in shared protos.
+# ----------------------------------------------------------------------------
+external_types:
+  commons.MiniHeader:
+    role: header on most frontend car_hire events (field 1)
+    query_fields:
+      - guid              # event guid
+      - client_timestamp  # commons.DateTime (see time handling below)
+      - traveller_identity # utid for user-level analysis
+      - user_context      # commons.CultureSettings: country/currency/locale
+  commons.LightHeader:
+    role: header on backend events (quote_search, indicative_price, blocking)
+    query_fields: [guid, event_timestamp, correlation_id, request_id]
+  commons.DateTime:
+    caveat: >
+      NOT a plain timestamp. Fields: unix_time_millis (int64, ms),
+      timezone_offset_mins, daylight_savings_offset_mins, date_time_kind(Precision).
+      local = unix_time_millis + (tz_offset + dst_offset)*60000.
+      For date filtering use unix_time_millis; convert ms -> date.
+  commons.Money:
+    caveat: "{currency, amount(int64), unit}. unit CENTI=0/MILLI=1/MICRO=2/WHOLE=3."
+  commons.Price:
+    caveat: "nested: total_price/tax/payment_card_fees/insurance, each a Money."
+  clients.CarHireFilterAndSort:
+    role: filter/sort state snapshot; referenced by app UserAction & MiniSearch.
+    note: "car_hire.proto ALSO defines its own CarHireFilterAndSort — do not confuse."
+  clients.BookingPanelOption:
+    role: the canonical quote/deal (BPO) referenced by *_option_guid fields.
+
+# ----------------------------------------------------------------------------
+# 4. PITFALLS for the SQL-generating agent
+# ----------------------------------------------------------------------------
+pitfalls:
+  - Prices in quote_search.Quote are `price_eur_cents` (uint32, EUR cents) — divide
+    by 100 and note the currency is already normalised to EUR, unlike commons.Money.
+  - car_hire.proto and car_hire_app.proto BOTH define Quote / CarGroupCardEvent /
+    PickupMethod / FuelType / CarHireMiniSearch with DIFFERENT fields. Always
+    qualify by package + source_file when generating SQL.
+  - Enum fields are stored as their numeric value unless the warehouse expanded
+    them — # CONFIRM enum storage (int vs string) per physical table.
+  - Field grappler_receive_timestamp (field 1998) is ingestion time, not event time.
+    Use header timestamp for user-facing time, grappler for pipeline/lag analysis.
+  - repeated fields (quotes, indicative_price_results, group_card_information,
+    ranking_results) are arrays — require UNNEST/explode before per-item analysis.
+  - oneof fields (UserAction.additional_information, CarHireSeoEvent.seo_action)
+    mean only ONE sub-field is populated per row; filter by the discriminator enum.

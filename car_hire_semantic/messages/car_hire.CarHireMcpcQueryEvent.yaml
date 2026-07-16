@@ -1,0 +1,68 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireMcpcQueryEvent
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "后端：MCPC(按维度的 CPC 定价)查询事件，记录归一化维度与应用的 CPC 值。"   # curated (overlay.yaml)
+grain: "一行 = 一次 search_guid + quote_guid 的 CPC 规则应用"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.LightHeader
+    number: 1
+    ref: commons.LightHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 2
+    desc: "Search/session identifier (join key to searches)."
+  - name: quote_guid
+    type: string
+    number: 3
+    desc: "Candidate quote guid (join key to redirects)."
+  - name: provider_id
+    type: string
+    number: 4
+    desc: "Stable partner identifier."
+  - name: normalized_dimensions
+    type: NormalizedDimensions
+    number: 5
+    ref: NormalizedDimensions
+    desc: "Normalized dimensions applied."
+  - name: cpc_value
+    type: commons.Money
+    number: 6
+    ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+    desc: "Applied CPC value as authored."
+  - name: cpc_value_gbp
+    type: commons.Money
+    number: 7
+    ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+    desc: "Applied CPC value converted to GBP."
+  - name: rule_id
+    type: string
+    number: 8
+    desc: "ID of the raw rule row applied."
+  - name: rule_version_ts
+    type: string
+    number: 9
+    desc: "Version timestamp of the raw rule applied."
+  - name: registry_version_ts
+    type: string
+    number: 10
+    desc: "Version timestamp of the raw rule registry metadata applied."
+  - name: mini_search_guid
+    type: string
+    number: 11
+    desc: "Passed from the frontend, generated when a filter or pagination operation occurs."
+  - name: dimension_source_values
+    type: DimensionSourceValues
+    number: 12
+    ref: DimensionSourceValues
+    desc: "Original request values before dimension normalization."
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

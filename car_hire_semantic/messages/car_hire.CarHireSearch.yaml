@@ -1,0 +1,34 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireSearch
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "租车搜索条件building block：驾龄 + 取还地点/时间。被多个后端事件复用。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: driver_age
+    type: uint32
+    number: 1
+    desc: ""   # TODO 待补充业务含义
+  - name: pickup_location
+    type: commons.Location
+    number: 2
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: pickup_timestamp
+    type: commons.DateTime
+    number: 3
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: dropoff_location
+    type: commons.Location
+    number: 4
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: dropoff_timestamp
+    type: commons.DateTime
+    number: 5
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

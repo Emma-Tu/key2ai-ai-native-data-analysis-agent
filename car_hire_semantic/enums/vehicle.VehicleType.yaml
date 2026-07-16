@@ -1,0 +1,157 @@
+# AUTO-GENERATED from proto/vehicle.proto.
+enum: VehicleType
+package: vehicle
+source_file: vehicle.proto
+group: shared
+desc: "车辆类型（ACRISS 细分，如 COMPACT/ECONOMY/SUV/CONVERTIBLE 及各 FULLSIZE_* 变体）。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_VEHICLE_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: ALL_TERRAIN_VEHICLE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: COMMERCIAL_VAN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: COMPACT
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: COMPACT_SUV
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: CONVERTIBLE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: COUPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: ECONOMY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 8
+    name: ECONOMY_SUV
+    meaning: ""   # TODO 待确认业务含义
+  - num: 9
+    name: ESTATE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 10
+    name: FULLSIZE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 11
+    name: FULLSIZE_ALL_TERRAIN_VEHICLE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 12
+    name: FULLSIZE_COMMERCIAL_VAN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 13
+    name: FULLSIZE_CONVERTIBLE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 14
+    name: FULLSIZE_COUPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 15
+    name: FULLSIZE_ESTATE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 16
+    name: FULLSIZE_LIMOUSINE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 17
+    name: FULLSIZE_MOTOR_HOME
+    meaning: ""   # TODO 待确认业务含义
+  - num: 18
+    name: FULLSIZE_MOTORCYCLE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 19
+    name: FULLSIZE_PASSENGER_VAN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 20
+    name: FULLSIZE_PICK_UP_TRUCK
+    meaning: ""   # TODO 待确认业务含义
+  - num: 21
+    name: FULLSIZE_SPORTS_CAR
+    meaning: ""   # TODO 待确认业务含义
+  - num: 22
+    name: FULLSIZE_SUV
+    meaning: ""   # TODO 待确认业务含义
+  - num: 23
+    name: INTERMEDIATE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 24
+    name: INTERMEDIATE_PASSENGER_VAN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 25
+    name: INTERMEDIATE_SUV
+    meaning: ""   # TODO 待确认业务含义
+  - num: 26
+    name: LIMOUSINE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 27
+    name: MINI
+    meaning: ""   # TODO 待确认业务含义
+  - num: 28
+    name: MINI_PASSENGER_VAN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 29
+    name: MINI_SUV
+    meaning: ""   # TODO 待确认业务含义
+  - num: 30
+    name: MOTOR_HOME
+    meaning: ""   # TODO 待确认业务含义
+  - num: 31
+    name: MOTORCYCLE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 32
+    name: PICK_UP_TRUCK
+    meaning: ""   # TODO 待确认业务含义
+  - num: 33
+    name: PREMIUM
+    meaning: ""   # TODO 待确认业务含义
+  - num: 34
+    name: PREMIUM_ALL_TERRAIN_VEHICLE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 35
+    name: PREMIUM_COMMERCIAL_VAN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 36
+    name: PREMIUM_CONVERTIBLE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 37
+    name: PREMIUM_COUPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 38
+    name: PREMIUM_ESTATE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 39
+    name: PREMIUM_LIMOUSINE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 40
+    name: PREMIUM_MOTOR_HOME
+    meaning: ""   # TODO 待确认业务含义
+  - num: 41
+    name: PREMIUM_MOTORCYCLE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 42
+    name: PREMIUM_PASSENGER_VAN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 43
+    name: PREMIUM_PICK_UP_TRUCK
+    meaning: ""   # TODO 待确认业务含义
+  - num: 44
+    name: PREMIUM_SPORTS_CAR
+    meaning: ""   # TODO 待确认业务含义
+  - num: 45
+    name: PREMIUM_SUV
+    meaning: ""   # TODO 待确认业务含义
+  - num: 46
+    name: SPORTS_CAR
+    meaning: ""   # TODO 待确认业务含义
+  - num: 47
+    name: STANDARD
+    meaning: ""   # TODO 待确认业务含义
+  - num: 48
+    name: STANDARD_PASSENGER_VAN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 49
+    name: STANDARD_SUV
+    meaning: ""   # TODO 待确认业务含义

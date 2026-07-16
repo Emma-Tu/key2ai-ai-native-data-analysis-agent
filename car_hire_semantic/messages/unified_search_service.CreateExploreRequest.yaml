@@ -1,0 +1,127 @@
+# AUTO-GENERATED skeleton from proto/unified_search_service.proto. Enrich desc / relationships by hand.
+message: CreateExploreRequest
+package: unified_search_service
+source_file: unified_search_service.proto
+group: shared
+description: "USS 创建 Explore 请求事件（含 uss_search_id + search_guid，同为桥接来源）。"   # curated (overlay.yaml)
+grain: "一行 = 一次 USS Explore 请求"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.LightHeader
+    number: 1
+    ref: commons.LightHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: origin
+    type: commons.Location
+    number: 2
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: refined_origin
+    type: commons.Location
+    number: 3
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: platform
+    type: commons.Platform
+    number: 4
+    ref: commons.Platform   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: culture_settings
+    type: commons.CultureSettings
+    number: 5
+    ref: commons.CultureSettings   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: uss_search_id
+    type: string
+    number: 6
+    desc: "prefix \"uss_\""
+  - name: session_id
+    type: string
+    number: 7
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 8
+    desc: ""   # TODO 待补充业务含义
+  - name: traveller_count
+    type: uint32
+    number: 9
+    desc: ""   # TODO 待补充业务含义
+  - name: uss_batch_id
+    type: string
+    number: 20
+    desc: "prefix \"uss-batch_\""
+  - name: label
+    type: string
+    number: 21
+    desc: ""   # TODO 待补充业务含义
+  - name: channel_id
+    type: string
+    number: 22
+    desc: "Channel ID, used to track where this request comes from (eg. GoogleHpa, ExploreHomepage, ...)."
+  - name: target_geo_level
+    type: GeoLevel
+    number: 10
+    ref: GeoLevel
+    desc: ""   # TODO 待补充业务含义
+  - name: location_sort_order_type
+    type: LocationSortOrderType
+    number: 11
+    ref: LocationSortOrderType
+    desc: ""   # TODO 待补充业务含义
+  - name: traffic_source
+    type: TrafficSource
+    number: 12
+    ref: TrafficSource
+    desc: ""   # TODO 待补充业务含义
+  - name: destination
+    type: MultiGeo
+    number: 13
+    ref: MultiGeo
+    desc: ""   # TODO 待补充业务含义
+  - name: refined_destination
+    type: MultiGeo
+    number: 14
+    ref: MultiGeo
+    desc: ""   # TODO 待补充业务含义
+  - name: travel_dates
+    type: TravelDates
+    number: 15
+    ref: TravelDates
+    desc: ""   # TODO 待补充业务含义
+  - name: refined_travel_dates
+    type: TravelDates
+    number: 16
+    ref: TravelDates
+    desc: ""   # TODO 待补充业务含义
+  - name: trip_modifiers
+    type: repeated TripModifierType
+    number: 17
+    ref: TripModifierType
+    desc: "Max length 4 elements"
+  - name: inventories
+    type: repeated SearchInventory
+    number: 18
+    ref: SearchInventory
+    desc: "Max length 10 elements"
+  - name: inventory_summaries
+    type: repeated InventoryResponseSummary
+    number: 19
+    ref: InventoryResponseSummary
+    desc: "Max length 10 elements"
+  - name: traveller_ages
+    type: repeated uint32
+    number: 23
+    desc: "Max length 10 elements"
+  - name: allowed_user_consents
+    type: repeated UserConsentUsageType
+    number: 24
+    ref: UserConsentUsageType
+    desc: "Max length 10 elements"

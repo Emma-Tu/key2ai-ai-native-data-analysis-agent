@@ -1,0 +1,426 @@
+# ============================================================================
+# CURATED description overlay — hand-authored, survives regeneration.
+# generate_yaml.py merges these into messages/*.yaml and enums/*.yaml,
+# overriding the proto comment / TODO. Edit here, never in the generated files.
+#
+# Confidence: these are drafted from reading the proto definitions. Lines that
+# make a business claim beyond the schema are marked "# CONFIRM".
+# Only the highest-value event tables + shared/bridge/conversion types are
+# covered; the long tail keeps its proto-comment or # TODO until needed.
+# ============================================================================
+
+messages:
+  # ---- backend search / quote events (the funnel entry) ----
+  car_hire_quote_search.CarHireQuoteSearchEvent:
+    description: "后端租车报价搜索事件：一次搜索请求返回的报价列表（约30-40条）。漏斗起点之一。"
+    grain: "一行 = 一次 search_request_id 的报价搜索"
+  car_hire_quote_search.Quote:
+    description: "报价搜索返回的单条报价，价格以欧元分(price_eur_cents)表示。"
+    grain: "一行 = 搜索结果里的一条报价（嵌套在 CarHireQuoteSearchEvent.quotes 数组）"
+  car_hire_indicative_price.CarHireIndicativePriceSearchEvent:
+    description: "SEO/落地页指示性价格搜索事件：真实搜索前展示的预估价。经 USS，含 search_guid 关联。"
+    grain: "一行 = 一次 search_request_id 的指示性价格查询"
+  car_hire_indicative_price.IndicativePriceResult:
+    description: "指示性价格的单条结果（取车/还车日期 + 预估价 + 地点）。"
+    grain: "一行 = 一个指示性价格结果（嵌套在事件的 indicative_price_results 数组）"
+  car_hire_no_quote_request_blocking.CarHireNoQuoteRequestBlocking:
+    description: "无报价请求拦截事件：记录某供应商请求是否被拦截。算拦截率时必须排除 is_holdout_dataset。"
+    grain: "一行 = 一次 search_request_id 下对某 pick_up_office 的拦截判定"
+
+  # ---- frontend result / interaction events ----
+  car_hire.CarHireQuoteSelected:
+    description: "前端：用户选中了某条具体报价（点击进入预订流程），漏斗中的点选环节。"
+    grain: "一行 = 一次 search_guid 下的一次报价选中"
+  car_hire.CarGroupCardEvent:
+    description: "前端：分组结果卡片的渲染/曝光/点击事件（一个 itinerary_id 一组，含多条 deal）。"
+    grain: "一行 = 一次 search_guid 下一张分组卡片的一个 UIEventType 动作"
+  car_hire_app.CarGroupCardEvent:
+    description: "App 端分组卡片事件（含首屏 top-N 组信息）。注意与 car_hire.CarGroupCardEvent 字段不同。"
+    grain: "一行 = 一次 App 端分组卡片事件"
+  car_hire.MapState:
+    description: "前端：地图组件状态（可见/选中/隐藏的地点标记 + 地图边界）。"
+    grain: "一行 = 一次 search_guid 下的地图状态快照"
+  car_hire_app.UserAction:
+    description: "App 端细粒度交互事件（筛选/点标记/地图/底部面板等），用 oneof 携带具体动作数据。"
+    grain: "一行 = 一次 App 端用户交互（ActionType 决定 additional_information 分支）"
+  car_hire.CarHireMiniSearch:
+    description: "前端：一次筛选/翻页触发的子搜索（mini search），关联到父 search_guid。"
+    grain: "一行 = 一次 mini_search_guid"
+  car_hire.CarHireSearchControlChanged:
+    description: "前端：搜索控件被修改（取还地点/日期/时间/驾龄等），oneof 携带新值。"
+    grain: "一行 = 一次搜索控件变更"
+  car_hire.CarHireSeoEvent:
+    description: "前端：SEO 页面加载/点击事件（按 CarhirePageType 区分页面类型）。"
+    grain: "一行 = 一次 SEO 页面动作"
+  car_hire.CarHireNoResults:
+    description: "前端：搜索无结果事件。"
+    grain: "一行 = 一次 search_guid 下的无结果事件"
+  car_hire.MarkerCardEvent:
+    description: "前端：地图标记卡片事件（某地点的车辆数/价格/机场信息）。"
+    grain: "一行 = 一次地点标记卡片事件"
+  car_hire.CarhireChatEvent:
+    description: "前端：租车聊天机器人交互事件（用户消息、机器人回复、识别意图）。"
+    grain: "一行 = 一条聊天消息（message_id 唯一）"
+  car_hire.CarhireFeedbackEvent:
+    description: "前端：用户对聊天机器人回复的点赞/点踩反馈。"
+    grain: "一行 = 一次反馈（关联 message_id）"
+
+  # ---- backend pipeline / partner events ----
+  car_hire.CarHireDroppedQuotes:
+    description: "后端：被丢弃的报价及原因（如 CMA 过滤、无图、超半径等）。数据质量/召回分析用。"
+    grain: "一行 = 一条被丢弃的报价（含 Reason）"
+  car_hire.CarHireOfficeSearch:
+    description: "后端：租车门店搜索事件（按 office/iata/geo 查询取还门店）。"
+    grain: "一行 = 一次门店搜索（office_search_id 唯一）"
+  car_hire.CarHireRanking:
+    description: "后端：租车排序事件（模型排序或 fallback 排序，含模型名与排序数量）。"
+    grain: "一行 = 一次 search_guid 下的排序执行"
+  car_hire.CarHireRankingResult:
+    description: "后端：排序结果明细（每张卡片的排序分），分页存储。"
+    grain: "一行 = 一次排序事件（ranking_results 为卡片分数数组）"
+  car_hire.CarHireFilterResult:
+    description: "后端：租车筛选结果记录（每张卡片的筛选后明细 + 签名）。"
+    grain: "一行 = 一次 filter_search_guid 下的一张筛选卡片"
+  car_hire.CarHireResponseQuotes:
+    description: "后端：发给前端的分页响应报价记录（是否经过 CaPS 模型）。"
+    grain: "一行 = 一次响应的一页报价"
+  car_hire.CarHireMcpcQueryEvent:
+    description: "后端：MCPC(按维度的 CPC 定价)查询事件，记录归一化维度与应用的 CPC 值。"
+    grain: "一行 = 一次 search_guid + quote_guid 的 CPC 规则应用"
+  car_hire.CarHirePartnerScrapeInfo:
+    description: "后端：合作方抓价信息（预付/到付价、平台、原始供应商名）。"
+    grain: "一行 = 一次合作方抓价"
+  car_hire.CarHireMissingVendor:
+    description: "后端：供应商映射缺失事件（partner vendor 未能映射到 skyscanner vendor）。"
+    grain: "一行 = 一次缺失供应商记录"
+  car_hire.CarHireNoQuoteSample:
+    description: "后端：无报价采样事件（合作方真实报价数、是否发送给合作方）。"
+    grain: "一行 = 一次无报价采样"
+  car_hire.CarhireVendorMappingSearch:
+    description: "后端：供应商映射搜索事件（未映射/未确认/映射到其他合作方的供应商名）。"
+    grain: "一行 = 一次 vendor-mapping 查询"
+  car_hire.CarHireScheduledSearch:
+    description: "后端：定时任务触发的租车搜索事件。"
+    grain: "一行 = 一次定时搜索"
+
+  # ---- reusable value/building-block messages ----
+  car_hire.Quote:
+    description: "租车报价的完整定义（价格/车型/供应商/取还地点时间/增值服务等）。被多个前端事件复用。"
+    grain: "复用型嵌套消息，非独立事件表"
+  car_hire.CarHireItinerary:
+    description: "租车行程（SIPP/取还地点时间/车型/渠道/供应商）。被 redirects/booking 嵌套引用。"
+    grain: "复用型嵌套消息"
+  car_hire.CarHireFilterAndSort:
+    description: "筛选与排序状态快照（各类筛选项 + 排序方式 + 地图状态）。注意 clients.proto 另有同名类型。"
+    grain: "复用型嵌套消息"
+  car_hire.CarHireSearchResultsOption:
+    description: "呈现给用户的租车行程选项(itinerary)内容，含车型/座位/行李/价格/排序分。"
+    grain: "复用型嵌套消息（BPO 级别）"
+
+  # ---- B2B car hire ----
+  b2b_carhire_indicative.IndicativeQuery:
+    description: "B2B API 租车指示性价格查询（取还地点实体 + 日期分组）。"
+    grain: "一行 = 一次 B2B 指示性价格查询"
+  b2b_carhire_live.Query:
+    description: "B2B API 租车实时价格查询（取还地点/时间/驾龄 + 包含/排除的 agent 列表）。"
+    grain: "一行 = 一次 B2B 实时价格查询"
+
+  # ---- shared / bridge types ----
+  unified_search_service.CreateSearchRequest:
+    description: "USS 创建搜索请求事件。★桥接表：同一行同时含 uss_search_id、session_id、search_guid，是打通后端搜索与前端 search_guid 的关键。"
+    grain: "一行 = 一次 USS 创建搜索"
+  unified_search_service.CreateExploreRequest:
+    description: "USS 创建 Explore 请求事件（含 uss_search_id + search_guid，同为桥接来源）。"
+    grain: "一行 = 一次 USS Explore 请求"
+  unified_search_service.PollSearchRequest:
+    description: "USS 轮询搜索请求事件（含 uss_search_id + search_guid + 轮询迭代次数）。"
+    grain: "一行 = 一次 USS 轮询"
+  clients.Search:
+    description: "前端通用搜索事件；其 header.guid 即所有前端租车事件引用的 search_guid 之源。"
+    grain: "一行 = 一次前端搜索（跨垂直，oneof 区分业务）"
+  clients.BookingPanelOption:
+    description: "预订面板选项(BPO)：被 *_option_guid 字段引用的规范报价/deal 实体。"
+    grain: "复用型引用实体"
+  commons.DateTime:
+    description: "时间类型：unix_time_millis(毫秒)+时区偏移+夏令时偏移+精度。非普通时间戳，过滤日期用 unix_time_millis。"
+    grain: "值类型"
+  commons.Money:
+    description: "金额类型：{currency, amount(int64), unit}。unit: CENTI=0/MILLI=1/MICRO=2/WHOLE=3。"
+    grain: "值类型"
+  commons.Price:
+    description: "价格类型：total_price/tax/payment_card_fees/insurance，各为一个 Money。"
+    grain: "值类型"
+
+  # ---- conversion tail ----
+  redirects.Redirect:
+    description: "跳转事件：用户点击去合作方。★转化枢纽，同时含 search_guid(回连前端)、redirect_id(前连 booking)、以及营收字段。嵌套 car_hire.CarHireItinerary。"
+    grain: "一行 = 一次跳转"
+  booking.BookingEvent:
+    description: "预订事件：合并后的预订，经 redirect_id 关联到跳转。car_hire_extra 路径已 deprecated（需确认当前租车预订来源）。"
+    grain: "一行 = 一次预订（booking_id 主键）"
+  booking.BookingStep:
+    description: "预订流程中的单个步骤（步骤类型/结果/失败原因）。来源为 hotel dbook 漏斗，租车适用性待确认。"   # CONFIRM 租车是否复用
+    grain: "一行 = 预订流程的一步"
+  booking.BookingStitchedEvent:
+    description: "拼接后的预订事件（把同一预订的多步/多来源缝合成一条）。"
+    grain: "一行 = 一次拼接后的预订"
+  redirects.RedirectCompleted:
+    description: "跳转完成事件（跳转成功落地的确认）。"
+    grain: "一行 = 一次完成的跳转"
+  redirects.RedirectEnrichedForInsights:
+    description: "为分析富化后的跳转事件（跳转 + 合作方报价 ID 等），供 insights 使用。"
+    grain: "一行 = 一次富化后的跳转"
+
+  # ---- core: search / SEO / building-block messages ----
+  car_hire.CarHireSearch:
+    description: "租车搜索条件building block：驾龄 + 取还地点/时间。被多个后端事件复用。"
+    grain: "复用型嵌套消息"
+  car_hire.CarHireSearchButton:
+    description: "前端：租车搜索按钮点击事件（含所在页面类型 PageType）。"
+    grain: "一行 = 一次搜索按钮事件"
+  car_hire.CarHireAdCardAction:
+    description: "前端：租车广告卡片动作事件（出发/目的地/时间 + UIEventType 动作）。"
+    grain: "一行 = 一次广告卡片动作"
+  car_hire.CarhireAirportIndicativePricePanel:
+    description: "前端：机场指示性价格面板卡片（按 car_class 展示）。"
+    grain: "一行 = 一次机场指示价面板事件"
+  car_hire.CarHireAutosuggestItemAction:
+    description: "前端：自动补全条目动作（实体 id/类型/位置/输入串 + UIEventType）。"
+    grain: "一行 = 一次自动补全条目动作"
+  car_hire.CarHireNoImageCar:
+    description: "后端：无图车辆事件 + 图片匹配结果（含 MatchType 匹配方式）。图片覆盖率分析用。"
+    grain: "一行 = 一次无图车辆的图片匹配记录"
+  car_hire.OfficeIdentity:
+    description: "门店标识building block：website_id + 取还门店 office（坐标/IATA/国家码）+ 缓存/返回报价数。"
+    grain: "复用型嵌套消息"
+  car_hire.CarHireLocationExtra:
+    description: "租车地点补充信息building block：取车/还车实体 id。"
+    grain: "复用型嵌套消息"
+  car_hire.CarHireSeoLocationParameter:
+    description: "SEO 地点参数building block：取还地点 + 取还时间。"
+    grain: "复用型嵌套消息"
+  car_hire.SeoLoadAction:
+    description: "SEO 页面加载动作building block（页面搜索参数 + 地点参数）。"
+    grain: "复用型嵌套消息"
+  car_hire.SeoClickAction:
+    description: "SEO 页面点击动作building block（地点参数）。"
+    grain: "复用型嵌套消息"
+  car_hire.CarHirePageDetails:
+    description: "响应报价的单页明细building block（card_id + 页内序号 + quote_brief 列表）。"
+    grain: "复用型嵌套消息"
+  car_hire.CarHireQuoteBrief:
+    description: "报价简要building block（BPO id + 在卡片中的排序）。"
+    grain: "复用型嵌套消息"
+  car_hire.NormalizedDimensions:
+    description: "MCPC 定价的归一化维度（market/season/device/租期/预订窗口等），取值由 registry 元数据定义。"
+    grain: "复用型嵌套消息（隶属 CarHireMcpcQueryEvent）"
+  car_hire.LocationInfo:
+    description: "地点信息building block（是否机场/坐标/地址/全名/实体 id）。"
+    grain: "复用型嵌套消息"
+  car_hire.LocationDetails:
+    description: "取还地点信息building block（pu=取车, do=还车，各为 LocationInfo）。"
+    grain: "复用型嵌套消息"
+  car_hire.Coordinates:
+    description: "经纬度坐标building block（float latitude/longitude）。"
+    grain: "值类型"
+  car_hire.Distance:
+    description: "距离building block（数值 + DistanceUnit 单位）。"
+    grain: "值类型"
+  car_hire.Pin:
+    description: "地图标记 building block（仅含 id）。"
+    grain: "值类型"
+  car_hire.AirportTransferItinerary:
+    description: "机场接送行程building block（取还地点时间 + 乘客数 + 是否往返）。多数字段已 deprecated。"
+    grain: "复用型嵌套消息"
+  car_hire.CampervanSearch:
+    description: "房车搜索building block（乘客数 + 取还地点时间 + 是否往返 + 居住地）。"
+    grain: "复用型嵌套消息"
+
+  # ---- car_hire_app: view-history / day-view / building blocks ----
+  car_hire_app.CarHireMiniSearch:
+    description: "App 端 mini search 事件（筛选/翻页子搜索状态）。注意与 car_hire.CarHireMiniSearch 字段不同。"
+    grain: "一行 = 一次 App 端 mini search"
+  car_hire_app.DayViewEvent:
+    description: "App 端 day-view 事件（结果加载，oneof 携带具体信息）。"
+    grain: "一行 = 一次 day-view 事件"
+  car_hire_app.DayViewLoadedInformation:
+    description: "day-view 结果加载明细（总数/电动数/混动数 + 占比）。绿色出行分析用。"
+    grain: "复用型嵌套消息"
+  car_hire_app.QuotesAdditions:
+    description: "报价增值信息building block（保险展开/免取消/里程/超额/盗窃险等）。"
+    grain: "复用型嵌套消息"
+  car_hire_app.SupplierRatingInformation:
+    description: "供应商评分信息building block（供应商名 + 评分）。"
+    grain: "复用型嵌套消息"
+  car_hire_app.AutosuggestItemInformation:
+    description: "App 端自动补全条目信息building block（实体 id/值/分组类型/位置/查询串）。"
+    grain: "复用型嵌套消息"
+  car_hire_app.ViewHistoryEvent:
+    description: "App 端浏览历史事件（打开历史页/报价过期，oneof 携带具体信息）。"
+    grain: "一行 = 一次浏览历史事件"
+  car_hire_app.ViewHistoryOpenPageInformation:
+    description: "浏览历史打开页明细building block（搜索数/分组数/报价数）。"
+    grain: "复用型嵌套消息"
+  car_hire_app.ViewHistoryTapManageInformation:
+    description: "浏览历史‘管理’点击building block（是否点击工具栏管理按钮）。"
+    grain: "复用型嵌套消息"
+  car_hire_app.ViewHistoryTapResultInformation:
+    description: "浏览历史‘结果’点击building block（是否有效 + 选中的行程内容 + 序号）。"
+    grain: "复用型嵌套消息"
+  car_hire_app.ViewHistoryChangeSaveStateInformation:
+    description: "浏览历史保存开关变更building block（保存是否开启）。"
+    grain: "复用型嵌套消息"
+  car_hire_app.ViewHistoryQuoteExpiredInformation:
+    description: "浏览历史报价过期building block（日期是否仍有效但报价已失效）。"
+    grain: "复用型嵌套消息"
+
+  # ---- indicative_price building blocks ----
+  car_hire_indicative_price.TravellerContext:
+    description: "指示性价格的旅客上下文building block（market/locale/currency）。"
+    grain: "复用型嵌套消息"
+  car_hire_indicative_price.Filter:
+    description: "指示性价格搜索所用筛选building block（约束 + 车型/供应商/合作方 id）。"
+    grain: "复用型嵌套消息"
+  car_hire_indicative_price.Location:
+    description: "指示性价格取还地点building block（取车/还车 location 实体 id）。"
+    grain: "复用型嵌套消息"
+
+  # ---- quote_search building blocks (shared, backend) ----
+  car_hire_quote_search.CarInfo:
+    description: "报价搜索里的车辆信息building block（车名/SIPP/门数/变速箱/空调/乘客/行李/燃料）。"
+    grain: "复用型嵌套消息"
+  car_hire_quote_search.Passengers:
+    description: "乘客数building block（成人/儿童）。"
+    grain: "复用型嵌套消息"
+  car_hire_quote_search.AdditionalDrivers:
+    description: "附加驾驶员信息building block（免费名额 + 需付费金额，欧元分）。"
+    grain: "复用型嵌套消息"
+  car_hire_quote_search.FreeAdditionalDriver:
+    description: "免费附加驾驶员building block（数量 + 最低年龄）。"
+    grain: "复用型嵌套消息"
+  car_hire_quote_search.InsurancePackage:
+    description: "保险套餐building block（碰撞损失免除保险）。"
+    grain: "复用型嵌套消息"
+  car_hire_quote_search.Insurance:
+    description: "保险building block（价格 + 免赔额，欧元分）。"
+    grain: "复用型嵌套消息"
+  car_hire_quote_search.CancellationPolicy:
+    description: "取消政策building block（是否免费取消 + 最晚可免费取消小时数）。"
+    grain: "复用型嵌套消息"
+  car_hire_quote_search.IncludedMileage:
+    description: "含里程building block（是否无限里程）。"
+    grain: "复用型嵌套消息"
+  car_hire_quote_search.LocationDetail:
+    description: "取还地点明细building block（纬度/经度/地址）。"
+    grain: "复用型嵌套消息"
+
+  # ---- shared types (subset) ----
+  quote_search.TravelNode:
+    description: "通用行程节点building block：location_id 按业务含义不同（租车=office_id）+ 时间 + 地点引用类型 + GEO 实体 id。"
+    grain: "复用型嵌套消息"
+  quote_search.TravellerContext:
+    description: "通用旅客上下文building block（market/locale/currency）。"
+    grain: "复用型嵌套消息"
+  clients.CarHireFilterAndSort:
+    description: "前端筛选与排序状态快照（各类 SelectionList 筛选项）。被 app UserAction/MiniSearch 引用；注意 car_hire.proto 另有同名类型。"
+    grain: "复用型嵌套消息"
+  clients.CarHireGroupVisibleProperties:
+    description: "呈现给用户的租车分组可见属性（车型/类别/变速箱/座位/行李/空调等），用于浏览历史等。"
+    grain: "复用型嵌套消息"
+
+  # ---- b2b building block ----
+  b2b_carhire_live.PickupDropOff:
+    description: "B2B 实时查询的取还地点building block（实体 id + `纬度;经度` 坐标）。"
+    grain: "复用型嵌套消息"
+
+enums:
+  car_hire.PayType:
+    desc: "支付方式：到付(ARRIVAL_PAY)/预付(PRE_PAY)/混合(MIX_PAY)。"
+  car_hire.PickupMethod:
+    desc: "取车方式：普通/钥匙即走/无钥匙/其他。注意与 car_hire_app.PickupMethod 取值编号不同。"
+  car_hire.PickupType:
+    desc: "取车类型：班车/见面交车/航站楼柜台/其他。"
+  car_hire.FuelType:
+    desc: "燃料类型（电动/混动/其他）。注意 OTHER=999；与其他文件的 FuelType 取值不同。"
+  car_hire.CarCategory:
+    desc: "ACRISS 官方车辆类别（Mini/Economy/Compact...Luxury/Oversize）。"
+  car_hire.CarType:
+    desc: "ACRISS 官方车型代码（门数/车身样式等）。"
+  car_hire.Transmission:
+    desc: "ACRISS 变速箱类型（手动/自动 × 驱动方式）。"
+  car_hire.UIEventType:
+    desc: "通用 UI 交互类型（PRESSED/VIEWED/OPENED/RENDERED 等）。曝光通常取 VIEWED。"
+  commons.BusinessDomain:
+    desc: "业务域枚举，租车相关值用于区分事件所属垂直。"   # CONFIRM 具体取值
+  car_hire_app.ActionType:
+    desc: "App 端用户动作类型（应用筛选/点标记/点报价/查看历史/快捷筛选等）。决定 UserAction 的 oneof 分支。"
+  car_hire_app.BookingType:
+    desc: "预订类型：直连(DIRECT)/标准(STANDARD)。"
+  car_hire_indicative_price.TrafficSource:
+    desc: "流量来源：SEO/XSELL/组合搜索/B2B。"
+  car_hire_indicative_price.Scenario:
+    desc: "指示性价格场景（SEO 各类落地页 / XSELL 视图 / B2B 等）。"
+
+  # ---- long-tail enum descriptions ----
+  car_hire.CarhirePageType:
+    desc: "租车各类页面类型（首页/结果页/各类 SEO 落地页），注释含链接示例。"
+  car_hire.CarhireSeoAction:
+    desc: "SEO 动作：搜索点击(CAR_HIRE_SEARCH_CLICKED)/搜索加载(CAR_HIRE_SEARCH_LOAD)。"
+  car_hire.GroupCardType:
+    desc: "分组卡片类型：基础/已收藏/顶部高亮。"
+  car_hire.QuotePlacement:
+    desc: "报价展示位置：对比表/CaPS 库存卡/报价对比侧栏。"
+  car_hire.MapTriggerType:
+    desc: "地图触发类型：数据驱动/用户驱动/初始化。"
+  car_hire.IqrApplyStatus:
+    desc: "IQR 地图边界优化状态：已应用/禁用(用户操作过)/不符合条件(标记不足4个)。"
+  car_hire.DistanceUnit:
+    desc: "距离单位：英里/千米/米。"
+  car_hire.AutosuggestGroupType:
+    desc: "自动补全分组类型：自动补全/最近搜索/最热门。"
+  car_hire.ClientID:
+    desc: "调用 vendor-mapping API 的业务方：Jacquard / Egressor。"
+  car_hire_app.SearchType:
+    desc: "搜索类型：标准搜索(SEARCH)/mini 搜索(MINI_SEARCH)。"
+  car_hire_app.FreeCancellationType:
+    desc: "免费取消类型：可免费取消/部分 deal 可/不可。"
+  car_hire_app.FreeMileageType:
+    desc: "含里程单位：英里/千米。"
+  car_hire_app.DayViewEventType:
+    desc: "day-view 事件类型：结果加载(RESULTS_LOADED)。"
+  car_hire_app.ViewHistoryEventType:
+    desc: "浏览历史事件类型：打开历史页/报价过期。"
+  car_hire_app.AutosuggestGroupType:
+    desc: "App 端自动补全分组类型：自动补全/最近搜索/最热门。"
+  car_hire_indicative_price.DateTimeGroupingType:
+    desc: "指示性价格的报价按时间分组方式：按天/按月/按周。"
+  car_hire_indicative_price.FilterConstraint:
+    desc: "筛选约束：等于/不等于。"
+  car_hire_indicative_price.LocationType:
+    desc: "查询地点类型：任意/国家/领地/各级行政区/机场/城市/城区/火车站。"
+  b2b_carhire_indicative.DateTimeGroupingType:
+    desc: "B2B 指示性价格按时间分组方式：按天/按月/按周。"
+  commons.Platform:
+    desc: "平台类型：iOS/Android/桌面 Web/移动 Web/未知 Web/平板 Web。"
+  quote_search.QuoteSource:
+    desc: "报价来源：实时更新(LIVE_UPDATE,默认)/自动刷新(AUTO_REFRESH)。"
+  quote_search.ClientId:
+    desc: "报价搜索调用方：普通租车搜索/SEO 调度/价格竞争力/B2B/旅行排序。"
+  quote_search.LocationReferenceType:
+    desc: "地点 id 引用类型：租车=office_id / 酒店=hotel_id / 机票=route_id。"
+  unified_search_service.GeoLevel:
+    desc: "USS 地理层级：任意/国家/本地/区域/POI/城区。"
+  unified_search_service.TrafficSource:
+    desc: "USS 流量来源（垂直搜索/B2B/组合搜索/组合 Explore/SEO/运营/生命周期营销/广告等）。"
+  unified_search_service.PollingSessionStatus:
+    desc: "USS 轮询会话状态：进行中(ONGOING)/已结束(ENDED)。"
+  unified_search_service.LocationSortOrderType:
+    desc: "USS 地点排序方式：相关性/热门度/最便宜机票。"
+  unified_search_service.TripModifierType:
+    desc: "USS 行程修饰类型（筛选 pill/agent 偏好/替代出发地/机票舱位/住宿房间数等，跨垂直）。"
+  unified_search_service.UserConsentUsageType:
+    desc: "USS 用户同意用途：优化(INFORMATION)/广告个性化(ADVERTS)。"
+  vehicle.VehicleType:
+    desc: "车辆类型（ACRISS 细分，如 COMPACT/ECONOMY/SUV/CONVERTIBLE 及各 FULLSIZE_* 变体）。"
+  vehicle.VehicleCategory:
+    desc: "车辆尺寸类别：小型/中型/大型/豪华/多人车/SUV/厢式货车。"

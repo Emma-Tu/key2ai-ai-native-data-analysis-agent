@@ -1,0 +1,20 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: QuickFilterApplyInformation
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "Information for the apply quick filter action"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: filter_and_sort
+    type: clients.CarHireFilterAndSort
+    number: 1
+    ref: clients.CarHireFilterAndSort   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: quick_filter_type
+    type: QuickFilterType
+    number: 2
+    ref: QuickFilterType
+    desc: ""   # TODO 待补充业务含义

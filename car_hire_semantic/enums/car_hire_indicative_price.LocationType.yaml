@@ -1,0 +1,40 @@
+# AUTO-GENERATED from proto/car_hire_indicative_price.proto.
+enum: LocationType
+package: car_hire_indicative_price
+source_file: car_hire_indicative_price.proto
+group: core
+desc: "查询地点类型：任意/国家/领地/各级行政区/机场/城市/城区/火车站。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_LOCATION_TYPE
+    meaning: "Default value, location type is not set"
+  - num: 1
+    name: LOCATION_TYPE_ANYWHERE
+    meaning: "The location type is anywhere"
+  - num: 2
+    name: LOCATION_TYPE_COUNTRY
+    meaning: "The location type is country"
+  - num: 3
+    name: LOCATION_TYPE_TERRITORY
+    meaning: "The location type is territory;"
+  - num: 4
+    name: LOCATION_TYPE_REGION_FIRST_ADM
+    meaning: "The location type is first administrative region"
+  - num: 5
+    name: LOCATION_TYPE_REGION_SECOND_ADM
+    meaning: "The location type is second administrative region"
+  - num: 6
+    name: LOCATION_TYPE_REGION_THIRD_ADM
+    meaning: "The location type is third administrative region"
+  - num: 7
+    name: LOCATION_TYPE_AIRPORT
+    meaning: "The location type is airport"
+  - num: 8
+    name: LOCATION_TYPE_CITY
+    meaning: "The location type is city"
+  - num: 9
+    name: LOCATION_TYPE_DISTRICT
+    meaning: "The location type is anywhere"
+  - num: 10
+    name: LOCATION_TYPE_TRAIN_STATION
+    meaning: "The location type is train station"

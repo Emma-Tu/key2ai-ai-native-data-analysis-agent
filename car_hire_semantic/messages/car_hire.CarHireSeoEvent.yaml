@@ -1,0 +1,50 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireSeoEvent
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "前端：SEO 页面加载/点击事件（按 CarhirePageType 区分页面类型）。"   # curated (overlay.yaml)
+grain: "一行 = 一次 SEO 页面动作"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: car_hire_seo_action
+    type: CarhireSeoAction
+    number: 2
+    ref: CarhireSeoAction
+    desc: ""   # TODO 待补充业务含义
+  - name: carhire_page_type
+    type: CarhirePageType
+    number: 3
+    ref: CarhirePageType
+    desc: ""   # TODO 待补充业务含义
+  - name: seo_load_action
+    type: SeoLoadAction
+    number: 4
+    oneof: seo_action
+    ref: SeoLoadAction
+    desc: ""   # TODO 待补充业务含义
+  - name: seo_click_action
+    type: SeoClickAction
+    number: 5
+    oneof: seo_action
+    ref: SeoClickAction
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 6
+    desc: "associate it with search"
+  - name: mini_search_guid
+    type: string
+    number: 7
+    desc: "associate it with mini search"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

@@ -1,0 +1,44 @@
+# AUTO-GENERATED skeleton from proto/car_hire_no_quote_request_blocking.proto. Enrich desc / relationships by hand.
+message: CarHireNoQuoteRequestBlocking
+package: car_hire_no_quote_request_blocking
+source_file: car_hire_no_quote_request_blocking.proto
+group: core
+description: "无报价请求拦截事件：记录某供应商请求是否被拦截。算拦截率时必须排除 is_holdout_dataset。"   # curated (overlay.yaml)
+grain: "一行 = 一次 search_request_id 下对某 pick_up_office 的拦截判定"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.LightHeader
+    number: 1
+    ref: commons.LightHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: website_id
+    type: string
+    number: 2
+    desc: "The website id of the car hire request"
+  - name: market
+    type: string
+    number: 3
+    desc: "The market of the car hire request"
+  - name: pick_up_office_id
+    type: string
+    number: 4
+    desc: "The office id of the pick-up location"
+  - name: search_request_id
+    type: string
+    number: 5
+    desc: "The search request id of the car hire search"
+  - name: is_blocked
+    type: bool
+    number: 6
+    desc: "True if the request is blocked, false if the request is not blocked"
+  - name: is_holdout_dataset
+    type: bool
+    number: 7
+    desc: "True if the request is in holdout dataset, which means the request is always non-blocked"

@@ -1,0 +1,22 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: PayType
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "支付方式：到付(ARRIVAL_PAY)/预付(PRE_PAY)/混合(MIX_PAY)。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_PAY_TYPE
+    meaning: "handling exceptions"
+  - num: 1
+    name: ARRIVAL_PAY
+    meaning: "pay type is arrival pay"
+  - num: 2
+    name: PRE_PAY
+    meaning: "pay type is pre pay"
+  - num: 3
+    name: MIX_PAY
+    meaning: "pay type is mix pay"
+  - num: 999
+    name: PAY_TYPE_OTHER
+    meaning: "default value if no pay type value can be found"

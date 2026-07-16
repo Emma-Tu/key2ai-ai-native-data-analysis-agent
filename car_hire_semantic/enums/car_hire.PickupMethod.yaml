@@ -1,0 +1,22 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: PickupMethod
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "取车方式：普通/钥匙即走/无钥匙/其他。注意与 car_hire_app.PickupMethod 取值编号不同。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_PICKUP_METHOD
+    meaning: "Handling exceptions"
+  - num: 1
+    name: NORMAL
+    meaning: "all non keyless and key_and_go car quotes will be normal"
+  - num: 2
+    name: KEY_AND_GO
+    meaning: "pickup method is key and go"
+  - num: 3
+    name: KEYLESS
+    meaning: "pickup method is keyless"
+  - num: 4
+    name: PICKUP_METHOD_OTHER
+    meaning: "default value if no pickup method value can be found"

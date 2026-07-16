@@ -1,0 +1,16 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: CarhireSeoAction
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "SEO 动作：搜索点击(CAR_HIRE_SEARCH_CLICKED)/搜索加载(CAR_HIRE_SEARCH_LOAD)。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_CAR_HIRE_SEO_ACTION
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: CAR_HIRE_SEARCH_CLICKED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: CAR_HIRE_SEARCH_LOAD
+    meaning: ""   # TODO 待确认业务含义

@@ -1,0 +1,1076 @@
+syntax = "proto3";
+
+package car_hire;
+option go_package = "github.com/skyscanner/go-schemas/car_hire";
+option java_package = "net.skyscanner.schemas";
+option objc_class_prefix = "SKYSchema";
+import "commons.proto";
+import "vehicle.proto";
+
+message LocationInfo {
+    bool is_airport = 1;
+    Coordinates coordinates = 2;  // latitude and longitude
+    string address = 3;
+    string full_name = 4;
+    string entity_id = 5;
+}
+
+message LocationDetails {
+    LocationInfo pu = 1;  // pick-up location information
+    LocationInfo do = 2;  // drop-off location information
+}
+
+message Quote {
+
+    commons.Price price = 1;
+
+    string sipp = 2; // car descriptive sipp code www.car-hire-centre.co.uk/sipp-codes.html
+    int32 seats = 3; // car number of seats
+    int32 bags = 4;  // car number of bags
+
+    commons.DownstreamPartner provider = 5;
+    double provider_star_ratings = 6;
+    int32 provider_number_of_reviews = 7;
+    string vendor_name = 8; // car supplier name
+    int32 vendor_id = 9;    // car supplier assigned skyscanner vendor id
+
+    commons.DateTime pick_up_datetime = 10;
+    commons.Location pick_up_ddb_location = 11; // pick up ddb id; the location_descriptors map contains the jacquard id and city ddb id
+
+    commons.DateTime drop_off_datetime = 12;
+    commons.Location drop_off_ddb_location = 13; // drop off ddb id; the location_descriptors map contains the jacquard id and city ddb id
+
+    int32 driver_age = 14;
+
+    message ValueAdds {
+        string pick_up_type = 1 [deprecated=true]; // car pick up type is no longer placed in ValueAdds, it is placed under Quote
+        bool fair_fuel_policy = 2 [deprecated=true]; // car fail fuel is no longer placed in ValueAdds, it is placed under Group
+        string fuel_policy = 3; // reuse by: it called fair fuel policy when it is group level and the condition is met; it comes directly from quote.fuel_pol when it is quote level.
+        bool free_cancellation = 4; // free cancellation, it comes from quote.adds.free_cancel. When it is false it means it is non_refundable.
+        string mileage = 5;         // included mileage ('unlimited' or the actual value)
+        string mileage_unit = 6;
+        bool collision_dmg_wvr = 7; // collision damage waver insurance
+        commons.Money excess = 8;   // excess insurance
+        bool free_additional_driver = 10;
+        bool is_theft_protection_included = 11; // theft protection insurance
+        bool is_free_breakdown_assistance_included = 12; // free breakdown assistance insurance
+        bool is_third_party_cover_included = 13; // third party cover insurance
+        bool is_self_service_pickup = 14; // self-service pick-up, it means quote.pickup_method is one of ['keyless', 'key_and_go']
+    }
+
+    ValueAdds value_adds = 15;
+    double value_score = 16; // car quote overall score assigned by the api
+
+    commons.BusinessDomain domain = 17; // CAR_HIRE
+    commons.EventHeader event_header = 18;
+
+    CarCategory cat_category = 19;  // car category e.g. Mini, compact
+    FuelType fuel_type = 20;        // fuel type e.g. electric, hybrid
+    Transmission transmission = 21; // transmission
+    bool has_air_conditioning = 22;    // has air conditioning or not
+    uint32 child_seats = 23; // number of child seats
+    uint32 adult_seats = 24; // number of adult seats
+    string provider_id = 25; // it is from quote.prv_id, such as 'vipc'
+    string provider_name = 26; // it is from quote.provider.provider_name, such as 'VIPCars'.
+    string pickup_location = 27; // it stores address information when it is city
+    string pickup_location_entity_id = 28; // stores entity id or iata code information.
+    PayType pay_type = 29; // pay type, it will return the pay_type, including 'ARRIVAL_PAY', 'PRE_PAY' and 'MIX_PAY'.
+    string dplink = 30; // deep link for redirect.
+    string car_name = 31;    // car name, such as 'Ford Galaxy'.
+    LocationDetails loc = 32; // pick-up and drop-off location information
+}
+
+enum PickupMethod {
+    UNSET_PICKUP_METHOD = 0;  // Handling exceptions
+    NORMAL = 1;              // all non keyless and key_and_go car quotes will be normal
+    KEY_AND_GO = 2;          // pickup method is key and go
+    KEYLESS = 3;             // pickup method is keyless
+    PICKUP_METHOD_OTHER = 4; // default value if no pickup method value can be found
+}
+
+enum PickupType {
+    UNSET_PICKUP_TYPE = 0;    // Handling exceptions
+    SHUTTLE = 1;              // pickup type is shuttle
+    MEET_AND_GREET = 2;       // pickup type is meet and greet
+    DESK_IN_TERMINAL = 3;     // pickup type is desk in terminal
+    PICKUP_TYPE_OTHER = 4;    // default value if no pickup type value can be found
+}
+
+enum FuelType {
+    UNSET_FUEL_TYPE = 0;    // handling exceptions
+    ELECTRIC = 1;           // fuel type is electric
+    HYBRID = 2;             // fuel type is hybrid
+    FUEL_TYPE_OTHER = 999;  // default value if no fuel type value can be found
+}
+
+enum PayType {
+    UNSET_PAY_TYPE = 0;      // handling exceptions
+    ARRIVAL_PAY = 1;         // pay type is arrival pay
+    PRE_PAY = 2;             // pay type is pre pay
+    MIX_PAY = 3;             // pay type is mix pay
+    PAY_TYPE_OTHER = 999;    // default value if no pay type value can be found
+}
+
+enum QuotePlacement {
+    UNSET_QUOTE_PLACEMENT = 0;      // Handling exceptions
+    COMPARE_TABLE = 1;              // quote is placed in compare table
+    CAPS_HERO_IN_CARD = 2;          // quote in CaPS inventory card.
+    QUOTE_COMPARISON_SIDE_PANEL = 3; // quote is placed in quote comparison side panel
+}
+
+message CarHireQuoteSelected {
+    commons.MiniHeader header = 1;
+    Quote quote = 2; // This item tells us the specific quote the user selected
+    uint32 index = 3; // The index numbers tell you the position of the itinerary in the group
+    string booking_panel_option_guid = 4;  // unique guid attached to deep link of quote
+    CarHireFilterAndSort car_hire_filter_and_sort = 5; // The state of the filtering and sorting options at the time this event was fired.
+    PickupType pickup_type = 6;// This item tells us the quote pickup type
+    PickupMethod pickup_method = 7;// This item tells us the quote pickup method
+    uint32 page_index = 8; // The index number tell you the quote in which page, start from 0
+    uint32 group_index = 9; // The index number tell you the group position in the page, start from 0
+    CarCategory car_class = 10; // The car class of the quote
+    uint32 initial_group_index = 11; // The index number tell you the initial group position in the page, start from 0
+    string search_guid = 12; // associate it with search
+    string mini_search_guid = 13; // associate it with mini search
+    UIEventType event_type = 14; // event type maybe RENDERED/VIEWED/SELECTED
+    vehicle.VehicleType vehicle_type = 15; // vehicle type
+    string itinerary_id = 16; // The contents of the car hire itinerary that are presented to the user.
+    uint32 recommended_ranking_index = 17; // The index number tell you the recommended position in total results, start from 0
+    uint32 price_index = 18; // The index representing the itinerary's position when sorted by price (original sort order)
+    bool is_compare_checked = 19; // Whether the quote is under comparing
+    QuotePlacement quote_placement = 20; // The placement of the quote, default null means it is put in the inventory card
+    bool is_compare_ai_recommended = 21; // Whether the quote is recommended by compare ai
+
+
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+message CarHireNoImageCar {
+    commons.MiniHeader header = 1;
+    string car_name = 2;    // car name, such as 'Ford Galaxy'.
+    string car_class = 3;   // car_class are the car SIPP codes, used to summarise the key features of a vehicle.
+    string vendor_name = 4; // car supplier name
+    sint32 vendor_id = 5;   // car supplier assigned skyscanner vendor id
+    string jqd_provider_id = 6; // jqd provider id
+    string sample_image_url = 7;    // sample image url of the quote
+    string trimmed_car_name = 8;    // trimmed car name
+    CarInfo standard_car_info = 9;  // standard car info
+    MatchType match_type = 10;       // image match type
+    CarImageInfo car_image_info = 11;     // matched image info
+    string market = 12;     // market of this car
+    commons.DateTime grappler_receive_timestamp = 1998;
+
+    message CarInfo {
+        string maker = 1;
+        string model = 2;
+        string body = 3;
+    }
+
+    message CarImageInfo {
+        CarInfo car_info = 1;
+        string image_url = 2;
+    }
+
+    enum MatchType {
+        UNSET_MATCH_TYPE = 0;   // Handling exceptions
+        NO_MATCH = 1;           // Can not match a image
+        TRIMMED_CAR_NAME = 2;   // Matched by trimmed car name, trim means remove spaces, delimiters, etc
+        STANDARD_CAR_NAME = 3;  // Matched by standard car name, standard car name contains car maker, model and body spilt from car name
+        MAKER_CAR_CLASS = 4;    // Matched by maker and car class, car class is first two letters of SIPP code
+        CAR_CLASS = 5;          // Matched only by car class
+        ES_NO_MATCH = 6;        // Can not match image using elasticsearch
+        ES_CAR_NAME = 7;        // Matched by car name using elasticsearch
+        ES_CAR_CLASS = 8;       // Matched by car class using elasticsearch
+    }
+}
+
+message CarHireItinerary {
+    //SIPP codes are used to summarise the key features of a vehicle.
+    //They are the industry standard for describing vehicles.
+    //The code is normally 4 characters long. For example:
+    //CDMR is a Compact 4 door manual car with air conditioning
+    string sipp = 1;
+    commons.Location pickup_location = 2;
+    commons.DateTime pickup_timestamp = 3;
+    commons.Location dropoff_location = 4;
+    commons.DateTime dropoff_timestamp = 5;
+    string car_class = 6;
+    string channel = 7; // field within a redirect that describes where that redirect came from.
+    string vendor = 8; // a vendor provides the car for a quote. For example argus provides quotes for Avis' fleet. the website_id may be argus. The vendor will be Avis.
+    CarHireLocationExtra extra_location_info = 9; // extra location information for car hire locations.
+    uint32 vendor_id = 10; // Car supplier assigned Skyscanner vendor_id for example vendor Avis has vendor_id 640.
+}
+
+message CarHireLocationExtra {
+    string pick_up_entity_id = 1; // the entity id of pickup location.
+    string drop_off_entity_id = 2; // the entity id of drop-off location.
+}
+
+// Booking common schema fields
+message CarHireBookingExtra {
+  car_hire.CarHireItinerary car_hire_itinerary = 1;
+}
+
+message AirportTransferItinerary {
+    string sipp = 1 [deprecated=true]; //unavailable in skippy query (should really be removed) see example in CarHireItinerary message
+    commons.Location pickup_location = 2;
+    commons.DateTime pickup_timestamp = 3;
+    commons.Location dropoff_location = 4;
+    commons.DateTime dropoff_timestamp = 5;
+    string car_class = 6 [deprecated=true]; //unavailable in skippy query (should really be removed)
+    string channel = 7; // field within a redirect that describes where that redirect came from.
+    string vendor = 8 [deprecated=true]; //unavailable in skippy query (should really be removed) a vendor provides the car for a quote. For example argus provides quotes for Avis' fleet. the website_id may be argus. The vendor will be Avis.
+
+    uint32 passenger_number = 9; // number of passengers traveling
+    bool is_return = 10; // is this a return hire
+}
+
+message CarHireSearch {
+  uint32 driver_age = 1;
+  commons.Location pickup_location = 2;
+  commons.DateTime pickup_timestamp = 3;
+  commons.Location dropoff_location = 4;
+  commons.DateTime dropoff_timestamp = 5;
+}
+
+message CarHirePartnerScrapeInfo {
+    CarHireSearch search = 1;
+    string skyscanner_booking_id = 2;    // Internal Skyscanner booking identifier
+    string partner_booking_id = 3;  // booking reference retrieved from the partner
+    commons.Money total_price = 4;
+    commons.Money prepaid_price = 5;
+    commons.Money pay_on_arrival_price = 6;
+    commons.Platform platform = 7; // user's device (platform) type
+    string original_vendor_names = 8; // a comma-separated string of original car vendor names
+}
+
+//Building blocks for view messages
+message AirportTransferSearch {
+    uint32 passenger_number = 1;
+    commons.Location pickup_location = 2;
+    commons.DateTime pickup_timestamp = 3;
+    commons.Location dropoff_location = 4;
+    commons.DateTime return_timestamp = 5;
+    bool is_return = 6;
+}
+
+message CampervanSearch {
+    uint32 passenger_number = 1;
+    commons.Location pickup_location = 2;
+    commons.DateTime pickup_timestamp = 3;
+    commons.Location dropoff_location = 4;
+    commons.DateTime dropoff_timestamp = 5;
+    bool is_return = 6;
+    commons.Location residence_location = 7;
+}
+
+enum MapTriggerType {
+    UNSET_TRIGGER_TYPE = 0; // handling exceptions
+    DATA_DRIVEN = 1; // triggered by data updates
+    USER_DRIVEN = 2; // triggered by direct user interaction (e.g. drag map, zoom in/out)
+    INITIALIZE = 3; // triggered when the map is first loaded
+}
+
+enum IqrApplyStatus {
+    UNSET_IQR_APPLY_STATUS = 0; // handling exceptions
+    APPLIED = 1; // IQR was used to calculate map bounds
+    DISABLED = 2; // user operated the map, so IQR is not applied
+    NOT_ELIGIBLE = 3; // insufficient markers to compute IQR (requires at least 4)
+}
+
+message MapState {
+    commons.MiniHeader header = 1;
+    commons.DateTime grappler_receive_timestamp = 1998;
+
+    string search_guid = 2;
+    repeated Pin visible_pins = 3; // list of visible location markers displayed on the map
+    repeated Pin selected_pins = 4; // selected location markers
+    MapBounds map_bounds = 5; // the areas of the visible to the user
+    string mini_search_guid = 6; // associate it with mini search
+    repeated Pin hidden_pins = 7; // list of hidden location markers displayed on the map
+    MapTriggerType trigger_type = 8; // distinguish between trigger types
+    IqrApplyStatus iqr_apply_status = 9; // IQR boundary optimization status for the map view
+}
+
+message Pin {
+    string id = 1;
+}
+
+// UI interaction types as specified here: https://confluence.skyscannertools.net/x/F_ZTBw#Eventsstandards2.0-TypicalUIinteractions
+enum UIEventType {
+    UNSET_UI_EVENT_TYPE = 0;
+    // Click/tap on element
+    PRESSED = 1;
+    // Element appeared on the screen
+    VIEWED = 2;
+    // opened popups/rollout/collapsible components
+    OPENED = 3;
+    // closed popups/rollout/collapsible components
+    CLOSED = 4;
+    // selection of checkbox-like components
+    SELECTED = 5;
+    // de-selection of checkbox-like components
+    DESELECTED = 6;
+    // component rendering requested
+    REQUESTED = 7;
+    // component rendering succeeded
+    RENDERED = 8;
+    // component scrolled
+    SCROLLED = 9;
+    // click save button to save
+    SAVED =10;
+    // click save button to remove
+    UNSAVED = 11;
+    // select comparison checkbox to differentiate it from other checkbox events
+    CHECKED =12;
+    // de-select comparison checkbox to differentiate it from other checkbox events
+    UNCHECKED = 13;
+    // component hovered
+    HOVERED = 14;
+}
+
+// UI interactions, including component rendering
+message UIEvent {
+    commons.MiniHeader header = 1;
+
+    // Type of the interaction
+    UIEventType type = 2;
+    // Name/ID of the element being interacted with
+    string element_id = 3;
+    // Type of the element, e..g button/checkbox/drop-down/etc
+    string element_type = 4;
+    // Id of the screen that hosts element
+    string screen_id = 5;
+    // Index of the element for cases where the element is rendered multiple times (e.g. a list)
+    uint32 element_index = 6; // First element is index 0
+    // Optional field that suits the need to tie event to a particular feature in mobile apps or web
+    string feature_name = 7;
+    string search_guid = 8; // associate it with the Search
+    string mini_search_guid = 9; // associate it with the mini search
+    
+    string element_group = 10; // Group of the element, eg: policies/pick-up/transmission..
+
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+// map bounds from google maps api
+message MapBounds {
+    Coordinates ne = 1;
+    Coordinates nw = 2;
+    Coordinates se = 3;
+    Coordinates sw = 4;
+}
+
+message Coordinates {
+    float latitude = 1;
+    float longitude = 2;
+}
+
+enum GroupCardType {
+    UNSET_GROUP_CARD_TYPE = 0;
+    BASIC = 1; // the basic group card
+    HEARTED = 2; // the group card which is saved
+    HIGHLIGHT = 3; // the group card which highlight at top
+}
+
+enum CarType {
+    // ACRISS official car types sourced from https://www.acriss.org/car-codes/
+    UNSET_CAR_TYPE = 0;
+    TWO_TO_THREE_DOOR = 1;
+    TWO_TO_FOUR_DOOR = 2;
+    FOUR_TO_FIVE_DOOR = 3;
+    WAGON_ESTATE = 4;
+    PASSENGER_VAN = 5;
+    LIMOUSINE = 6;
+    SPORT = 7;
+    CONVERTIBLE = 8;
+    SUV = 9;
+    ALL_TERRAIN = 10;
+    SPECIAL_TYPE = 11;
+    PICK_UP_REGULAR = 12;
+    PICK_UP_EXTENDED = 13;
+    SPECIAL_OFFER = 14;
+    COUPE = 15;
+    MONOSPACE = 16;
+    RECREATIONAL = 17;
+    MOTOR_HOME = 18;
+    TWO_WHEEL = 19;
+    ROADSTER = 20;
+    CROSSOVER = 21;
+    COMMERCIAL_VAN = 22;
+}
+
+enum CarCategory {
+    // ACRISS official car categories sourced from https://www.acriss.org/car-codes/
+    UNSET_CAR_CATEGORY = 0;
+    MINI = 1;
+    MINI_ELITE = 2;
+    ECONOMY = 3;
+    ECONOMY_ELITE = 4;
+    COMPACT = 5;
+    COMPACT_ELITE = 6;
+    INTERMEDIATE = 7;
+    INTERMEDIATE_ELITE = 8;
+    STANDARD = 9;
+    STANDARD_ELITE = 10;
+    FULLSIZE = 11;
+    FULLSIZE_ELITE = 12;
+    PREMIUM = 13;
+    PREMIUM_ELITE = 14;
+    LUXURY = 15;
+    LUXURY_ELITE = 16;
+    OVERSIZE = 17;
+    SPECIAL_CATEGORY = 18;
+}
+
+enum Transmission {
+    // ACRISS official transimissions sourced from https://www.acriss.org/car-codes/
+    UNSET_TRANSMISSION = 0;
+    MANUAL_UNSPECIFIED_DRIVE = 1;
+    MANUAL_4WD = 2;
+    MANUAL_AWD = 3;
+    AUTOMATIC_UNSPECIFIED_DRIVE = 4;
+    AUTOMATIC_4WD = 5;
+    AUTOMATIC_AWD = 6;
+}
+
+// Checkbox style filter.
+message SelectionValue {
+    string label = 1;
+    bool is_checked = 2;
+}
+
+// List of dynamic selection filters, e.g Airports
+message SelectionList {
+    repeated SelectionValue values = 1;
+    bool is_collapsed = 2;
+}
+
+message CarHireFilterAndSort {
+    // object representing relevant state of passengers filter
+    SelectionList passengers = 1;
+    // types that correspond to class for car types
+    SelectionList car_classes = 2;
+    // types that correspond directly to SIPP codes for car types
+    SelectionList car_types = 3;
+    // Mixed class and type categories
+    SelectionList car_categories = 4;
+    // object representing relevant state of pick up types filter
+    SelectionList pick_up_types = 5;
+    // object representing relevant state of features filter
+    SelectionList features = 6;
+    // object representing relevant state of fuel policies filter
+    SelectionList fuel_policies = 7;
+    // object representing relevant state of star ratings filter: Different from the StarSelectionList type as this filter does not show all star ratings
+    SelectionList star_ratings = 8;
+    // object representing relevant state of possible transmission types filter
+    SelectionList transmissions = 9;
+    // object representing relevant state of booking sites filter
+    SelectionList booking_sites = 10;
+    // object representing relevant state of possible supplier filter
+    SelectionList suppliers = 11;
+    // object representing relevant state of recommended filters filter
+    SelectionList recommended_options = 12;
+
+    enum SortOrder {
+      UNSET_SORT_ORDER = 0;
+      PRICE_ASCENDING = 1; // sort by cheapest
+      BEST_DESCENDING = 2; // sort by a best deal algorithmic model
+      DISTANCE_ASCENDING = 3; // sort by distance
+    }
+
+    // the type of sort applied
+    SortOrder sorted_by = 13;
+
+    // object representing relevant state of filter for free cancellation policies
+    SelectionList cancellation_policy = 14;
+
+    // object representing the state of map component
+    MapState map_state = 15;
+
+    // object representing relevant state of recommended plicies filter
+    SelectionList policies = 16;
+
+    // object representing relevant state of greener choices filter
+    SelectionList greener_choices = 17;
+
+    // object representing relevant state of booking options filter
+    SelectionList booking_options = 18;
+
+    // object representing relevant state of price filter
+    SelectionList price = 19;
+}
+
+message CarHireDroppedQuotes {
+    commons.MiniHeader header = 1;
+    string request_id = 2;          //uuid for the request
+    commons.CultureSettings culture = 3;
+    string pick_up_location = 4;    //pick up entity id
+    string drop_off_location = 5;   //drop of entity id
+    string pick_up_date = 6;        //pick up date
+    string drop_off_date = 7;       //drop off date
+    string provider_id = 8;         //provider id
+    sint32 vendor_id = 9;           //car supplier assigned skyscanner vendor id
+    string vendor_name = 10;        //car supplier name
+    Reason reason = 11;             //dropped reason
+    string reason_description = 12; //description for the reason
+    commons.Money price = 13;       //quote price
+    string sipp = 14;               //sipp code, the industry standard for describing vehicles
+    string car_name = 15;           //car name
+    string pick_up_office_id = 16;  //pick up office id
+    string drop_off_office_id = 17; //drop off office id
+    uint32 request_sequence = 18;        //request sequence
+    bool is_zero_excess = 19;             //true if quote has zero-excess insurance product
+    commons.DateTime grappler_receive_timestamp = 1998;
+
+    enum Reason {
+        UNSET_REASON = 0;
+        CMA_FILTER = 1;     //CMA filter
+        INVALID_SIPP = 2;   //invalid SIPP
+        OUT_RADIUS = 3;     //out of search radius
+        SIMILAR_QUOTES = 4; //similar quotes exist
+        NO_IMAGE = 5;       //no image
+        NON_AIRPORT = 6;    //pick up is non airport for airport search
+        INVALID_CARTYPE = 7; //invalid cartype
+        INVALID_SEATS = 8; //invalid seats
+        INVALID_TRANSMISSION = 9; //invalid transmission
+        VENDOR_MISMATCH = 10; // vendor mismatch
+        NO_VEHICLE_NAME = 11; // no vehicle name
+        CAPS_SUPPRESSION = 12; // quote suppressed by CaPS model (score = -1)
+        EXCLUSIVE_REMOVAL = 13; // exclusive quote removed by experiment
+    }
+}
+
+message CarHireMissingVendor {
+    commons.LightHeader header = 1;
+    string website_id = 2;           // partner website id
+    string partner_vendor_name = 3;  // partner vendor name
+    string jacquard_url = 4;              // jacquard url
+    string deep_link = 5;            // origin quote url
+    string pick_up_travel_api_id = 6;    //pick up id from the Travel API
+    string drop_off_travel_api_id = 7;   //drop off id from the Travel API
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+message OfficeIdentity {
+    message Office {
+        string office_id = 1;               // office id identity a office in a provider
+        Coordinates coordinates = 2;        // office coordinates, including longitude and latitude
+        string airport_iata = 3;            // office airport IATA code, e.g. LHR for London's Heathrow Airport
+        string country_code = 4;            // office country code, 2-letter ISO country code e.g. FR
+    }
+    string website_id = 1;              // website id identity a provider
+    string pickup_office_id = 2;        // office id identity a office in a provider
+    string dropoff_office_id = 3;       // may different from pickup office id because some partners support return car in another place
+    uint32 cache_quote_count = 4;       // car quotes return directly from cache
+    uint32 return_quote_count = 5;      // car quotes return to frontend
+    Coordinates coordinates = 6 [deprecated=true];        // office coordinates
+    string airport_iata = 7 [deprecated=true];            // the airport iata to which the office belongs
+    string country_code = 8 [deprecated=true];            // the country code to which the office belongs
+    Office pickup_office = 9;           // pickup office
+    Office dropoff_office = 10;         // dropoff office
+}
+
+message CarHireOfficeSearch {
+    commons.MiniHeader header = 1;
+    CarHireSearch search = 2;               // user search conditions
+    string request_id = 3;                  // uuid, unique for every user search
+    uint32 request_seq_num = 4;             // the sequence number of a user search
+    OfficeIdentity office = 5;              // car hire office
+    string office_search_id = 14;           // uuid, unique for every office search
+    QueryType query_type = 6;               // query type of office search
+    commons.DateTime grappler_receive_timestamp = 1998;
+
+    enum QueryType {
+        UNSET_QUERY_TYPE = 0;
+        OFFICE = 1;             // office query type
+        IATA = 2;               // iata code query type
+        GEO = 3;                // geo query type
+    }
+}
+
+message CarhireAirportIndicativePricePanel {
+    commons.MiniHeader header = 1;
+    string car_class = 2;           // indicative price panel card carclass
+}
+
+message CarHireSearchButton {
+  commons.MiniHeader header = 1;
+  commons.DateTime grappler_receive_timestamp = 1998; // Grappler Receive Timestamp added by SDK ie., time when slipstream receives an event.
+  enum PageType {
+    UNSET_CAR_HIRE_OTHER = 0;
+    CAR_HIRE_HOME = 1;
+    CAR_HIRE_RESULTS = 2;
+    CAR_HIRE_ALL_AIRPORTS = 3;
+    CAR_HIRE_ALL_CITIES = 4;
+    CAR_HIRE_ALL_PROVIDERS = 5;
+    CAR_HIRE_ALL_COUNTRIES = 6;
+    CAR_HIRE_FAQ = 7;
+    CAR_HIRE_AIRPORT = 8;
+    CAR_HIRE_LOCATION = 9;
+    CAR_HIRE_PROVIDER = 10;
+    CAR_HIRE_COUNTRIES = 11;
+    CAR_HIRE_WITH_PROVIDER = 12;
+    CAR_HIRE_TRAIN_STATION = 13;
+    CAR_HIRE_COUNTRY = 14;
+    CAR_HIRE_NEIGHBOURHOOD = 15;
+    CAR_HIRE_REGION = 16;
+    CAR_HIRE_PROVIDER_IN_CITY = 17;
+    CAR_HIRE_PROVIDER_AT_AIRPORT = 18;
+    CAR_HIRE_PROVIDER_IN_COUNTRY = 19;
+    CAR_HIRE_CAR_TYPE = 20;
+  }
+
+  PageType page_type = 2;
+}
+
+message CarHireAdCardAction {
+  commons.MiniHeader header = 1;
+  commons.DateTime search_start_timestamp = 2; // search depart time
+  commons.DateTime search_end_timestamp = 3; // search return time
+  commons.Location original_location = 4; // depart location
+  commons.Location destination_location = 5; // destination location
+  UIEventType action = 6; // action type of card eg: RENDERED/PRESSED
+  commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+enum CarhirePageType {          // carhire all page types, we will give link example in the comment.
+    UNSET_CAR_HIRE_OTHER = 0;
+    CAR_HIRE_HOME = 1;          //car-hire-home : https://www.skyscanner.net/carhire
+    CAR_HIRE_RESULTS = 2;       //car-hire-result : https://www.skyscanner.co.kr/carhire/results/27538638/27538638/2021-12-16T10:00/2021-12-17T10:00/30
+    CAR_HIRE_ALL_AIRPORTS = 3;  //car-hire-all-airports : https://www.skyscanner.net/car-hire-from/all-airports.html
+    CAR_HIRE_ALL_CITIES = 4;    //car-hire-all-cities : https://www.skyscanner.net/car-hire-in/all-cities.html
+    CAR_HIRE_ALL_PROVIDERS = 5; //car-hire-all-providers : https://www.skyscanner.net/car-hire-with/all-providers.html
+    CAR_HIRE_ALL_COUNTRIES = 6; //car-hire-all-country : https://www.skyscanner.net/car-hire-in/united-kingdom/29475375.html
+    CAR_HIRE_FAQ = 7;           //car-hire-faq : https://www.skyscanner.net/car-hire-help/guide-to-hidden-charges.html
+    CAR_HIRE_AIRPORT = 8;       //car-hire-airport : https://www.skyscanner.net/car-hire-from/agp/car-hire-from-malaga-airport.html
+    CAR_HIRE_LOCATION = 9;      //car-hire-location : https://www.skyscanner.net/car-hire-in/car-hire-in-london/27544008.html
+    CAR_HIRE_PROVIDER = 10;     //car-hire-provider : https://www.skyscanner.net/car-hire-with/hert/car-hire-with-hertz.html
+    CAR_HIRE_COUNTRIES = 11;    //car-hire-all-countries : https://www.skyscanner.net/car-hire-in/all-countries.html
+    CAR_HIRE_WITH_PROVIDER = 12; //car-hire-with-provider : https://www.skyscanner.net/car-hire/car-hire-with-provider/hertz/672
+    CAR_HIRE_TRAIN_STATION = 13; //car-hire-train-station : https://www.skyscanner.net/car-hire/car-hire-from-train-station/edinburgh-waverley-station/207975465
+    CAR_HIRE_COUNTRY = 14; //car-hire-country :  https://www.skyscanner.net/car-hire-in/united-kingdom/29475375.html
+    CAR_HIRE_NEIGHBOURHOOD = 15; //car-hire-neighbourhood : https://www.skyscanner.net/car-hire/car-hire-in-neighbourhood/brooklyn/27562850
+    CAR_HIRE_REGION = 16; //car-hire-region : https://www.skyscanner.net/car-hire/car-hire-in-region/hawaii/44294303
+    CAR_HIRE_PROVIDER_IN_CITY = 17; // car-hire-provider-in-city : https://www.skyscanner.net/car-hire/provider-in-city/sxit/dublin/673/27540823
+    CAR_HIRE_PROVIDER_AT_AIRPORT = 18; // car-hire-provider-at-airport : https://www.skyscanner.net/car-hire/provider-at-airport/1501/dub
+    CAR_HIRE_PROVIDER_IN_COUNTRY = 19; // car-hire-provider-in-country : https://www.skyscanner.net/car-hire/provider-in-country/sixt/united-kingdom/673/29475375
+    CAR_HIRE_CAR_TYPE = 20; // car-hire-car-type : https://www.skyscanner.net/car-hire/car-type/mini/mini
+}
+
+message CarHireSeoLocationParameter {
+    commons.Location pickup_location = 1;
+    commons.DateTime pickup_timestamp = 2;
+    commons.Location dropoff_location = 3;
+    commons.DateTime dropoff_timestamp = 4;
+}
+
+enum CarhireSeoAction {
+    UNSET_CAR_HIRE_SEO_ACTION = 0;
+    CAR_HIRE_SEARCH_CLICKED = 1;
+    CAR_HIRE_SEARCH_LOAD = 2;
+}
+
+message SeoLoadAction {
+  message SearchParameter {
+     string country_name = 1; // required when page_type is CAR_HIRE_COUNTRIES
+     string provider_name = 2; // required when page_type is CAR_HIRE_PROVIDER
+     string airport_name = 3; // required when page_type is CAR_HIRE_AIRPORT
+     string location_name = 4; // required when page_type is CAR_HIRE_LOCATION
+  }
+  SearchParameter search_parameter = 1; 
+  CarHireSeoLocationParameter location_parameter = 2; // not required when page_type is one of CAR_HIRE_ALL_xxx, CAR_HIRE_FAQ and CAR_HIRE_PROVIDER
+}
+
+message SeoClickAction {
+  CarHireSeoLocationParameter location_parameter = 1; // not required when page_type is one of CAR_HIRE_ALL_xxx, CAR_HIRE_FAQ and CAR_HIRE_PROVIDER
+}
+
+message CarHireSeoEvent {
+    commons.MiniHeader header = 1;
+    CarhireSeoAction car_hire_seo_action = 2;
+    CarhirePageType carhire_page_type = 3;
+
+    oneof seo_action {
+       SeoLoadAction seo_load_action = 4;
+       SeoClickAction seo_click_action = 5;
+    }
+
+    string search_guid = 6; // associate it with search
+    string mini_search_guid = 7; // associate it with mini search
+
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+message CarHireNoResults {
+    commons.MiniHeader header = 1;
+    string search_guid = 2;
+    string mini_search_guid = 3; // associate it with mini search
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+message CarHireMiniSearch {
+    commons.MiniHeader header = 1;
+    string search_guid = 2;  // associate it with search
+    string previous_mini_search_guid = 3; // associate it with previous mini search if exists
+    CarHireFilterAndSort car_hire_filter_and_sort = 4; // The state of the filtering and sorting options at the time this event was fired.
+    uint32 saved_cars_total_count = 5; // total count of saved cars
+    uint32 current_page_hearted_count = 6; // count of saved cars in current page
+    uint32 page_index = 7; // current page index start from 0
+    uint32 total_results_count = 8; // total results count
+    uint32 current_results_count = 9; // current results count
+    string filter_search_guid = 10; // associate it with filter search if exists
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+enum DistanceUnit {
+    UNSET_DISTANCE_UNIT = 0; // handling exceptions
+    MILES = 1; // miles
+    KILOMETERS = 2; // kilometers
+    METERS = 3; // meters
+}
+
+message Distance {
+    double value = 1; // display the distance value
+    DistanceUnit unit = 2; // unit to use for distance
+}
+
+message CarGroupCardEvent {
+    commons.MiniHeader header = 1;
+    string search_guid = 2; // associate it with search
+    string mini_search_guid = 3; // associate it with mini search
+    string search_results_option_guid = 4; // associate clients.BookingPanelOption in bumblebee
+    uint32 group_index = 5; // The index number tell you the group position in the page, start from 0
+    uint32 page_index = 6; // The index number tell you the group in which page, start from 0
+    uint32 initial_group_index = 7; // The index number tell you the initial group position in total results, start from 0
+    uint32 number_of_deals = 8; // how many deals are in the group
+    UIEventType event_type = 9; // event type maybe RENDERED/VIEWED/PRESSED
+    uint32 max_seats = 10; // the maximum seats available to the user
+    uint32 max_bags = 11; // the maximum number of bags available to the user
+    uint32 max_score = 12 [deprecated=true]; // car group overall score assigned by the api, this one replaced by group_score
+    string booking_panel_option_guid = 13;  // unique guid attached to deep link of quote
+    PickupMethod pickup_method = 14;// This item tells us the quote pickup method
+    PickupType pickup_type = 15;// This item tells us the quote pickup type
+    bool is_pickup_at_airport = 16; //  The pickup location type whether it is an airport or not
+    float group_score = 17; // The group score which is calculated by quotes at frontend
+    string itinerary_id = 18; // The contents of the car hire itinerary that are presented to the user.
+    uint32 recommended_ranking_index = 19; // The index number tell you the recommended position in total results, start from 0
+    uint32 total_number_of_deals = 20; // total deals count in the group
+    GroupCardType card_type = 21; // group card type
+    string car_type = 22; // car type
+    string car_name = 23;
+    string vendor_id = 24;
+    Transmission transmission = 25;
+    bool has_ac = 26;
+    string seat_group = 27; // seat group values: 1-3, 4-5, 6+
+    string pickup_location = 28;
+    string save_action_id = 29; // the id of save action
+    commons.Price price = 30; // price on group card
+    bool is_hero_cheapest = 31; // Is the hero quote cheapest in the group.
+    Distance distance = 32; // display the distance of the location id
+
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+// Component in Search Control
+enum SearchControlItem {
+    UNSET_SEARCH_CONTROL_ITEM = 0;
+    PICKUP_LOCATION_INPUT = 1;
+    DROPOFF_LOCATION_INPUT = 2;
+    RETURN_CHECKBOX = 3;
+    PICKUP_DATE_SELECTED = 4;
+    PICKUP_TIME_SELECTED = 5;
+    DROPOFF_DATE_SELECTED = 6;
+    DROPOFF_TIME_SELECTED = 7;
+    AGE_CHECKBOX = 8;
+    AGE_SELECTED = 9;
+    SEARCH_BUTTON = 10;
+}
+
+message CarHireSearchControlChanged {
+    commons.MiniHeader header = 1;
+    string search_guid = 2;  // associate to clients.Search
+    string mini_search_guid = 3; // associate to CarHireMiniSearch
+    SearchControlItem item = 4; // component type in search control
+    oneof value {
+        commons.Location location = 5; // pickup/dropoff location
+        commons.Date date = 6; // pickup/dropoff date
+        commons.Time time = 7; // pickup/dropoff time
+        bool is_checked = 8; // checkbox status in search control
+        uint32 driver_age = 9; // driver age in search control
+    }
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+enum AutosuggestGroupType {
+    UNSET_AUTOSUGGEST_GROUP_TYPE = 0;
+    AUTOSUGGEST_GROUP = 1; // group type of autosuggest
+    RECENT_SEARCH_GROUP = 2; // group type of recent search
+    MOST_POPULAR_GROUP = 3; // group type of most popular
+}
+
+// the entity type used in carhire autosuggest
+enum LocationType {
+    UNSET_LOCATION_TYPE = 0;
+    CITY = 1;
+    AIRPORT = 2;
+    TRAIN_STATION = 3;
+    DISTRICT = 4;
+}
+
+message CarHireAutosuggestItemAction {
+    commons.MiniHeader header = 1;
+    string search_guid = 2; // associate it with clients.search
+    string mini_search_guid = 3; // associate it with CarHireMiniSearch
+    string entity_id = 4; // autosuggest entity id eg. 95565047
+    LocationType entity_type = 5; // autosuggest entity type eg. City/Airport
+    string entity_value = 6; // autosuggest entity valye eg. London
+    AutosuggestGroupType group_type = 7; // autosuggest group type
+    uint32 position = 8; // autosuggest item position in the group list
+    string query_string = 9; // autosuggest input query string
+    UIEventType event_type = 10; // autosuggest item event type, eg. RENDERED/VIEWED/SELECTED
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+
+// vendor-mapping event
+message CarhireVendorMappingSearch {
+  commons.LightHeader header = 1;
+  string scrape_request_id = 2; // client request identifier, associated with a scrape request (e.g. a Jacquard request)
+  string website_id = 3; // Abbreviation of car-hire provider(broker) company name
+  ClientID client_id = 4; // Business which calls vendor-mapping api, obtained from the header of http, including Jacquard and Egressor
+  string unmapped_partner_vendor_names = 5; // a comma-seperated string
+  string unconfirmed_partner_vendor_names = 6; // a comma-seperated string
+  string mapped_with_other_partner_vendor_names = 7; // a comma-seperated string
+  commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+enum ClientID {
+  UNSET_CLIENT_ID = 0;
+  CLIENT_ID_JACQUARD = 1; // Jacquard
+  CLIENT_ID_EGRESSOR = 2; // Egressor
+}
+
+// car hire scheduled job search event
+message CarHireScheduledSearch {
+    commons.MiniHeader header = 1;
+    commons.DateTime grappler_receive_timestamp = 1998;
+    commons.Location origin = 2; // carhire pickup location
+    commons.Location destination = 3; // carhire dropoff location
+    commons.DateTime start_timestamp = 4; // carhire pickup time
+    commons.DateTime end_timestamp = 5; // carhire dropoff time
+}
+
+// car hire no quote sample results event
+message CarHireNoQuoteSample {
+    commons.MiniHeader header = 1;
+    string provider_id = 2; // request partner
+    string market = 3; // request market
+    string pick_up_office_id = 4; // request pick up office id
+    sint32 real_quote_count = 5; // partner's real quote count from sample result, -1 for not sampled
+    bool is_sent_to_partner = 6; // send request to partner or not
+    string request_id = 7; //uuid for the request
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+// Car hire ranking event
+message CarHireRanking {
+    enum RankingStatus {
+        UNSET_RANKING_STATUS = 0;   // Handling exceptions
+        RANKED_BY_MODEL = 1;        // ranked by model
+        RANKED_BY_FALLBACK = 2;     // ranked by fallback
+    }
+
+    commons.MiniHeader header = 1;
+    string guid = 2;                         // Unique identifier for the ranking event
+    string search_guid = 3;                  // GUID linking this event to the search and card events
+    string model_name = 4;                   // Name of the ranking model used (nullable if no model was applied)
+    uint32 model_ranked_count = 5;            // Number of top cards ranked by the model
+    RankingStatus ranking_status = 6;        // The ranking execution status
+    commons.Platform platform = 7;           // Platform of the user
+    string grouping_version = 8;             // Version of the grouping logic used during the search
+    uint32 request_sequence = 9;              // Request (polling) sequence in a search
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+// The result of a car hire ranking process
+message CarHireRankingResult {
+    // Represents an individual ranking result for a card
+    message RankingResult {
+        string card_id = 1;         // Unique identifier for the card
+        float rank_score = 2;       // Ranking score assigned to the card
+    }
+
+    commons.MiniHeader header = 1;   // Common header
+    string ranking_guid = 2;         // Unique identifier for the ranking event
+    string search_guid = 3;          // GUID linking this ranking result to the search event
+    repeated RankingResult ranking_results = 4;  // List of individual ranking results for the cards, paginated to avoid exceeding size limits
+    uint32 request_sequence = 5;      // Request (polling) sequence number in a search
+    string mini_search_guid = 6; // associate to CarHireMiniSearch
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+// Records all filtering results for car hire searches.
+message CarHireFilterResult {
+    commons.MiniHeader header = 1;
+    string search_guid = 2; // link to one search operation
+    string mini_search_guid = 3; // associate to CarHireMiniSearch
+    repeated string booking_panel_option_ids = 4; // BPO id list of this card
+    CarHireSearchResultsOption filtered_card_detail = 5; // filtered card details
+    string card_signature = 6; // concat all card field values
+    string filter_search_guid = 7; // link to one filter search operation
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+// record all paginated results which will be sent as response to frontend
+message CarHireResponseQuotes {
+    commons.MiniHeader header = 1;
+    string search_guid = 2; // link to one search operation
+    string mini_search_guid = 3; // associate to CarHireMiniSearch
+    uint32 page_index = 4; // page index
+    repeated CarHirePageDetails page_details = 5;
+    string card_signature = 6; // concat all card field values
+    string caps_model_preference = 7; // record which CAPS model this response quote was generated from
+    bool is_caps = 8; // Mark whether this response went through CaPS.
+    string filter_search_guid = 9; // link to one filter search operation
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+message CarHirePageDetails {
+    string card_id = 1; // card id
+    uint32 index_in_page = 2; // card index in page
+    repeated CarHireQuoteBrief quote_brief = 3; // quote id and index
+}
+
+message CarHireQuoteBrief {
+    string booking_panel_option_id = 1; // quote id
+    uint32 index_in_card = 2; // sort order of this quote in card
+}
+
+// Moved from client to car_hire as it's now needed in car_hire's new design.
+// Data must be written to new table (CarHireFilterResult) instead of search_result_option to avoid side effects.
+message CarHireSearchResultsOption {
+    // The contents of the car hire itinerary that are presented to the user.
+    string itinerary_id = 1;
+
+    CarType car_type = 2  [deprecated=true]; // ACRISS car type
+    CarCategory car_category = 3  [deprecated=true]; // ACRISS car category
+    Transmission transmission = 4  [deprecated=true]; // ACRISS transmission type
+    uint32 max_seats = 5; // the maximum seats available to the user
+    uint32 max_bags = 6; // the maximum number of bags available to the user
+    bool is_air_conditioning = 7; // does the rental have a/c
+    uint32 number_of_deals = 8; // how many deals are in the group
+    float group_score = 9; // the deal score calculated for the group (visible in app)
+
+    commons.Price price = 10; // represented price of the option
+    string sipp_code = 11; // the code that encodes the ACRISS properties of the car in a string
+    vehicle.VehicleType vehicle_type = 12;    // vehicle type
+    // The category can be both SUV and Small,
+    // the maximum size is 2 now and should be limited to few in the future.
+    repeated vehicle.VehicleCategory vehicle_categories = 13;
+    float best_ranking_score = 14; // the best ranking score for the group, used in Recommended Sort, the higher the better
+    Distance distance = 15; // display the distance of the location id
+}
+
+message CarHireMcpcQueryEvent {
+    commons.LightHeader header = 1;
+    string search_guid = 2; // Search/session identifier (join key to searches).
+    string quote_guid = 3; // Candidate quote guid (join key to redirects).
+    string provider_id = 4; // Stable partner identifier.
+    NormalizedDimensions normalized_dimensions = 5; // Normalized dimensions applied.
+    commons.Money cpc_value = 6; // Applied CPC value as authored.
+    commons.Money cpc_value_gbp = 7; // Applied CPC value converted to GBP.
+    string rule_id = 8; // ID of the raw rule row applied.
+    string rule_version_ts = 9; // Version timestamp of the raw rule applied.
+    string registry_version_ts = 10; // Version timestamp of the raw rule registry metadata applied.
+    string mini_search_guid = 11; // Passed from the frontend, generated when a filter or pagination operation occurs.
+    DimensionSourceValues dimension_source_values = 12; // Original request values before dimension normalization.
+
+    commons.DateTime grappler_receive_timestamp = 1998;
+}
+
+// Original request values from which normalized dimensions are derived.
+message DimensionSourceValues {
+    string market = 1;              // From request.market (source for "market" dimension).
+    string channel = 2;             // From request.channel (source for "device" dimension).
+    string pickup_country_id = 3;   // From request.pickup_location.countryId (source for "pickup_market" dimension).
+    commons.DateTime pickup_datetime_timestamp = 4;   // From request pickup datetime (source for "length_of_rental" dimension).
+    commons.DateTime dropoff_datetime_timestamp = 5;  // From request dropoff datetime (source for "length_of_rental" dimension).
+}
+
+message NormalizedDimensions {
+    string market = 1; // Normalised source market. Expected to be ISO country code (e.g. UK, US, FR).
+    string season = 2; // Normalised season string. Allowed values defined in registry metadata (typically "High" or "Low").
+    string device = 3; // Normalised device string. Allowed values defined in registry metadata (typically "Mobile" or "Desktop").
+    string rental_duration = 4; // Normalised rental duration string. Allowed values defined in registry metadata (e.g. "Short", "Long").
+    string booking_window = 5; // Normalised booking window string. Allowed values defined in registry metadata (e.g. "Short", "Medium", "Long").
+    string pickup_market = 6; // Normalised pickup market string. Allowed values defined in registry metadata.
+    string length_of_rental = 7; // Normalised length of rental string. Allowed values defined in registry metadata (e.g. "1", "2", ..., "7", "8+").
+}
+
+message CarhireChatEvent {
+    commons.LightHeader header = 1;
+    string utid = 2; //User identifier
+    string search_guid = 3; // associate it with search
+    string pickup_location_name = 4; // pickup location for the search
+    string dropoff_location_name = 5; // dropoff location for the search
+    commons.DateTime pickup_datetime_timestamp = 6; // pickup datetime for the search
+    commons.DateTime dropoff_datetime_timestamp = 7;// dropoff datetime for the search
+    uint32 age = 8; // driver age for the search
+    string user_message = 9; // user message sent to the chatbot
+    string main_response = 10; // Main response from the chatbot
+    string followup_answer = 11; // followup answer generated by the chatbot
+    AnswerType intent_detected = 12; // intent detected from the user message
+    uint32 sequence_number = 13; // sequence number of messages in the session
+    string message_id = 14; // unique identifier for each message
+    commons.CultureSettings culture = 15; // culture settings for the search
+    commons.DateTime grappler_receive_timestamp = 1998; // Grappler Receive Timestamp added by SDK
+}
+
+message CarhireFeedbackEvent {
+    commons.LightHeader header = 1;
+    string utid = 2;
+    string search_guid = 3; // associate it with search
+    string message_id = 4; // associate it with mini search
+    Feedback feedback_type = 5; // feedback type provided by the user
+    commons.DateTime grappler_receive_timestamp = 1998; // Grappler Receive Timestamp added by SDK
+
+}
+
+// Types of answers the chatbot can provide
+enum AnswerType {
+    // Default unspecified type
+    UNSET_ANSWER_TYPE = 0;
+    // General car rental knowledge
+    ANSWER_TYPE_KNOWLEDGE = 1;
+    // Unsupported intent
+    ANSWER_TYPE_UNSUPPORTED = 2;
+}
+
+// Types of feedback the chatbot can receive
+enum Feedback {
+    // Default unspecified type
+    UNSET_FEEDBACK = 0;
+    // Positive feedback
+    FEEDBACK_LIKE = 1;
+    // Negative feedback
+    FEEDBACK_DISLIKE = 2;
+}
+
+message MarkerCardEvent {
+    commons.MiniHeader header = 1;
+    commons.DateTime grappler_receive_timestamp = 1998;
+
+    string search_guid = 2; // associate it with search
+    string mini_search_guid = 3; // associate it with mini search
+    string location_id = 4; // display location id of loc.pu.key
+    repeated uint64 vendor_ids = 5; // Array of vendor IDs
+    bool is_airport = 6; // display is airport
+    string airport_full_name = 7; // display airport's full_name
+    string airport_iata_code = 8; // display airport's iata code
+    string non_airport_address = 9; // display non-airport's address
+    Distance distance = 10; // display the distance of the location id
+    uint64 quote_count = 11; // number of available car hire quotes for this location; currently unused, reserved for future use
+    commons.Price price = 12; // display the price
+    uint64 group_count = 13; // number of available car hire groups for this location
+}

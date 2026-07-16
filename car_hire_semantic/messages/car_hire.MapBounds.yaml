@@ -1,0 +1,30 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: MapBounds
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "map bounds from google maps api"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: ne
+    type: Coordinates
+    number: 1
+    ref: Coordinates
+    desc: ""   # TODO 待补充业务含义
+  - name: nw
+    type: Coordinates
+    number: 2
+    ref: Coordinates
+    desc: ""   # TODO 待补充业务含义
+  - name: se
+    type: Coordinates
+    number: 3
+    ref: Coordinates
+    desc: ""   # TODO 待补充业务含义
+  - name: sw
+    type: Coordinates
+    number: 4
+    ref: Coordinates
+    desc: ""   # TODO 待补充业务含义

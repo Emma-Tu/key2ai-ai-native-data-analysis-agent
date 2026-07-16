@@ -1,0 +1,31 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: QuickFilterType
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "All the quick filter types"
+values:
+  - num: 0
+    name: UNSET_QUICK_FILTER_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: CAR_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: PICK_UP
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: SEATS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: TRANSMISSION
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: ALL_FILTERS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: SORTED_BY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: PRICE_RANGE
+    meaning: ""   # TODO 待确认业务含义

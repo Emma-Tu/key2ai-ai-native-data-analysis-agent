@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: IqrApplyStatus
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "IQR 地图边界优化状态：已应用/禁用(用户操作过)/不符合条件(标记不足4个)。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_IQR_APPLY_STATUS
+    meaning: "handling exceptions"
+  - num: 1
+    name: APPLIED
+    meaning: "IQR was used to calculate map bounds"
+  - num: 2
+    name: DISABLED
+    meaning: "user operated the map, so IQR is not applied"
+  - num: 3
+    name: NOT_ELIGIBLE
+    meaning: "insufficient markers to compute IQR (requires at least 4)"

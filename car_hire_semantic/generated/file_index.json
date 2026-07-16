@@ -1,0 +1,398 @@
+{
+  "b2b_carhire_indicative.proto": {
+    "package": "b2b_carhire_indicative",
+    "messages": [
+      "IndicativeQuery"
+    ],
+    "enums": [
+      "DateTimeGroupingType"
+    ]
+  },
+  "b2b_carhire_live.proto": {
+    "package": "b2b_carhire_live",
+    "messages": [
+      "PickupDropOff",
+      "Query"
+    ],
+    "enums": []
+  },
+  "booking.proto": {
+    "package": "booking",
+    "messages": [
+      "BookingEvent",
+      "BookingStep",
+      "BookingStitchedEvent"
+    ],
+    "enums": [
+      "BookingSource",
+      "BookingState",
+      "EventSource"
+    ]
+  },
+  "car_hire.proto": {
+    "package": "car_hire",
+    "messages": [
+      "AirportTransferItinerary",
+      "AirportTransferSearch",
+      "CampervanSearch",
+      "CarGroupCardEvent",
+      "CarHireAdCardAction",
+      "CarHireAutosuggestItemAction",
+      "CarHireBookingExtra",
+      "CarHireDroppedQuotes",
+      "CarHireFilterAndSort",
+      "CarHireFilterResult",
+      "CarHireItinerary",
+      "CarHireLocationExtra",
+      "CarHireMcpcQueryEvent",
+      "CarHireMiniSearch",
+      "CarHireMissingVendor",
+      "CarHireNoImageCar",
+      "CarHireNoQuoteSample",
+      "CarHireNoResults",
+      "CarHireOfficeSearch",
+      "CarHirePageDetails",
+      "CarHirePartnerScrapeInfo",
+      "CarHireQuoteBrief",
+      "CarHireQuoteSelected",
+      "CarHireRanking",
+      "CarHireRankingResult",
+      "CarHireResponseQuotes",
+      "CarHireScheduledSearch",
+      "CarHireSearch",
+      "CarHireSearchButton",
+      "CarHireSearchControlChanged",
+      "CarHireSearchResultsOption",
+      "CarHireSeoEvent",
+      "CarHireSeoLocationParameter",
+      "CarhireAirportIndicativePricePanel",
+      "CarhireChatEvent",
+      "CarhireFeedbackEvent",
+      "CarhireVendorMappingSearch",
+      "Coordinates",
+      "DimensionSourceValues",
+      "Distance",
+      "LocationDetails",
+      "LocationInfo",
+      "MapBounds",
+      "MapState",
+      "MarkerCardEvent",
+      "NormalizedDimensions",
+      "OfficeIdentity",
+      "Pin",
+      "Quote",
+      "SelectionList",
+      "SelectionValue",
+      "SeoClickAction",
+      "SeoLoadAction",
+      "UIEvent"
+    ],
+    "enums": [
+      "AnswerType",
+      "AutosuggestGroupType",
+      "CarCategory",
+      "CarType",
+      "CarhirePageType",
+      "CarhireSeoAction",
+      "ClientID",
+      "DistanceUnit",
+      "Feedback",
+      "FuelType",
+      "GroupCardType",
+      "IqrApplyStatus",
+      "LocationType",
+      "MapTriggerType",
+      "PayType",
+      "PickupMethod",
+      "PickupType",
+      "QuotePlacement",
+      "SearchControlItem",
+      "Transmission",
+      "UIEventType"
+    ]
+  },
+  "car_hire_app.proto": {
+    "package": "car_hire_app",
+    "messages": [
+      "AutosuggestItemInformation",
+      "BottomSheetInteraction",
+      "CarGroupCardEvent",
+      "CarGroupCardInformation",
+      "CarHireMiniSearch",
+      "DayViewEvent",
+      "DayViewLoadedInformation",
+      "MapEvent",
+      "MapInteraction",
+      "MapLoadedEvent",
+      "MarkerFilter",
+      "QuickFilterApplyInformation",
+      "QuickFilterBottomSheetInteraction",
+      "QuickFilterPillInformation",
+      "QuotesAdditions",
+      "SavingBadgeInformation",
+      "SearchAreaInformation",
+      "SearchControl",
+      "SelectedMarker",
+      "SupplierRatingInformation",
+      "TapQuoteInformation",
+      "UserAction",
+      "ViewHistoryChangeSaveStateInformation",
+      "ViewHistoryEvent",
+      "ViewHistoryOpenPageInformation",
+      "ViewHistoryQuoteExpiredInformation",
+      "ViewHistoryTapManageInformation",
+      "ViewHistoryTapResultInformation"
+    ],
+    "enums": [
+      "ActionType",
+      "AutosuggestGroupType",
+      "BookingType",
+      "BottomSheetState",
+      "DayViewEventType",
+      "FreeCancellationType",
+      "FreeMileageType",
+      "FuelType",
+      "MapEventType",
+      "MapInteractionType",
+      "MarkerType",
+      "PickupMethod",
+      "QuickFilterBottomSheetInteractionType",
+      "QuickFilterType",
+      "ResetMarkerFilterReason",
+      "SearchControlField",
+      "SearchType",
+      "ViewHistoryEventType"
+    ]
+  },
+  "car_hire_indicative_price.proto": {
+    "package": "car_hire_indicative_price",
+    "messages": [
+      "CarHireIndicativePriceSearchEvent",
+      "Filter",
+      "IndicativePriceResult",
+      "Location",
+      "TravellerContext"
+    ],
+    "enums": [
+      "DateTimeGroupingType",
+      "FilterConstraint",
+      "LocationType",
+      "Scenario",
+      "TrafficSource"
+    ]
+  },
+  "car_hire_no_quote_request_blocking.proto": {
+    "package": "car_hire_no_quote_request_blocking",
+    "messages": [
+      "CarHireNoQuoteRequestBlocking"
+    ],
+    "enums": []
+  },
+  "car_hire_quote_search.proto": {
+    "package": "car_hire_quote_search",
+    "messages": [
+      "AdditionalDrivers",
+      "Bags",
+      "CancellationPolicy",
+      "CarHireQuoteSearchEvent",
+      "CarInfo",
+      "Doors",
+      "FreeAdditionalDriver",
+      "IncludedMileage",
+      "Insurance",
+      "InsurancePackage",
+      "LocationDetail",
+      "Passengers",
+      "Quote"
+    ],
+    "enums": [
+      "FuelPolicy",
+      "FuelType",
+      "PaymentType",
+      "PickupMethod",
+      "PickupType",
+      "Transmission"
+    ]
+  },
+  "clients.proto": {
+    "package": "clients",
+    "messages": [
+      "Acquisition",
+      "AuthenticationStatusChange",
+      "BookingPanelOption",
+      "CarHireBookingPanelOption",
+      "CarHireFilterAndSort",
+      "CarHireGroupVisibleProperties",
+      "CarHireSearch",
+      "ChangeableParameters",
+      "CombinedSearch",
+      "CovidSafetyRatingValues",
+      "DurationSlider",
+      "ExperimentAllocation",
+      "FareAttributeOption",
+      "FlightSearch",
+      "FlightTimes",
+      "FlightsBookingPanelOption",
+      "FlightsFilterAndSort",
+      "FlightsSearchResultsOption",
+      "HotelSearch",
+      "HotelsFilterAndSort",
+      "HotelsSearchResultsOption",
+      "IndexedTimeSlider",
+      "PackagesBookingPanelOption",
+      "PackagesSearch",
+      "PriceRangeSelection",
+      "PriceRangeSelectionList",
+      "PriceSelection",
+      "PriceSlider",
+      "Search",
+      "SearchPillSelected",
+      "SearchResultSelected",
+      "SearchResultsOption",
+      "SearchResultsPage",
+      "SearchViewMoreSelected",
+      "SelectionList",
+      "SelectionValue",
+      "ShieldsUpDismissed",
+      "StarSelectionList",
+      "StopsSelectedValues",
+      "SystemInfo",
+      "TimeSlider",
+      "UserPreferences",
+      "View",
+      "ViewLifecycle"
+    ],
+    "enums": [
+      "LifecycleEvent",
+      "UserInterfaceStyle"
+    ]
+  },
+  "commons.proto": {
+    "package": "commons",
+    "messages": [
+      "Alert",
+      "BaseMiniEvent",
+      "ClientContext",
+      "ClientDetails",
+      "CryptoSignature",
+      "CryptoSignatureHeader",
+      "CultureSettings",
+      "Date",
+      "DateTime",
+      "DisplayMeasurement",
+      "DownstreamPartner",
+      "DownstreamTarget",
+      "EventHeader",
+      "Exception",
+      "ExceptionBase",
+      "Geo",
+      "GeoMeasurement",
+      "HTTPHeader",
+      "HTTPResponse",
+      "IdentityConfiguration",
+      "LightHeader",
+      "LinkingGUID",
+      "Location",
+      "LocationAttribute",
+      "MiniHeader",
+      "Money",
+      "PartnerQueryOutcome",
+      "Price",
+      "Revenue",
+      "ServiceInstanceFingerprint",
+      "TaxItem",
+      "Time",
+      "TimeInterval",
+      "Touchpoint",
+      "TravellerIdentity",
+      "UrlTrackingParameters"
+    ],
+    "enums": [
+      "BusinessDomain",
+      "BusinessVertical",
+      "DataComponent",
+      "DayOfWeek",
+      "DeployColour",
+      "HTTPMethod",
+      "OptionalBoolean",
+      "Platform",
+      "Producer",
+      "Proposition",
+      "Protocol",
+      "Region",
+      "SegmentType",
+      "Severity",
+      "SortingMode",
+      "TripType"
+    ]
+  },
+  "quote_search.proto": {
+    "package": "quote_search",
+    "messages": [
+      "TravelNode",
+      "TravellerContext"
+    ],
+    "enums": [
+      "ClientId",
+      "LocationReferenceType",
+      "QuoteSource"
+    ]
+  },
+  "redirects.proto": {
+    "package": "redirects",
+    "messages": [
+      "Redirect",
+      "RedirectCompleted",
+      "RedirectCompletedStitched",
+      "RedirectEnrichedForInsights"
+    ],
+    "enums": []
+  },
+  "unified_search_service.proto": {
+    "package": "unified_search_service",
+    "messages": [
+      "CreateExploreRequest",
+      "CreateSearchRequest",
+      "DateRange",
+      "DegradedResponseReason",
+      "DoubleRange",
+      "ErrorReason",
+      "Filter",
+      "FilterValue",
+      "FlexibleDate",
+      "GeoProximity",
+      "IntegerRange",
+      "InventoryResponseSummary",
+      "MultiGeo",
+      "PollSearchRequest",
+      "SearchInventory",
+      "Sort",
+      "TravelDates",
+      "TripElement"
+    ],
+    "enums": [
+      "DegradedReasonCode",
+      "ErrorReasonCode",
+      "FilterConstraint",
+      "FilterType",
+      "GeoLevel",
+      "GrpcStatusCode",
+      "LocationSortOrderType",
+      "PollingSessionStatus",
+      "ResultStatus",
+      "SearchInventoryType",
+      "SortOrderType",
+      "TrafficSource",
+      "TripModifierType",
+      "UserConsentUsageType"
+    ]
+  },
+  "vehicle.proto": {
+    "package": "vehicle",
+    "messages": [],
+    "enums": [
+      "VehicleCategory",
+      "VehicleType"
+    ]
+  }
+}

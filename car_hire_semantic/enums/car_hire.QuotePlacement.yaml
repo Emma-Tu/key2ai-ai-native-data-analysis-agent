@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: QuotePlacement
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "报价展示位置：对比表/CaPS 库存卡/报价对比侧栏。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_QUOTE_PLACEMENT
+    meaning: "Handling exceptions"
+  - num: 1
+    name: COMPARE_TABLE
+    meaning: "quote is placed in compare table"
+  - num: 2
+    name: CAPS_HERO_IN_CARD
+    meaning: "quote in CaPS inventory card."
+  - num: 3
+    name: QUOTE_COMPARISON_SIDE_PANEL
+    meaning: "quote is placed in quote comparison side panel"

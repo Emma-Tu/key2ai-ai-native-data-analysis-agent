@@ -1,0 +1,16 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: ViewHistoryEventType
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "浏览历史事件类型：打开历史页/报价过期。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_VIEW_HISTORY_EVENT_TYPE
+    meaning: "Default unset"
+  - num: 1
+    name: OPEN_VIEW_HISTORY_PAGE
+    meaning: "Open the view history page"
+  - num: 2
+    name: QUOTE_EXPIRED
+    meaning: "The quote that is tapped is expired (popup displayed)"

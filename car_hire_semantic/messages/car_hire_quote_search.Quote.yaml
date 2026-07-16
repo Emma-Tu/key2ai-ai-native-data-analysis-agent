@@ -1,0 +1,77 @@
+# AUTO-GENERATED skeleton from proto/car_hire_quote_search.proto. Enrich desc / relationships by hand.
+message: Quote
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+description: "报价搜索返回的单条报价，价格以欧元分(price_eur_cents)表示。"   # curated (overlay.yaml)
+grain: "一行 = 搜索结果里的一条报价（嵌套在 CarHireQuoteSearchEvent.quotes 数组）"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: price_eur_cents
+    type: uint32
+    number: 1
+    desc: "Quote price in euro-cents"
+  - name: partner_id
+    type: string
+    number: 2
+    desc: "Partner website ID"
+  - name: car_info
+    type: CarInfo
+    number: 3
+    ref: CarInfo
+    desc: "Car information"
+  - name: pickup_type
+    type: PickupType
+    number: 4
+    ref: PickupType
+    desc: "Pickup type"
+  - name: fuel_policy
+    type: FuelPolicy
+    number: 5
+    ref: FuelPolicy
+    desc: "Car fuel policy"
+  - name: pickup_method
+    type: PickupMethod
+    number: 6
+    ref: PickupMethod
+    desc: "Pickup method"
+  - name: pick_up_detail
+    type: LocationDetail
+    number: 7
+    ref: LocationDetail
+    desc: "Pickup location detail"
+  - name: drop_off_detail
+    type: LocationDetail
+    number: 8
+    ref: LocationDetail
+    desc: "Drop-off location detail"
+  - name: vendor_name
+    type: string
+    number: 9
+    desc: "vendor name"
+  - name: included_mileage
+    type: IncludedMileage
+    number: 10
+    ref: IncludedMileage
+    desc: "included mileage information"
+  - name: cancellation_policy
+    type: CancellationPolicy
+    number: 11
+    ref: CancellationPolicy
+    desc: "cancellation policy information"
+  - name: payment_type
+    type: PaymentType
+    number: 12
+    ref: PaymentType
+    desc: "Payment type"
+  - name: additional_drivers
+    type: AdditionalDrivers
+    number: 13
+    ref: AdditionalDrivers
+    desc: "Add additional driver information"
+  - name: insurance_package
+    type: InsurancePackage
+    number: 14
+    ref: InsurancePackage
+    desc: "Details of the insurance package"

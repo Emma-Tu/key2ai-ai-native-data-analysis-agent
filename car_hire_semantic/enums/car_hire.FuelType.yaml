@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: FuelType
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "燃料类型（电动/混动/其他）。注意 OTHER=999；与其他文件的 FuelType 取值不同。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_FUEL_TYPE
+    meaning: "handling exceptions"
+  - num: 1
+    name: ELECTRIC
+    meaning: "fuel type is electric"
+  - num: 2
+    name: HYBRID
+    meaning: "fuel type is hybrid"
+  - num: 999
+    name: FUEL_TYPE_OTHER
+    meaning: "default value if no fuel type value can be found"

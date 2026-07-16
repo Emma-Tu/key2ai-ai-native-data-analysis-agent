@@ -1,0 +1,76 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: CarType
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "ACRISS 官方车型代码（门数/车身样式等）。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_CAR_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: TWO_TO_THREE_DOOR
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: TWO_TO_FOUR_DOOR
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: FOUR_TO_FIVE_DOOR
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: WAGON_ESTATE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: PASSENGER_VAN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: LIMOUSINE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: SPORT
+    meaning: ""   # TODO 待确认业务含义
+  - num: 8
+    name: CONVERTIBLE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 9
+    name: SUV
+    meaning: ""   # TODO 待确认业务含义
+  - num: 10
+    name: ALL_TERRAIN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 11
+    name: SPECIAL_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 12
+    name: PICK_UP_REGULAR
+    meaning: ""   # TODO 待确认业务含义
+  - num: 13
+    name: PICK_UP_EXTENDED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 14
+    name: SPECIAL_OFFER
+    meaning: ""   # TODO 待确认业务含义
+  - num: 15
+    name: COUPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 16
+    name: MONOSPACE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 17
+    name: RECREATIONAL
+    meaning: ""   # TODO 待确认业务含义
+  - num: 18
+    name: MOTOR_HOME
+    meaning: ""   # TODO 待确认业务含义
+  - num: 19
+    name: TWO_WHEEL
+    meaning: ""   # TODO 待确认业务含义
+  - num: 20
+    name: ROADSTER
+    meaning: ""   # TODO 待确认业务含义
+  - num: 21
+    name: CROSSOVER
+    meaning: ""   # TODO 待确认业务含义
+  - num: 22
+    name: COMMERCIAL_VAN
+    meaning: ""   # TODO 待确认业务含义

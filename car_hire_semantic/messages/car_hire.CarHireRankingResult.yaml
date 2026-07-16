@@ -1,0 +1,53 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireRankingResult
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "后端：排序结果明细（每张卡片的排序分），分页存储。"   # curated (overlay.yaml)
+grain: "一行 = 一次排序事件（ranking_results 为卡片分数数组）"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: "Common header"
+  - name: ranking_guid
+    type: string
+    number: 2
+    desc: "Unique identifier for the ranking event"
+  - name: search_guid
+    type: string
+    number: 3
+    desc: "GUID linking this ranking result to the search event"
+  - name: ranking_results
+    type: repeated RankingResult
+    number: 4
+    ref: RankingResult
+    desc: "List of individual ranking results for the cards, paginated to avoid exceeding size limits"
+  - name: request_sequence
+    type: uint32
+    number: 5
+    desc: "Request (polling) sequence number in a search"
+  - name: mini_search_guid
+    type: string
+    number: 6
+    desc: "associate to CarHireMiniSearch"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+
+nested_messages:
+  - name: RankingResult
+    fields:
+      - name: card_id
+        type: string
+        number: 1
+        desc: "Unique identifier for the card"
+      - name: rank_score
+        type: float
+        number: 2
+        desc: "Ranking score assigned to the card"

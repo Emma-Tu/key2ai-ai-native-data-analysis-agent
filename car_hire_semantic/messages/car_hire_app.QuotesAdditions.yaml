@@ -1,0 +1,52 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: QuotesAdditions
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "报价增值信息building block（保险展开/免取消/里程/超额/盗窃险等）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: is_expanded
+    type: bool
+    number: 1
+    desc: "Whether to expand the insurance"
+  - name: is_free_cancellation
+    type: bool
+    number: 2
+    desc: "Cancellation Policy"
+  - name: mileage
+    type: FreeMileageType
+    number: 3
+    ref: FreeMileageType
+    desc: "included mileage (miles or kilometers)"
+  - name: is_unlimited
+    type: bool
+    number: 4
+    desc: "Is it unlimited"
+  - name: is_collision_damage_waiver
+    type: bool
+    number: 5
+    desc: "collision damage waver insurance"
+  - name: excess
+    type: commons.Money
+    number: 6
+    ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+    desc: "excess insurance"
+  - name: is_free_additional_driver
+    type: bool
+    number: 7
+    desc: ""   # TODO 待补充业务含义
+  - name: is_theft_protection_included
+    type: bool
+    number: 8
+    desc: "theft protection insurance"
+  - name: is_free_breakdown_assistance_included
+    type: bool
+    number: 9
+    desc: "free breakdown assistance insurance"
+  - name: is_third_party_cover_included
+    type: bool
+    number: 10
+    desc: "third party cover insurance"

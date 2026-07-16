@@ -1,0 +1,266 @@
+# AUTO-GENERATED skeleton from proto/redirects.proto. Enrich desc / relationships by hand.
+message: Redirect
+package: redirects
+source_file: redirects.proto
+group: conversion
+description: "跳转事件：用户点击去合作方。★转化枢纽，同时含 search_guid(回连前端)、redirect_id(前连 booking)、以及营收字段。嵌套 car_hire.CarHireItinerary。"   # curated (overlay.yaml)
+grain: "一行 = 一次跳转"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: event_header
+    type: commons.EventHeader
+    number: 1
+    ref: commons.EventHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "Grappler Receive Timestamp added by SDK ie., time when slipstream receives an event."
+  - name: request
+    type: Request
+    number: 2
+    ref: Request
+    desc: ""   # TODO 待补充业务含义
+  - name: response
+    type: Response
+    number: 3
+    ref: Response
+    desc: ""   # TODO 待补充业务含义
+  - name: redirect_engine_name
+    type: string
+    number: 38
+    desc: "The shared redirect code behind this redirect"
+  - name: scrape_engine_name
+    type: string
+    number: 39
+    desc: "The shared scrape code behind this redirect"
+  - name: scrape_engines
+    type: repeated string
+    number: 40
+    desc: "Can use multiple engines we store them all here"
+  - name: redirect_engines
+    type: repeated string
+    number: 41
+    desc: "Can use multiple engines we store them all here"
+
+nested_messages:
+  - name: Request
+    fields:
+      - name: event_header
+        type: commons.EventHeader
+        number: 1
+        ref: commons.EventHeader   # 外部类型，见 generated/external_refs.yaml
+        desc: ""   # TODO 待补充业务含义
+      - name: business_domain
+        type: commons.BusinessDomain
+        number: 2
+        ref: commons.BusinessDomain   # 外部类型，见 generated/external_refs.yaml
+        desc: "Hotels, Flights, Car Hire etc..."
+      - name: downstream_partner
+        type: commons.DownstreamPartner
+        number: 3
+        ref: commons.DownstreamPartner   # 外部类型，见 generated/external_refs.yaml
+        desc: "Billing details"
+      - name: downstream_target
+        type: commons.DownstreamTarget
+        number: 4
+        ref: commons.DownstreamTarget   # 外部类型，见 generated/external_refs.yaml
+        desc: "Tracking details"
+      - name: booking_price
+        type: commons.Price
+        number: 5
+        ref: commons.Price   # 外部类型，见 generated/external_refs.yaml
+        desc: "Booking price uses the Price message from commons. Includes total price, tax, card charges and insurance. Each one is the Money type also specified in commons. In here you specify currency, precision etc..."
+      - name: estimated_revenue
+        type: commons.Money
+        number: 6
+        ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+        desc: ""   # TODO 待补充业务含义
+      - name: deeplink_url
+        type: string
+        number: 7
+        desc: "Skippy deeplink url"
+      - name: platform
+        type: Platform
+        number: 8
+        ref: Platform
+        desc: "This is distinct from the Producer in event header - the producer is Skippy but we also want to know if this redirect request came from an app, website or B2B API. Other info can be derived from fields such as OS, device data etc..."
+      - name: flight_search
+        type: flights.Search
+        number: 9
+        ref: flights.Search   # 外部类型，见 generated/external_refs.yaml
+        desc: ""   # TODO 待补充业务含义
+      - name: flight_itinerary
+        type: flights.Itinerary
+        number: 10
+        ref: flights.Itinerary   # 外部类型，见 generated/external_refs.yaml
+        desc: ""   # TODO 待补充业务含义
+      - name: request_id
+        type: string
+        number: 11
+        desc: "Identifies the initial request (Page/App view or B2B API call) which resulted in this redirect"
+      - name: app_id
+        type: string
+        number: 12
+        desc: "Identifies a specific B2B partner integration (for external requests) or a specific microservice (for internal requests)"
+      - name: hotel_itinerary
+        type: hotel.HotelItinerary
+        number: 28
+        ref: hotel.HotelItinerary   # 外部类型，见 generated/external_refs.yaml
+        desc: ""   # TODO 待补充业务含义
+      - name: car_itinerary
+        type: car_hire.CarHireItinerary
+        number: 29
+        ref: car_hire.CarHireItinerary   # 外部类型，见 generated/external_refs.yaml
+        desc: ""   # TODO 待补充业务含义
+      - name: exclude_from_reporting
+        type: bool
+        number: 30
+        desc: "A flag to Determine whether a redirect should be included in our statistics and reports. for example if the redirect was caused by Debug, PA, Manual tests etc."
+      - name: should_be_logged
+        type: bool
+        number: 31
+        desc: "This flag should be set when a redirect should be included in reports and metrics."
+      - name: should_be_tracked
+        type: bool
+        number: 32
+        desc: "This flag should be set when a redirect includes the tracking information required. it is usually evident of testing or non-user initiated redirects."
+      - name: is_debug_redirect
+        type: bool
+        number: 33
+        desc: "This flag indicates when a redirect has been made solely for the purpose of debugging the redirect and it's tracking."
+      - name: acquisition_data
+        type: string
+        number: 34
+        desc: "Acquisition data from upstream partners i.e. kenshoo tracking ids (ksh_id)"
+      - name: is_self_transfer_component
+        type: bool
+        number: 35
+        desc: "This flag should be set if the request is part of an non-protected transfer"
+      - name: is_multipart_booking_component
+        type: bool
+        number: 36
+        desc: "This flag should be set if the request is part of a multipart booking"
+      - name: airport_transfer_itinerary
+        type: car_hire.AirportTransferItinerary
+        number: 37
+        ref: car_hire.AirportTransferItinerary   # 外部类型，见 generated/external_refs.yaml
+        desc: ""   # TODO 待补充业务含义
+      - name: transfer_protection
+        type: string
+        number: 38
+        desc: "This flag should be set if the request is part of a self-transfer flight"
+      - name: estimated_revenue_in_source_currency
+        type: commons.Money
+        number: 39
+        ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+        desc: "As booking price - uses Money type. estimated_revenue in source currency used in the transaction"
+      - name: client_id
+        type: string
+        number: 40
+        desc: "The client_id in the url. Who created this deeplink url"
+      - name: actual_revenue
+        type: commons.Money
+        number: 41
+        ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+        desc: ""   # TODO 待补充业务含义
+      - name: search_guid
+        type: string
+        number: 42
+        desc: "This links to an event called `clients.Search` and is where the route, dates, passenger group are stored"
+      - name: booking_panel_option_guid
+        type: string
+        number: 43
+        desc: "This links to an events called `clients.BookingPanelOption` and is the actual price that was clicked on and the partner selected"
+      - name: quote_keys
+        type: repeated bytes
+        number: 44
+        desc: "Unique identifiers to identify and supply key meta-data on quotes (e.g. routes, times).  This is repeated as the decryption library decrypts one quote at a time and splitting a byte string is unreliable.  The length is always equal to or less than the number of legs in the itinerary"
+      - name: quote_sources
+        type: repeated engines.SourceSystem
+        number: 45
+        ref: engines.SourceSystem   # 外部类型，见 generated/external_refs.yaml
+        desc: "Identifies the source system (Jacquard, AQIS), of each quote. This is repeated as quotes may come from different sources. Each quote contain the price and the source represents where it was obtain from."
+      - name: ad_click_guid
+        type: string
+        number: 46
+        desc: "This links to an event called `sponsored.AdClick` and is used to calculate the conversion of ad campaigns."
+      - name: quotes
+        type: repeated Quote
+        number: 47
+        ref: Quote
+        desc: "Information about the quote(s) that this redirect was triggered from (this is optional -- not all skippy redirects will contain this information)"
+      - name: fps_session_id
+        type: string
+        number: 48
+        desc: "Log the session id of flights pricing service"
+      - name: source
+        type: Source
+        number: 49
+        ref: Source
+        desc: "The request source of redirect should be distinguished from skippy, redirects-ui or app-to-app."
+      - name: package_itinerary
+        type: packages.PackageItinerary
+        number: 50
+        ref: packages.PackageItinerary   # 外部类型，见 generated/external_refs.yaml
+        desc: "The package itinerary for the redirect"
+  - name: Response
+    fields:
+      - name: event_header
+        type: commons.EventHeader
+        number: 1
+        ref: commons.EventHeader   # 外部类型，见 generated/external_refs.yaml
+        desc: ""   # TODO 待补充业务含义
+      - name: redirect_id
+        type: string
+        number: 2
+        desc: "Business wide unique identifier - generated by deeplink service per redirect"
+      - name: target_depth
+        type: Depth
+        number: 3
+        ref: Depth
+        desc: "Target_depth is the depth we think we can achieve from the partner"
+      - name: achieved_depth
+        type: Depth
+        number: 4
+        ref: Depth
+        desc: "If redirects are working properly, target should be the same as achieved"
+      - name: error
+        type: repeated Error
+        number: 5
+        ref: Error
+        desc: ""   # TODO 待补充业务含义
+      - name: used_cache
+        type: bool
+        number: 6
+        desc: "Indicates that the redirect was able to used cached deeplink data (hence, did not trigger a rescrape)"
+      - name: deeplink_data_source
+        type: DeeplinkDataSource
+        number: 7
+        ref: DeeplinkDataSource
+        desc: "Indicates what was the source of the deeplink data"
+      - name: target_information
+        type: TargetInformation
+        number: 8
+        ref: TargetInformation
+        desc: ""   # TODO 待补充业务含义
+      - name: rank
+        type: Rank
+        number: 9
+        ref: Rank
+        desc: "Log what was rank of the quote we're redirecting to in the scrape results"
+      - name: closed_user_group
+        type: string
+        number: 10
+        desc: "User group to which the redirect has been attributed. This is used for revenue attribution"
+      - name: requested_depth
+        type: Depth
+        number: 11
+        ref: Depth
+        desc: "Log the user's requested depth for the redirect"
+      - name: target_url
+        type: string
+        number: 12
+        desc: "Log the URL we are redirecting the user to."

@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: DistanceUnit
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "距离单位：英里/千米/米。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_DISTANCE_UNIT
+    meaning: "handling exceptions"
+  - num: 1
+    name: MILES
+    meaning: "miles"
+  - num: 2
+    name: KILOMETERS
+    meaning: "kilometers"
+  - num: 3
+    name: METERS
+    meaning: "meters"

@@ -1,0 +1,42 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: CarGroupCardInformation
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "Information about card exposure"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: search_results_option_guid
+    type: string
+    number: 1
+    desc: "associate clients.BookingPanelOption in bumblebee"
+  - name: group_index
+    type: uint32
+    number: 2
+    desc: "The index number tell you the group position in the page, start from 0"
+  - name: initial_group_index
+    type: uint32
+    number: 3
+    desc: "The index number tell you the initial group position in total results, start from 0"
+  - name: number_of_deals
+    type: uint32
+    number: 4
+    desc: "how many deals are in the group"
+  - name: total_number_of_deals
+    type: uint32
+    number: 5
+    desc: "The total number of deals which is the sum of all the quotes"
+  - name: booking_panel_option_guid
+    type: string
+    number: 6
+    desc: "unique guid attached to deep link of quote"
+  - name: itinerary_id
+    type: string
+    number: 7
+    desc: "The only key that distinguishes the groups"
+  - name: exclusive_savings_pct
+    type: uint32
+    number: 8
+    desc: "The card contains information about discounts."

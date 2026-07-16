@@ -1,0 +1,28 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: Transmission
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "ACRISS 变速箱类型（手动/自动 × 驱动方式）。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_TRANSMISSION
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: MANUAL_UNSPECIFIED_DRIVE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: MANUAL_4WD
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: MANUAL_AWD
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: AUTOMATIC_UNSPECIFIED_DRIVE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: AUTOMATIC_4WD
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: AUTOMATIC_AWD
+    meaning: ""   # TODO 待确认业务含义

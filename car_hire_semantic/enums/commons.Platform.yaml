@@ -1,0 +1,28 @@
+# AUTO-GENERATED from proto/commons.proto.
+enum: Platform
+package: commons
+source_file: commons.proto
+group: shared
+desc: "平台类型：iOS/Android/桌面 Web/移动 Web/未知 Web/平板 Web。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_PLATFORM
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: IOS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: ANDROID
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: DESKTOP_WEB
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: MOBILE_WEB
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: UNKNOWN_WEB
+    meaning: "Used when the client is unable to tell if the platform is Desktop or Mobile"
+  - num: 6
+    name: TABLET_WEB
+    meaning: ""   # TODO 待确认业务含义

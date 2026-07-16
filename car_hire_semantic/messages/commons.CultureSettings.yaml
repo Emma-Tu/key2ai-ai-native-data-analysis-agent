@@ -1,0 +1,22 @@
+# AUTO-GENERATED skeleton from proto/commons.proto. Enrich desc / relationships by hand.
+message: CultureSettings
+package: commons
+source_file: commons.proto
+group: shared
+description: "CULTURE SETTINGS"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: country
+    type: string
+    number: 1
+    desc: "It should be the market code as returned by culture service. e.g. HU, DE"
+  - name: currency
+    type: string
+    number: 2
+    desc: "It should be the currency code as returned by culture service. e.g. USD"
+  - name: locale
+    type: string
+    number: 4
+    desc: "It should be the locale as returned by culture service. e.g. en-US, en-GB"

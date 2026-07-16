@@ -1,0 +1,20 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: BottomSheetInteraction
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "Information about the bottom sheet interaction"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: from_state
+    type: BottomSheetState
+    number: 1
+    ref: BottomSheetState
+    desc: ""   # TODO 待补充业务含义
+  - name: to_state
+    type: BottomSheetState
+    number: 2
+    ref: BottomSheetState
+    desc: ""   # TODO 待补充业务含义

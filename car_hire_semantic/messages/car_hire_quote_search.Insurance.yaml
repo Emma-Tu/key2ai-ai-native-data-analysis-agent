@@ -1,0 +1,18 @@
+# AUTO-GENERATED skeleton from proto/car_hire_quote_search.proto. Enrich desc / relationships by hand.
+message: Insurance
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+description: "保险building block（价格 + 免赔额，欧元分）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: price_eur_cents
+    type: uint32
+    number: 1
+    desc: "The amount traveler needs to pay in euro-cents to buy insurance"
+  - name: excess_eur_cents
+    type: uint32
+    number: 2
+    desc: "Max amount traveler pay in euro-cents to settle a claim when an accident occurs"

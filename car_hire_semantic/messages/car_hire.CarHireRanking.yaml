@@ -1,0 +1,61 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireRanking
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "后端：租车排序事件（模型排序或 fallback 排序，含模型名与排序数量）。"   # curated (overlay.yaml)
+grain: "一行 = 一次 search_guid 下的排序执行"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: guid
+    type: string
+    number: 2
+    desc: "Unique identifier for the ranking event"
+  - name: search_guid
+    type: string
+    number: 3
+    desc: "GUID linking this event to the search and card events"
+  - name: model_name
+    type: string
+    number: 4
+    desc: "Name of the ranking model used (nullable if no model was applied)"
+  - name: model_ranked_count
+    type: uint32
+    number: 5
+    desc: "Number of top cards ranked by the model"
+  - name: ranking_status
+    type: RankingStatus
+    number: 6
+    ref: RankingStatus
+    desc: "The ranking execution status"
+  - name: platform
+    type: commons.Platform
+    number: 7
+    ref: commons.Platform   # 外部类型，见 generated/external_refs.yaml
+    desc: "Platform of the user"
+  - name: grouping_version
+    type: string
+    number: 8
+    desc: "Version of the grouping logic used during the search"
+  - name: request_sequence
+    type: uint32
+    number: 9
+    desc: "Request (polling) sequence in a search"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+
+nested_enums:
+  - name: RankingStatus
+    values:
+      0: UNSET_RANKING_STATUS   # Handling exceptions
+      1: RANKED_BY_MODEL   # ranked by model
+      2: RANKED_BY_FALLBACK   # ranked by fallback

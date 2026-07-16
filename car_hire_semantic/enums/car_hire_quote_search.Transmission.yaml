@@ -1,0 +1,16 @@
+# AUTO-GENERATED from proto/car_hire_quote_search.proto.
+enum: Transmission
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+desc: "Car transmission"
+values:
+  - num: 0
+    name: UNSET_TRANSMISSION
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: MANUAL
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: AUTOMATIC
+    meaning: ""   # TODO 待确认业务含义

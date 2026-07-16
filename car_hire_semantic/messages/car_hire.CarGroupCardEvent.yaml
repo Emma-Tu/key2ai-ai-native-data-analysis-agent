@@ -1,0 +1,151 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarGroupCardEvent
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "前端：分组结果卡片的渲染/曝光/点击事件（一个 itinerary_id 一组，含多条 deal）。"   # curated (overlay.yaml)
+grain: "一行 = 一次 search_guid 下一张分组卡片的一个 UIEventType 动作"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 2
+    desc: "associate it with search"
+  - name: mini_search_guid
+    type: string
+    number: 3
+    desc: "associate it with mini search"
+  - name: search_results_option_guid
+    type: string
+    number: 4
+    desc: "associate clients.BookingPanelOption in bumblebee"
+  - name: group_index
+    type: uint32
+    number: 5
+    desc: "The index number tell you the group position in the page, start from 0"
+  - name: page_index
+    type: uint32
+    number: 6
+    desc: "The index number tell you the group in which page, start from 0"
+  - name: initial_group_index
+    type: uint32
+    number: 7
+    desc: "The index number tell you the initial group position in total results, start from 0"
+  - name: number_of_deals
+    type: uint32
+    number: 8
+    desc: "how many deals are in the group"
+  - name: event_type
+    type: UIEventType
+    number: 9
+    ref: UIEventType
+    desc: "event type maybe RENDERED/VIEWED/PRESSED"
+  - name: max_seats
+    type: uint32
+    number: 10
+    desc: "the maximum seats available to the user"
+  - name: max_bags
+    type: uint32
+    number: 11
+    desc: "the maximum number of bags available to the user"
+  - name: max_score
+    type: uint32
+    number: 12
+    desc: "car group overall score assigned by the api, this one replaced by group_score"
+  - name: booking_panel_option_guid
+    type: string
+    number: 13
+    desc: "unique guid attached to deep link of quote"
+  - name: pickup_method
+    type: PickupMethod
+    number: 14
+    ref: PickupMethod
+    desc: "This item tells us the quote pickup method"
+  - name: pickup_type
+    type: PickupType
+    number: 15
+    ref: PickupType
+    desc: "This item tells us the quote pickup type"
+  - name: is_pickup_at_airport
+    type: bool
+    number: 16
+    desc: "The pickup location type whether it is an airport or not"
+  - name: group_score
+    type: float
+    number: 17
+    desc: "The group score which is calculated by quotes at frontend"
+  - name: itinerary_id
+    type: string
+    number: 18
+    desc: "The contents of the car hire itinerary that are presented to the user."
+  - name: recommended_ranking_index
+    type: uint32
+    number: 19
+    desc: "The index number tell you the recommended position in total results, start from 0"
+  - name: total_number_of_deals
+    type: uint32
+    number: 20
+    desc: "total deals count in the group"
+  - name: card_type
+    type: GroupCardType
+    number: 21
+    ref: GroupCardType
+    desc: "group card type"
+  - name: car_type
+    type: string
+    number: 22
+    desc: "car type"
+  - name: car_name
+    type: string
+    number: 23
+    desc: ""   # TODO 待补充业务含义
+  - name: vendor_id
+    type: string
+    number: 24
+    desc: ""   # TODO 待补充业务含义
+  - name: transmission
+    type: Transmission
+    number: 25
+    ref: Transmission
+    desc: ""   # TODO 待补充业务含义
+  - name: has_ac
+    type: bool
+    number: 26
+    desc: ""   # TODO 待补充业务含义
+  - name: seat_group
+    type: string
+    number: 27
+    desc: "seat group values: 1-3, 4-5, 6+"
+  - name: pickup_location
+    type: string
+    number: 28
+    desc: ""   # TODO 待补充业务含义
+  - name: save_action_id
+    type: string
+    number: 29
+    desc: "the id of save action"
+  - name: price
+    type: commons.Price
+    number: 30
+    ref: commons.Price   # 外部类型，见 generated/external_refs.yaml
+    desc: "price on group card"
+  - name: is_hero_cheapest
+    type: bool
+    number: 31
+    desc: "Is the hero quote cheapest in the group."
+  - name: distance
+    type: Distance
+    number: 32
+    ref: Distance
+    desc: "display the distance of the location id"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

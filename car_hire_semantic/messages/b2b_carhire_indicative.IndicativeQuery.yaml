@@ -1,0 +1,38 @@
+# AUTO-GENERATED skeleton from proto/b2b_carhire_indicative.proto. Enrich desc / relationships by hand.
+message: IndicativeQuery
+package: b2b_carhire_indicative
+source_file: b2b_carhire_indicative.proto
+group: b2b
+description: "B2B API 租车指示性价格查询（取还地点实体 + 日期分组）。"   # curated (overlay.yaml)
+grain: "一行 = 一次 B2B 指示性价格查询"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: culture
+    type: commons.CultureSettings
+    number: 1
+    ref: commons.CultureSettings   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: pick_up_date_timestamp
+    type: commons.DateTime
+    number: 11
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "DateTime of pickup"
+  - name: drop_off_date_timestamp
+    type: commons.DateTime
+    number: 12
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "DateTime of dropoff"
+  - name: date_time_grouping_type
+    type: DateTimeGroupingType
+    number: 13
+    ref: DateTimeGroupingType
+    desc: "DateTime Grouping of quotes"
+  - name: pick_up_drop_off_location_entity_id
+    type: string
+    number: 14
+    desc: "Entity ID"
+  - name: is_allow_alternative_destination
+    type: bool
+    number: 15
+    desc: "Allows alternate destinations"

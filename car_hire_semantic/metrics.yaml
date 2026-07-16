@@ -1,0 +1,81 @@
+# ============================================================================
+# CURATED metric definitions — hand-authored business口径.
+# The analysis agent MUST use these definitions rather than inventing its own.
+# Every "# CONFIRM" needs sign-off from the owning squad before production use.
+# ============================================================================
+
+glossary:
+  - term: 搜索 / search
+    maps_to: search_request_id (backend) 或 search_guid (frontend)
+    note: 视分析角度选 key，见 relationships.yaml#join_keys
+  - term: 报价 / quote
+    maps_to: car_hire_quote_search.Quote  (backend)  或 clients.BookingPanelOption (frontend BPO)
+  - term: 分组卡片 / group card
+    maps_to: CarGroupCardEvent（一个 itinerary_id 一组，含多个 deal）
+  - term: mini search
+    maps_to: mini_search_guid — 一次筛选/翻页触发的子搜索
+  - term: 拦截 / blocked
+    maps_to: CarHireNoQuoteRequestBlocking.is_blocked = true
+
+metrics:
+  - metric: 搜索量 (Search Volume)
+    grain: backend
+    definition: COUNT(DISTINCT search_request_id) FROM CarHireQuoteSearchEvent
+    dims: [market, driver_age, quote_source]
+    tables: [car_hire_quote_search.CarHireQuoteSearchEvent]
+    note: market/locale/currency 来自 traveller_context（indicative）或 header user_context
+
+  - metric: 平均报价数 (Avg Quotes per Search)
+    definition: AVG(array_length(quotes)) FROM CarHireQuoteSearchEvent
+    tables: [car_hire_quote_search.CarHireQuoteSearchEvent]
+    caveat: quotes 上限约 30-40；空搜索的处理口径 # CONFIRM
+
+  - metric: 无报价拦截率 (No-Quote Block Rate)
+    definition: >
+      COUNT(*) FILTER (WHERE is_blocked) / COUNT(*)
+      FROM CarHireNoQuoteRequestBlocking
+      WHERE is_holdout_dataset = false
+    tables: [car_hire_no_quote_request_blocking.CarHireNoQuoteRequestBlocking]
+    caveat: 必须排除 holdout（holdout 永远 non-blocked，纳入会稀释分母）。
+
+  - metric: 报价平均价 (Avg Quote Price, EUR)
+    definition: AVG(quotes.price_eur_cents) / 100.0   -- 需 UNNEST quotes
+    unit: 欧元
+    tables: [car_hire_quote_search.CarHireQuoteSearchEvent, car_hire_quote_search.Quote]
+    caveat: price_eur_cents 已归一到欧元分；勿与 commons.Money 混用。
+
+  - metric: 卡片曝光量 (Card Impressions)
+    grain: frontend
+    definition: >
+      COUNT(*) FROM CarGroupCardEvent
+      WHERE event_type = VIEWED        -- commons UIEventType
+    tables: [car_hire.CarGroupCardEvent]
+    caveat: event_type 有 RENDERED/VIEWED/PRESSED，曝光通常取 VIEWED # CONFIRM
+
+  - metric: 报价点选率 (Quote Selection Rate / CTR)
+    definition: >
+      COUNT(DISTINCT CarHireQuoteSelected by search_guid)
+      / COUNT(DISTINCT CarGroupCardEvent VIEWED by search_guid)
+    tables: [car_hire.CarHireQuoteSelected, car_hire.CarGroupCardEvent]
+    caveat: >
+      分子分母都用 search_guid（frontend 空间）。不要跨到 search_request_id。
+      是否按 mini_search_guid 细分取决于问题口径。
+
+  - metric: 搜索到点选转化 (Search→Select Funnel)
+    definition: 见 relationships.yaml#funnel，跨 backend/frontend 需 bridge 表
+    tables: [car_hire_quote_search.CarHireQuoteSearchEvent, car_hire.CarGroupCardEvent, car_hire.CarHireQuoteSelected]
+    caveat: >
+      ★ backend(search_request_id) 与 frontend(search_guid) 之间没有直接列关联，
+      端到端漏斗必须先解决 bridge_backend_to_frontend（见 relationships.yaml）。
+
+  - metric: 电动/混动车占比 (Greener Choices Share)
+    definition: >
+      COUNT quotes WHERE fuel_type IN (ELECTRIC, HYBRID) / COUNT all quotes
+    tables: [car_hire_quote_search.CarHireQuoteSearchEvent, car_hire_quote_search.Quote]
+    note: fuel_type 枚举在不同文件取值不同 — car_hire.FuelType vs
+          car_hire_quote_search.FuelType vs car_hire_app.FuelType，按来源选。
+
+time_handling:
+  event_time: header.*_timestamp (commons.DateTime.unix_time_millis, 毫秒)
+  ingestion_time: grappler_receive_timestamp (field 1998) — 仅用于管道延迟分析
+  to_date: "date = DATE(TIMESTAMP_MILLIS(unix_time_millis))  # 方言相关，见物理层"

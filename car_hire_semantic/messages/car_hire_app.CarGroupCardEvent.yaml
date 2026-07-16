@@ -1,0 +1,122 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: CarGroupCardEvent
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "App 端分组卡片事件（含首屏 top-N 组信息）。注意与 car_hire.CarGroupCardEvent 字段不同。"   # curated (overlay.yaml)
+grain: "一行 = 一次 App 端分组卡片事件"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: "Common header"
+  - name: search_guid
+    type: string
+    number: 2
+    desc: "Search GUID"
+  - name: group_card_information
+    type: repeated GroupCardInformation
+    number: 3
+    ref: GroupCardInformation
+    desc: "The card group result list needs to record the information of the first top N groups"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "Grappler receive timestamp"
+  - name: search_type
+    type: SearchType
+    number: 4
+    ref: SearchType
+    desc: "Search type"
+  - name: mini_search_guid
+    type: string
+    number: 5
+    desc: "associate it with mini search"
+
+nested_messages:
+  - name: GroupCardInformation
+    fields:
+      - name: itinerary_id
+        type: string
+        number: 1
+        desc: "The contents of the car hire itinerary that are presented to the user."
+      - name: ranking_index
+        type: uint32
+        number: 2
+        desc: "The index number tell you the recommended position in total results, start from 0"
+      - name: search_results_option_guid
+        type: string
+        number: 3
+        desc: "associate clients.BookingPanelOption in bumblebee"
+      - name: number_of_deals
+        type: uint32
+        number: 4
+        desc: "how many deals are in the group"
+      - name: max_seats
+        type: uint32
+        number: 5
+        desc: "the maximum seats available to the user"
+      - name: max_bags
+        type: uint32
+        number: 6
+        desc: "the maximum number of bags available to the user"
+      - name: group_score
+        type: float
+        number: 7
+        desc: "The group score which is calculated by quotes at frontend"
+      - name: pickup_method
+        type: PickupMethod
+        number: 8
+        ref: PickupMethod
+        desc: "This item tells us the quote pickup method"
+      - name: car_type
+        type: string
+        number: 9
+        desc: "car type"
+      - name: car_name
+        type: string
+        number: 10
+        desc: "Car name"
+      - name: vendor_id
+        type: string
+        number: 11
+        desc: "Vendor ID"
+      - name: transmission
+        type: string
+        number: 12
+        desc: "Transmission type"
+      - name: has_ac
+        type: bool
+        number: 13
+        desc: "Indicates if the car has air conditioning"
+      - name: seat_group
+        type: string
+        number: 14
+        desc: "seat group values: 1-3, 4-5, 6+"
+      - name: booking_panel_option_guid
+        type: string
+        number: 15
+        desc: "unique guid attached to deep link of quote"
+      - name: fuel_type
+        type: FuelType
+        number: 16
+        ref: FuelType
+        desc: "The fuel type of the car (electric/hybrid/other)"
+      - name: free_cancellation
+        type: FreeCancellationType
+        number: 17
+        ref: FreeCancellationType
+        desc: "The free cancellation type of the car"
+      - name: price
+        type: commons.Price
+        number: 18
+        ref: commons.Price   # 外部类型，见 generated/external_refs.yaml
+        desc: "price on group card"
+      - name: exclusive_savings_pct
+        type: uint32
+        number: 19
+        desc: "The card contains information about discounts."

@@ -1,0 +1,81 @@
+# AUTO-GENERATED skeleton from proto/car_hire_indicative_price.proto. Enrich desc / relationships by hand.
+message: CarHireIndicativePriceSearchEvent
+package: car_hire_indicative_price
+source_file: car_hire_indicative_price.proto
+group: core
+description: "SEO/落地页指示性价格搜索事件：真实搜索前展示的预估价。经 USS，含 search_guid 关联。"   # curated (overlay.yaml)
+grain: "一行 = 一次 search_request_id 的指示性价格查询"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.LightHeader
+    number: 1
+    ref: commons.LightHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: search_request_id
+    type: string
+    number: 2
+    desc: "uuid for the request"
+  - name: traveller_context
+    type: TravellerContext
+    number: 3
+    ref: TravellerContext
+    desc: ""   # TODO 待补充业务含义
+  - name: traffic_source
+    type: TrafficSource
+    number: 4
+    ref: TrafficSource
+    desc: ""   # TODO 待补充业务含义
+  - name: locations
+    type: repeated Location
+    number: 5
+    ref: Location
+    desc: "The locations where the car is picked up and dropped off"
+  - name: start_date
+    type: string
+    number: 6
+    desc: "The date the user's query start date yyyy-MM-dd"
+  - name: end_date
+    type: string
+    number: 7
+    desc: "The date the user's query end date yyyy-MM-dd"
+  - name: target_geo_level
+    type: unified_search_service.GeoLevel
+    number: 8
+    ref: unified_search_service.GeoLevel   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: date_time_grouping_type
+    type: DateTimeGroupingType
+    number: 9
+    ref: DateTimeGroupingType
+    desc: ""   # TODO 待补充业务含义
+  - name: filter
+    type: Filter
+    number: 10
+    ref: Filter
+    desc: "The filter applied to the search"
+  - name: scenario
+    type: Scenario
+    number: 11
+    ref: Scenario
+    desc: "The scenarios that the user search"
+  - name: result_count
+    type: uint32
+    number: 12
+    desc: "The number of indicative price results"
+  - name: indicative_price_results
+    type: repeated IndicativePriceResult
+    number: 13
+    ref: IndicativePriceResult
+    desc: "The indicative price detail results"
+  - name: location_type
+    type: LocationType
+    number: 14
+    ref: LocationType
+    desc: "The query's location type"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

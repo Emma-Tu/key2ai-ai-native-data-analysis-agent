@@ -1,0 +1,105 @@
+# AUTO-GENERATED skeleton from proto/unified_search_service.proto. Enrich desc / relationships by hand.
+message: CreateSearchRequest
+package: unified_search_service
+source_file: unified_search_service.proto
+group: shared
+description: "USS 创建搜索请求事件。★桥接表：同一行同时含 uss_search_id、session_id、search_guid，是打通后端搜索与前端 search_guid 的关键。"   # curated (overlay.yaml)
+grain: "一行 = 一次 USS 创建搜索"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.LightHeader
+    number: 1
+    ref: commons.LightHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: origin
+    type: commons.Location
+    number: 2
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: destination
+    type: commons.Location
+    number: 3
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: departure_date
+    type: commons.Date
+    number: 4
+    ref: commons.Date   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: return_date
+    type: commons.Date
+    number: 5
+    ref: commons.Date   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: platform
+    type: commons.Platform
+    number: 6
+    ref: commons.Platform   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: culture_settings
+    type: commons.CultureSettings
+    number: 7
+    ref: commons.CultureSettings   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: uss_search_id
+    type: string
+    number: 8
+    desc: ""   # TODO 待补充业务含义
+  - name: session_id
+    type: string
+    number: 9
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 10
+    desc: ""   # TODO 待补充业务含义
+  - name: traveller_count
+    type: uint32
+    number: 11
+    desc: ""   # TODO 待补充业务含义
+  - name: traffic_source
+    type: TrafficSource
+    number: 12
+    ref: TrafficSource
+    desc: ""   # TODO 待补充业务含义
+  - name: kind_of_search
+    type: KindOfSearch
+    number: 13
+    ref: KindOfSearch
+    desc: ""   # TODO 待补充业务含义
+  - name: polling_status
+    type: PollingSessionStatus
+    number: 14
+    ref: PollingSessionStatus
+    desc: ""   # TODO 待补充业务含义
+  - name: trip_elements
+    type: repeated TripElement
+    number: 15
+    ref: TripElement
+    desc: "Max length 10 elements"
+  - name: inventories
+    type: repeated SearchInventory
+    number: 16
+    ref: SearchInventory
+    desc: "Max length 10 elements"
+  - name: inventory_summaries
+    type: repeated InventoryResponseSummary
+    number: 17
+    ref: InventoryResponseSummary
+    desc: "Max length 10 elements"
+
+nested_enums:
+  - name: KindOfSearch
+    values:
+      0: UNSET_KIND_OF_SEARCH
+      1: KIND_OF_SEARCH_UNKNOWN   # Used when mini-event schema becomes outdated with USS schemas
+      2: KIND_OF_SEARCH_ONE_WAY
+      3: KIND_OF_SEARCH_ROUND_TRIP
+      4: KIND_OF_SEARCH_MULTI_CITY

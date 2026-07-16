@@ -1,0 +1,117 @@
+# AUTO-GENERATED skeleton from proto/clients.proto. Enrich desc / relationships by hand.
+message: CarHireFilterAndSort
+package: clients
+source_file: clients.proto
+group: shared
+description: "前端筛选与排序状态快照（各类 SelectionList 筛选项）。被 app UserAction/MiniSearch 引用；注意 car_hire.proto 另有同名类型。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: passengers
+    type: SelectionList
+    number: 1
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: car_classes
+    type: SelectionList
+    number: 2
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: car_types
+    type: SelectionList
+    number: 3
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: car_categories
+    type: SelectionList
+    number: 4
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: pick_up_types
+    type: SelectionList
+    number: 5
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: features
+    type: SelectionList
+    number: 6
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: fuel_policies
+    type: SelectionList
+    number: 7
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: star_ratings
+    type: SelectionList
+    number: 8
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: transmissions
+    type: SelectionList
+    number: 9
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: booking_sites
+    type: SelectionList
+    number: 10
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: suppliers
+    type: SelectionList
+    number: 11
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: recommended_options
+    type: SelectionList
+    number: 12
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: sorted_by
+    type: SortOrder
+    number: 13
+    ref: SortOrder
+    desc: ""   # TODO 待补充业务含义
+  - name: cancellation_policy
+    type: SelectionList
+    number: 14
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: map_state
+    type: car_hire.MapState
+    number: 15
+    ref: car_hire.MapState   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: greener_choices
+    type: SelectionList
+    number: 16
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: policies
+    type: SelectionList
+    number: 17
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: seats
+    type: SelectionList
+    number: 18
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: booking_options
+    type: SelectionList
+    number: 19
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+  - name: price
+    type: SelectionList
+    number: 20
+    ref: SelectionList
+    desc: ""   # TODO 待补充业务含义
+
+nested_enums:
+  - name: SortOrder
+    values:
+      0: UNSET_SORT_ORDER
+      1: PRICE_ASCENDING   # sort by cheapest
+      2: BEST_DESCENDING   # sort by a best deal algorithmic model

@@ -1,0 +1,77 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireSearchResultsOption
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "呈现给用户的租车行程选项(itinerary)内容，含车型/座位/行李/价格/排序分。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息（BPO 级别）"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: itinerary_id
+    type: string
+    number: 1
+    desc: ""   # TODO 待补充业务含义
+  - name: car_type
+    type: CarType
+    number: 2
+    ref: CarType
+    desc: "ACRISS car type"
+  - name: car_category
+    type: CarCategory
+    number: 3
+    ref: CarCategory
+    desc: "ACRISS car category"
+  - name: transmission
+    type: Transmission
+    number: 4
+    ref: Transmission
+    desc: "ACRISS transmission type"
+  - name: max_seats
+    type: uint32
+    number: 5
+    desc: "the maximum seats available to the user"
+  - name: max_bags
+    type: uint32
+    number: 6
+    desc: "the maximum number of bags available to the user"
+  - name: is_air_conditioning
+    type: bool
+    number: 7
+    desc: "does the rental have a/c"
+  - name: number_of_deals
+    type: uint32
+    number: 8
+    desc: "how many deals are in the group"
+  - name: group_score
+    type: float
+    number: 9
+    desc: "the deal score calculated for the group (visible in app)"
+  - name: price
+    type: commons.Price
+    number: 10
+    ref: commons.Price   # 外部类型，见 generated/external_refs.yaml
+    desc: "represented price of the option"
+  - name: sipp_code
+    type: string
+    number: 11
+    desc: "the code that encodes the ACRISS properties of the car in a string"
+  - name: vehicle_type
+    type: vehicle.VehicleType
+    number: 12
+    ref: vehicle.VehicleType   # 外部类型，见 generated/external_refs.yaml
+    desc: "vehicle type"
+  - name: vehicle_categories
+    type: repeated vehicle.VehicleCategory
+    number: 13
+    ref: vehicle.VehicleCategory   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: best_ranking_score
+    type: float
+    number: 14
+    desc: "the best ranking score for the group, used in Recommended Sort, the higher the better"
+  - name: distance
+    type: Distance
+    number: 15
+    ref: Distance
+    desc: "display the distance of the location id"

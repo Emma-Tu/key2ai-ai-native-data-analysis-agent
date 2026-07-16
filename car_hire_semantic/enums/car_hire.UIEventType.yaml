@@ -1,0 +1,52 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: UIEventType
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "通用 UI 交互类型（PRESSED/VIEWED/OPENED/RENDERED 等）。曝光通常取 VIEWED。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_UI_EVENT_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: PRESSED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: VIEWED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: OPENED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: CLOSED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: SELECTED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: DESELECTED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: REQUESTED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 8
+    name: RENDERED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 9
+    name: SCROLLED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 10
+    name: SAVED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 11
+    name: UNSAVED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 12
+    name: CHECKED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 13
+    name: UNCHECKED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 14
+    name: HOVERED
+    meaning: ""   # TODO 待确认业务含义

@@ -1,0 +1,19 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: SelectionList
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "List of dynamic selection filters, e.g Airports"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: values
+    type: repeated SelectionValue
+    number: 1
+    ref: SelectionValue
+    desc: ""   # TODO 待补充业务含义
+  - name: is_collapsed
+    type: bool
+    number: 2
+    desc: ""   # TODO 待补充业务含义

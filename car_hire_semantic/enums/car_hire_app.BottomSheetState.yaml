@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: BottomSheetState
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "All the bottom sheet interactions"
+values:
+  - num: 0
+    name: UNSET_BOTTOM_SHEET_STATE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: TIP
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: HALF
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: FULL
+    meaning: ""   # TODO 待确认业务含义

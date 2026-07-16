@@ -1,0 +1,13 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: DayViewEventType
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "day-view 事件类型：结果加载(RESULTS_LOADED)。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_DAY_VIEW_EVENT_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: RESULTS_LOADED
+    meaning: ""   # TODO 待确认业务含义

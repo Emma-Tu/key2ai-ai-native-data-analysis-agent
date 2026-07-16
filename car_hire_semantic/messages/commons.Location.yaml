@@ -1,0 +1,20 @@
+# AUTO-GENERATED skeleton from proto/commons.proto. Enrich desc / relationships by hand.
+message: Location
+package: commons
+source_file: commons.proto
+group: shared
+description: "LOCATION"
+grain: ""        # TODO 一行代表什么
+domain: car_hire
+
+fields:
+  - name: location_attribute
+    type: LocationAttribute
+    number: 1
+    ref: LocationAttribute
+    desc: "attributes that characterise this location"
+  - name: geo
+    type: Geo
+    number: 2
+    ref: Geo
+    desc: "the geographical data for this location"

@@ -1,0 +1,48 @@
+# AUTO-GENERATED skeleton from proto/booking.proto. Enrich desc / relationships by hand.
+message: BookingStep
+package: booking
+source_file: booking.proto
+group: conversion
+description: "\"预订流程中的单个步骤（步骤类型/结果/失败原因）。来源为 hotel dbook 漏斗，租车适用性待确认。\"   # CONFIRM 租车是否复用"   # curated (overlay.yaml)
+grain: "一行 = 预订流程的一步"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: type
+    type: BookingStepType
+    number: 1
+    ref: BookingStepType
+    desc: "the event from which step in the hotel dbook funnel"
+  - name: reason
+    type: string
+    number: 2
+    desc: "the failed reason for this step if failed"
+  - name: result
+    type: string
+    number: 3
+    desc: "the result for this step, like success, failure, ..."
+  - name: mode
+    type: PaymentAuthMode
+    number: 4
+    ref: PaymentAuthMode
+    desc: "only for PAYMENT_AUTH step"
+
+nested_enums:
+  - name: BookingStepType
+    values:
+      0: UNSET_BOOKING_STEP_TYPE
+      1: RESERVATION   # the reservation step
+      2: PAYMENT   # the payment step
+      3: PAYMENT_AUTH   # the 3DS step
+      4: POST_BOOKING_SCHEDULE   # the schedule to update booking state post booking
+      5: POST_BOOKING_INCREMENTAL   # the incremental job to update booking state post booking
+      6: POST_BOOKING_OTHER   # the other behavior to update booking state post booking
+      7: PENDING_REDIRECT   # the createPayOrder step(Trip Payment Platform)
+      8: POST_BOOKING_V3_UPDATED   # the getBookingV3 step to request Trip's order detail api
+  - name: PaymentAuthMode
+    values:
+      0: UNSET_PAYMENT_AUTH_MODE
+      1: PREAUTH_FRICTIONLESS   # require collecting device info in 3DS Pre-Authentication Mode
+      2: PREAUTH_CHALLENGE   # require challenge in 3DS Pre-Authentication Mode
+      3: REDIRECT_FRICTIONLESS   # require collecting device info in 3DS Redirect Mode
+      4: REDIRECT_CHALLENGE   # require challenge in 3DS Redirect Mode

@@ -1,0 +1,61 @@
+# AUTO-GENERATED skeleton from proto/unified_search_service.proto. Enrich desc / relationships by hand.
+message: PollSearchRequest
+package: unified_search_service
+source_file: unified_search_service.proto
+group: shared
+description: "USS 轮询搜索请求事件（含 uss_search_id + search_guid + 轮询迭代次数）。"   # curated (overlay.yaml)
+grain: "一行 = 一次 USS 轮询"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.LightHeader
+    number: 1
+    ref: commons.LightHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: platform
+    type: commons.Platform
+    number: 2
+    ref: commons.Platform   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: uss_search_id
+    type: string
+    number: 3
+    desc: ""   # TODO 待补充业务含义
+  - name: session_id
+    type: string
+    number: 4
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 5
+    desc: ""   # TODO 待补充业务含义
+  - name: polling_iteration
+    type: int64
+    number: 10
+    desc: ""   # TODO 待补充业务含义
+  - name: traffic_source
+    type: TrafficSource
+    number: 6
+    ref: TrafficSource
+    desc: ""   # TODO 待补充业务含义
+  - name: polling_status
+    type: PollingSessionStatus
+    number: 7
+    ref: PollingSessionStatus
+    desc: ""   # TODO 待补充业务含义
+  - name: inventories
+    type: repeated SearchInventory
+    number: 8
+    ref: SearchInventory
+    desc: "Max length 10 elements"
+  - name: inventory_summaries
+    type: repeated InventoryResponseSummary
+    number: 9
+    ref: InventoryResponseSummary
+    desc: "Max length 10 elements"

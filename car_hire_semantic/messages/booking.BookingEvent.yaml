@@ -1,0 +1,134 @@
+# AUTO-GENERATED skeleton from proto/booking.proto. Enrich desc / relationships by hand.
+message: BookingEvent
+package: booking
+source_file: booking.proto
+group: conversion
+description: "预订事件：合并后的预订，经 redirect_id 关联到跳转。car_hire_extra 路径已 deprecated（需确认当前租车预订来源）。"   # curated (overlay.yaml)
+grain: "一行 = 一次预订（booking_id 主键）"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.LightHeader
+    number: 1
+    ref: commons.LightHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: "Standard details on the event like producer and time."
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "Grappler Receive Timestamp added by SDK ie., time when slipstream receives an event."
+  - name: downstream_partner
+    type: commons.DownstreamPartner
+    number: 2
+    ref: commons.DownstreamPartner   # 外部类型，见 generated/external_refs.yaml
+    desc: "Partner meta-data like the identifier."
+  - name: downstream_target
+    type: commons.DownstreamTarget
+    number: 3
+    ref: commons.DownstreamTarget   # 外部类型，见 generated/external_refs.yaml
+    desc: "Booking meta-data like market, language settings etc."
+  - name: client_details
+    type: commons.ClientDetails
+    number: 4
+    ref: commons.ClientDetails   # 外部类型，见 generated/external_refs.yaml
+    desc: "Details on the client like device type, user-agent etc."
+  - name: destination
+    type: commons.Location
+    number: 5
+    ref: commons.Location   # 外部类型，见 generated/external_refs.yaml
+    desc: "Meta-data on the destination e.g., the hotel booked."
+  - name: event_type
+    type: EventType
+    number: 6
+    ref: EventType
+    desc: "The type of event regarding booking consolidation."
+  - name: redirect_id
+    type: string
+    number: 10
+    desc: "The redirect associated with this booking."
+  - name: booking_id
+    type: string
+    number: 11
+    desc: "Internal booking identifier for use in consolidation as the 'primary key'."
+  - name: booking_reference
+    type: string
+    number: 12
+    desc: "External booking identifier for the booking (for if we require partner input)."
+  - name: booking_source
+    type: BookingSource
+    number: 20
+    ref: BookingSource
+    desc: "Which funnel was the source of this booking."
+  - name: booking_state
+    type: BookingState
+    number: 21
+    ref: BookingState
+    desc: "The current state of the booking (as reported in this event)."
+  - name: booking_timestamp
+    type: commons.DateTime
+    number: 22
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "When the booking was created (not when we got this event)."
+  - name: booking_error_type
+    type: string
+    number: 23
+    desc: "A field to classify an error from a failed booking."
+  - name: booking_price_in_source_currency
+    type: commons.Price
+    number: 30
+    ref: commons.Price   # 外部类型，见 generated/external_refs.yaml
+    desc: "Total price as reported for this booking."
+  - name: revenue
+    type: commons.Revenue
+    number: 31
+    ref: commons.Revenue   # 外部类型，见 generated/external_refs.yaml
+    desc: "Booking revenue from Appraiser."
+  - name: booking_revenue
+    type: commons.Money
+    number: 32
+    ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+    desc: "Revenue in a canonical currency."
+  - name: booking_revenue_in_source_currency
+    type: commons.Money
+    number: 33
+    ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+    desc: "Revenue in the original currency."
+  - name: event_source
+    type: EventSource
+    number: 34
+    ref: EventSource
+    desc: "The data-source of this booking event."
+  - name: booking_step
+    type: BookingStep
+    number: 35
+    ref: BookingStep
+    desc: "A field to mark where is the booking_state from and why"
+  - name: hotels_extra
+    type: hotel.HotelsBookingExtra
+    number: 100
+    oneof: product_extra
+    ref: hotel.HotelsBookingExtra   # 外部类型，见 generated/external_refs.yaml
+    desc: "Extra attributes specific to a hotel."
+  - name: rail_extra
+    type: rail.RailBookingExtra
+    number: 101
+    oneof: product_extra
+    ref: rail.RailBookingExtra   # 外部类型，见 generated/external_refs.yaml
+    desc: "Extra attributes specific to a train."
+  - name: car_hire_extra
+    type: car_hire.CarHireBookingExtra
+    number: 102
+    oneof: product_extra
+    ref: car_hire.CarHireBookingExtra   # 外部类型，见 generated/external_refs.yaml
+    desc: "Extra attributes specific to a car."
+  - name: organisation_id
+    type: string
+    number: 1000
+    desc: "Ties a partner to a higher level grouping of related partners."
+
+nested_enums:
+  - name: EventType
+    values:
+      0: NEW
+      1: UPDATE

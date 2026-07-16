@@ -1,0 +1,22 @@
+# AUTO-GENERATED from proto/car_hire_indicative_price.proto.
+enum: TrafficSource
+package: car_hire_indicative_price
+source_file: car_hire_indicative_price.proto
+group: core
+desc: "流量来源：SEO/XSELL/组合搜索/B2B。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_TRAFFIC_SOURCE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: SEO
+    meaning: "The SEO business"
+  - num: 2
+    name: XSELL
+    meaning: "The XSELL business"
+  - num: 3
+    name: COMBINE_SEARCH
+    meaning: "The COMBINE_SEARCH business"
+  - num: 4
+    name: B2B
+    meaning: "The B2B business"

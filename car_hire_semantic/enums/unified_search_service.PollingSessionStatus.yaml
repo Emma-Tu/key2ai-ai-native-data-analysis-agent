@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/unified_search_service.proto.
+enum: PollingSessionStatus
+package: unified_search_service
+source_file: unified_search_service.proto
+group: shared
+desc: "USS 轮询会话状态：进行中(ONGOING)/已结束(ENDED)。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_POLLING_SESSION_STATUS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: POLLING_SESSION_STATUS_UNKNOWN
+    meaning: "Used when mini-event schema becomes outdated with USS schemas"
+  - num: 2
+    name: POLLING_SESSION_STATUS_ONGOING
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: POLLING_SESSION_STATUS_ENDED
+    meaning: ""   # TODO 待确认业务含义

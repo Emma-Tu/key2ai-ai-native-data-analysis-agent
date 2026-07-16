@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/b2b_carhire_indicative.proto.
+enum: DateTimeGroupingType
+package: b2b_carhire_indicative
+source_file: b2b_carhire_indicative.proto
+group: b2b
+desc: "B2B 指示性价格按时间分组方式：按天/按月/按周。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_DATE_TIME_GROUPING_TYPE
+    meaning: "The date grouping is not specified (use the default)."
+  - num: 1
+    name: DATE_TIME_GROUPING_TYPE_BY_DATE
+    meaning: "Group the quotes by day."
+  - num: 2
+    name: DATE_TIME_GROUPING_TYPE_BY_MONTH
+    meaning: "Group the quotes by month."
+  - num: 3
+    name: DATE_TIME_GROUPING_TYPE_BY_WEEK
+    meaning: "Group the quotes by week."

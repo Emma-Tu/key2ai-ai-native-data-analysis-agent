@@ -1,0 +1,18 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireQuoteBrief
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "报价简要building block（BPO id + 在卡片中的排序）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: booking_panel_option_id
+    type: string
+    number: 1
+    desc: "quote id"
+  - name: index_in_card
+    type: uint32
+    number: 2
+    desc: "sort order of this quote in card"

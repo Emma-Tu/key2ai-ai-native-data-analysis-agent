@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire_quote_search.proto.
+enum: PickupType
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+desc: "Car pick up type"
+values:
+  - num: 0
+    name: UNSET_PICKUP_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: TERMINAL_DESK
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: MEET_AND_GREET
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: SHUTTLE_BUS
+    meaning: ""   # TODO 待确认业务含义

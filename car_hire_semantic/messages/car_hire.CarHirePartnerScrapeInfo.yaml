@@ -1,0 +1,47 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHirePartnerScrapeInfo
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "后端：合作方抓价信息（预付/到付价、平台、原始供应商名）。"   # curated (overlay.yaml)
+grain: "一行 = 一次合作方抓价"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: search
+    type: CarHireSearch
+    number: 1
+    ref: CarHireSearch
+    desc: ""   # TODO 待补充业务含义
+  - name: skyscanner_booking_id
+    type: string
+    number: 2
+    desc: "Internal Skyscanner booking identifier"
+  - name: partner_booking_id
+    type: string
+    number: 3
+    desc: "booking reference retrieved from the partner"
+  - name: total_price
+    type: commons.Money
+    number: 4
+    ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: prepaid_price
+    type: commons.Money
+    number: 5
+    ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: pay_on_arrival_price
+    type: commons.Money
+    number: 6
+    ref: commons.Money   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: platform
+    type: commons.Platform
+    number: 7
+    ref: commons.Platform   # 外部类型，见 generated/external_refs.yaml
+    desc: "user's device (platform) type"
+  - name: original_vendor_names
+    type: string
+    number: 8
+    desc: "a comma-separated string of original car vendor names"

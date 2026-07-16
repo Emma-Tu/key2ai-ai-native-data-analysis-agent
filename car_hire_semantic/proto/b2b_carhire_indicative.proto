@@ -1,0 +1,26 @@
+// Owner: Shiny Magpies (Slack: #shiny-magpies; Email: ShinyMagpiesSquad@skyscanner.net)
+// Schema for the B2B API car hire indicative pricing query
+
+syntax = "proto3";
+
+package b2b_carhire_indicative;
+option go_package = "github.com/skyscanner/go-schemas/b2b_carhire_indicative";
+option java_package = "net.skyscanner.schemas";
+
+import "commons.proto";
+
+message IndicativeQuery {
+    commons.CultureSettings culture = 1;
+    commons.DateTime pick_up_date_timestamp = 11; // DateTime of pickup 
+    commons.DateTime drop_off_date_timestamp = 12; // DateTime of dropoff
+    DateTimeGroupingType date_time_grouping_type = 13; // DateTime Grouping of quotes
+    string pick_up_drop_off_location_entity_id = 14; // Entity ID
+    bool is_allow_alternative_destination = 15; // Allows alternate destinations 
+  }
+
+  enum DateTimeGroupingType {
+    UNSET_DATE_TIME_GROUPING_TYPE = 0; // The date grouping is not specified (use the default).
+    DATE_TIME_GROUPING_TYPE_BY_DATE = 1; // Group the quotes by day.
+    DATE_TIME_GROUPING_TYPE_BY_MONTH = 2; // Group the quotes by month.
+    DATE_TIME_GROUPING_TYPE_BY_WEEK = 3; // Group the quotes by week.
+  }

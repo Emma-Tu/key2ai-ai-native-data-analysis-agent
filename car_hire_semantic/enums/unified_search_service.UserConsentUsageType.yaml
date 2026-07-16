@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/unified_search_service.proto.
+enum: UserConsentUsageType
+package: unified_search_service
+source_file: unified_search_service.proto
+group: shared
+desc: "USS 用户同意用途：优化(INFORMATION)/广告个性化(ADVERTS)。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_USER_CONSENT_USAGE_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: USER_CONSENT_USAGE_TYPE_INFORMATION_UNKNOWN
+    meaning: "Used when mini-event schemas becomes outdated with USS schemas"
+  - num: 2
+    name: USER_CONSENT_USAGE_TYPE_INFORMATION
+    meaning: "User can be tracked to improve experience (sometimes referred as optimisation)"
+  - num: 3
+    name: USER_CONSENT_USAGE_TYPE_ADVERTS
+    meaning: "User can be tracked to customize advertising (sometimes referred as personalisation)"

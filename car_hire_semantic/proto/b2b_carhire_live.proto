@@ -1,0 +1,30 @@
+// Owner: Shiny Magpies (Slack: #shiny-magpies; Email: ShinyMagpiesSquad@skyscanner.net)
+// Schema for the B2B API car hire live pricing query
+
+syntax = "proto3";
+
+package b2b_carhire_live;
+option go_package = "github.com/skyscanner/go-schemas/b2b_carhire_live";
+option java_package = "net.skyscanner.schemas";
+
+import "commons.proto";
+
+message Query {
+    commons.CultureSettings culture = 1;
+    PickupDropOff pick_up_location = 11; // Vehicle pickup location 
+    PickupDropOff drop_off_location = 12; // Vehicle drop-off location. Defaults to pick_up_location if empty.
+    commons.DateTime pick_up_date_timestamp = 13; // DateTime of pickup 
+    commons.DateTime drop_off_date_timestamp = 14; // DateTime of drop-off 
+    repeated string included_agent_ids = 15; // List of included agents for a given market - max length of list is 200 items.
+    repeated string excluded_agent_ids = 16; // List of excluded agents for a given market - max length of list is 200 items.
+    uint32 driver_age = 17; // Driver age
+    bool is_ip_address_specified = 18; // Whether ip address was specified
+    bool is_ip_address_valid = 19; // Whether ip address was valid
+  }
+
+  message PickupDropOff {
+    oneof item {
+      string entity_id = 1; // Entity ID - representing a city, airport, district or train station.
+      string coordinates = 2; // Coordinates in format `latitude;longitude`
+    }
+  }

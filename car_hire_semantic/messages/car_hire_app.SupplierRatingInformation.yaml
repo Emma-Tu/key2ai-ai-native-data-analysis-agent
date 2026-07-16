@@ -1,0 +1,18 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: SupplierRatingInformation
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "供应商评分信息building block（供应商名 + 评分）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: vendor_name
+    type: string
+    number: 1
+    desc: "The vendor name"
+  - name: score
+    type: double
+    number: 2
+    desc: "The vendor score"

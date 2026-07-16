@@ -1,0 +1,39 @@
+# AUTO-GENERATED skeleton from proto/commons.proto. Enrich desc / relationships by hand.
+message: DateTime
+package: commons
+source_file: commons.proto
+group: shared
+description: "时间类型：unix_time_millis(毫秒)+时区偏移+夏令时偏移+精度。非普通时间戳，过滤日期用 unix_time_millis。"   # curated (overlay.yaml)
+grain: "值类型"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: unix_time_millis
+    type: int64
+    number: 1
+    desc: "UNIX timestamp in MILLIS"
+  - name: timezone_offset_mins
+    type: int32
+    number: 2
+    desc: "Timezone offset from UTC in minutes, For example UK = 0, NL = 60. Does not include any adjustment for daylight savings."
+  - name: daylight_savings_offset_mins
+    type: int32
+    number: 3
+    desc: "A countries daylight savings offset in minutes. Set only when a country observes daylights saving time. For Example: UK = 60, NL = 60"
+  - name: date_time_kind
+    type: Precision
+    number: 4
+    ref: Precision
+    desc: ""   # TODO 待补充业务含义
+
+nested_enums:
+  - name: Precision
+    values:
+      0: MILLI
+      1: SECOND
+      2: DAY
+      4: WEEK
+      5: MONTH
+      6: YEAR
+      7: ANYTIME   # Anytime is unspecified time
+      8: MINUTE

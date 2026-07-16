@@ -1,0 +1,57 @@
+# AUTO-GENERATED skeleton from proto/car_hire_app.proto. Enrich desc / relationships by hand.
+message: CarHireMiniSearch
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+description: "App 端 mini search 事件（筛选/翻页子搜索状态）。注意与 car_hire.CarHireMiniSearch 字段不同。"   # curated (overlay.yaml)
+grain: "一行 = 一次 App 端 mini search"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 2
+    desc: "associate it with search"
+  - name: mini_search_guid
+    type: string
+    number: 3
+    desc: "associate it with mini search if exists"
+  - name: car_hire_filter_and_sort
+    type: clients.CarHireFilterAndSort
+    number: 4
+    ref: clients.CarHireFilterAndSort   # 外部类型，见 generated/external_refs.yaml
+    desc: "The state of the filtering and sorting options at the time this event was fired."
+  - name: saved_cars_total_count
+    type: uint32
+    number: 5
+    desc: "total count of saved cars"
+  - name: current_page_hearted_count
+    type: uint32
+    number: 6
+    desc: "count of saved cars in current page"
+  - name: page_index
+    type: uint32
+    number: 7
+    desc: "current page index start from 0"
+  - name: total_results_count
+    type: uint32
+    number: 8
+    desc: "total results count"
+  - name: current_results_count
+    type: uint32
+    number: 9
+    desc: "current results count"
+  - name: filter_search_guid
+    type: string
+    number: 10
+    desc: "associate it with filter search if exists"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

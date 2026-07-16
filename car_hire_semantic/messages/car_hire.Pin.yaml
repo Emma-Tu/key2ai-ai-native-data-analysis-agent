@@ -1,0 +1,14 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: Pin
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "地图标记 building block（仅含 id）。"   # curated (overlay.yaml)
+grain: "值类型"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: id
+    type: string
+    number: 1
+    desc: ""   # TODO 待补充业务含义

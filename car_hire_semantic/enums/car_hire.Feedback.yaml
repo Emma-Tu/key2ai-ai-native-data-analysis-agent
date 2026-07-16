@@ -1,0 +1,16 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: Feedback
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "Types of feedback the chatbot can receive"
+values:
+  - num: 0
+    name: UNSET_FEEDBACK
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: FEEDBACK_LIKE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: FEEDBACK_DISLIKE
+    meaning: ""   # TODO 待确认业务含义

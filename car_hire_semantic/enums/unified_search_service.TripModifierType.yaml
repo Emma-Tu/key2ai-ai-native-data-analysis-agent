@@ -1,0 +1,49 @@
+# AUTO-GENERATED from proto/unified_search_service.proto.
+enum: TripModifierType
+package: unified_search_service
+source_file: unified_search_service.proto
+group: shared
+desc: "USS 行程修饰类型（筛选 pill/agent 偏好/替代出发地/机票舱位/住宿房间数等，跨垂直）。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_TRIP_MODIFIER_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: TRIP_MODIFIER_TYPE_ACCOMMODATION_UNKNOWN
+    meaning: "Used when mini-event schema becomes outdated with USS schemas"
+  - num: 2
+    name: TRIP_MODIFIER_TYPE_GENERAL_FILTER_PILL
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: TRIP_MODIFIER_TYPE_GENERAL_AGENT_PREFERENCE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: TRIP_MODIFIER_TYPE_GENERAL_CARRIER_ID_PREFERENCE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: TRIP_MODIFIER_TYPE_GENERAL_ADD_ALTERNATIVE_ORIGINS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: TRIP_MODIFIER_TYPE_GENERAL_ADD_ALTERNATIVE_DESTINATIONS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: TRIP_MODIFIER_TYPE_FLIGHTS_CABIN_CLASS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 8
+    name: TRIP_MODIFIER_TYPE_FLIGHTS_PREFER_DIRECT_ONLY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 9
+    name: TRIP_MODIFIER_TYPE_FLIGHTS_HAS_PRICE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 10
+    name: TRIP_MODIFIER_TYPE_ACCOMMODATION_NUMBER_OF_ROOMS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 11
+    name: TRIP_MODIFIER_TYPE_ACCOMMODATION_HOTEL_STARS
+    meaning: ""   # TODO 待确认业务含义
+  - num: 12
+    name: TRIP_MODIFIER_TYPE_ACCOMMODATION_HOTEL_CHAIN
+    meaning: ""   # TODO 待确认业务含义
+  - num: 13
+    name: TRIP_MODIFIER_TYPE_ACCOMMODATION_HOTEL_GROUP
+    meaning: ""   # TODO 待确认业务含义

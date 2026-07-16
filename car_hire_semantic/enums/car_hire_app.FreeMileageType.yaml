@@ -1,0 +1,16 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: FreeMileageType
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "含里程单位：英里/千米。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_MILEAGE_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: MILES
+    meaning: "miles"
+  - num: 2
+    name: KILOMETERS
+    meaning: "kilometers"

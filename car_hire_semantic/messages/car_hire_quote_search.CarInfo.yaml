@@ -1,0 +1,47 @@
+# AUTO-GENERATED skeleton from proto/car_hire_quote_search.proto. Enrich desc / relationships by hand.
+message: CarInfo
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+description: "报价搜索里的车辆信息building block（车名/SIPP/门数/变速箱/空调/乘客/行李/燃料）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: vehicle_name
+    type: string
+    number: 1
+    desc: "Vehicle name"
+  - name: sipp
+    type: string
+    number: 2
+    desc: "SIPP code representing car type"
+  - name: doors
+    type: Doors
+    number: 3
+    ref: Doors
+    desc: "Number of doors"
+  - name: transmission
+    type: Transmission
+    number: 4
+    ref: Transmission
+    desc: "Car transmission"
+  - name: is_air_conditioning
+    type: bool
+    number: 5
+    desc: "Whether air conditioning is available"
+  - name: passengers
+    type: Passengers
+    number: 6
+    ref: Passengers
+    desc: "Passenger information"
+  - name: bags
+    type: Bags
+    number: 7
+    ref: Bags
+    desc: "bags"
+  - name: fuel_type
+    type: FuelType
+    number: 8
+    ref: FuelType
+    desc: "Fuel type"

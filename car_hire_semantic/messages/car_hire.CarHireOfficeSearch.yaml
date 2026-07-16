@@ -1,0 +1,55 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireOfficeSearch
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "后端：租车门店搜索事件（按 office/iata/geo 查询取还门店）。"   # curated (overlay.yaml)
+grain: "一行 = 一次门店搜索（office_search_id 唯一）"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: search
+    type: CarHireSearch
+    number: 2
+    ref: CarHireSearch
+    desc: "user search conditions"
+  - name: request_id
+    type: string
+    number: 3
+    desc: "uuid, unique for every user search"
+  - name: request_seq_num
+    type: uint32
+    number: 4
+    desc: "the sequence number of a user search"
+  - name: office
+    type: OfficeIdentity
+    number: 5
+    ref: OfficeIdentity
+    desc: "car hire office"
+  - name: office_search_id
+    type: string
+    number: 14
+    desc: "uuid, unique for every office search"
+  - name: query_type
+    type: QueryType
+    number: 6
+    ref: QueryType
+    desc: "query type of office search"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+
+nested_enums:
+  - name: QueryType
+    values:
+      0: UNSET_QUERY_TYPE
+      1: OFFICE   # office query type
+      2: IATA   # iata code query type
+      3: GEO   # geo query type

@@ -1,0 +1,38 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: NormalizedDimensions
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "MCPC 定价的归一化维度（market/season/device/租期/预订窗口等），取值由 registry 元数据定义。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息（隶属 CarHireMcpcQueryEvent）"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: market
+    type: string
+    number: 1
+    desc: "Normalised source market. Expected to be ISO country code (e.g. UK, US, FR)."
+  - name: season
+    type: string
+    number: 2
+    desc: "Normalised season string. Allowed values defined in registry metadata (typically \"High\" or \"Low\")."
+  - name: device
+    type: string
+    number: 3
+    desc: "Normalised device string. Allowed values defined in registry metadata (typically \"Mobile\" or \"Desktop\")."
+  - name: rental_duration
+    type: string
+    number: 4
+    desc: "Normalised rental duration string. Allowed values defined in registry metadata (e.g. \"Short\", \"Long\")."
+  - name: booking_window
+    type: string
+    number: 5
+    desc: "Normalised booking window string. Allowed values defined in registry metadata (e.g. \"Short\", \"Medium\", \"Long\")."
+  - name: pickup_market
+    type: string
+    number: 6
+    desc: "Normalised pickup market string. Allowed values defined in registry metadata."
+  - name: length_of_rental
+    type: string
+    number: 7
+    desc: "Normalised length of rental string. Allowed values defined in registry metadata (e.g. \"1\", \"2\", ..., \"7\", \"8+\")."

@@ -1,0 +1,16 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: AnswerType
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "Types of answers the chatbot can provide"
+values:
+  - num: 0
+    name: UNSET_ANSWER_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: ANSWER_TYPE_KNOWLEDGE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: ANSWER_TYPE_UNSUPPORTED
+    meaning: ""   # TODO 待确认业务含义

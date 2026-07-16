@@ -1,0 +1,107 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireNoImageCar
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "后端：无图车辆事件 + 图片匹配结果（含 MatchType 匹配方式）。图片覆盖率分析用。"   # curated (overlay.yaml)
+grain: "一行 = 一次无图车辆的图片匹配记录"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: car_name
+    type: string
+    number: 2
+    desc: "car name, such as 'Ford Galaxy'."
+  - name: car_class
+    type: string
+    number: 3
+    desc: "car_class are the car SIPP codes, used to summarise the key features of a vehicle."
+  - name: vendor_name
+    type: string
+    number: 4
+    desc: "car supplier name"
+  - name: vendor_id
+    type: sint32
+    number: 5
+    desc: "car supplier assigned skyscanner vendor id"
+  - name: jqd_provider_id
+    type: string
+    number: 6
+    desc: "jqd provider id"
+  - name: sample_image_url
+    type: string
+    number: 7
+    desc: "sample image url of the quote"
+  - name: trimmed_car_name
+    type: string
+    number: 8
+    desc: "trimmed car name"
+  - name: standard_car_info
+    type: CarInfo
+    number: 9
+    ref: CarInfo
+    desc: "standard car info"
+  - name: match_type
+    type: MatchType
+    number: 10
+    ref: MatchType
+    desc: "image match type"
+  - name: car_image_info
+    type: CarImageInfo
+    number: 11
+    ref: CarImageInfo
+    desc: "matched image info"
+  - name: market
+    type: string
+    number: 12
+    desc: "market of this car"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+
+nested_enums:
+  - name: MatchType
+    values:
+      0: UNSET_MATCH_TYPE   # Handling exceptions
+      1: NO_MATCH   # Can not match a image
+      2: TRIMMED_CAR_NAME   # Matched by trimmed car name, trim means remove spaces, delimiters, etc
+      3: STANDARD_CAR_NAME   # Matched by standard car name, standard car name contains car maker, model and body spilt from car name
+      4: MAKER_CAR_CLASS   # Matched by maker and car class, car class is first two letters of SIPP code
+      5: CAR_CLASS   # Matched only by car class
+      6: ES_NO_MATCH   # Can not match image using elasticsearch
+      7: ES_CAR_NAME   # Matched by car name using elasticsearch
+      8: ES_CAR_CLASS   # Matched by car class using elasticsearch
+
+nested_messages:
+  - name: CarInfo
+    fields:
+      - name: maker
+        type: string
+        number: 1
+        desc: ""   # TODO 待补充业务含义
+      - name: model
+        type: string
+        number: 2
+        desc: ""   # TODO 待补充业务含义
+      - name: body
+        type: string
+        number: 3
+        desc: ""   # TODO 待补充业务含义
+  - name: CarImageInfo
+    fields:
+      - name: car_info
+        type: CarInfo
+        number: 1
+        ref: CarInfo
+        desc: ""   # TODO 待补充业务含义
+      - name: image_url
+        type: string
+        number: 2
+        desc: ""   # TODO 待补充业务含义

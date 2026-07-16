@@ -1,0 +1,45 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarhireVendorMappingSearch
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "后端：供应商映射搜索事件（未映射/未确认/映射到其他合作方的供应商名）。"   # curated (overlay.yaml)
+grain: "一行 = 一次 vendor-mapping 查询"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.LightHeader
+    number: 1
+    ref: commons.LightHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: scrape_request_id
+    type: string
+    number: 2
+    desc: "client request identifier, associated with a scrape request (e.g. a Jacquard request)"
+  - name: website_id
+    type: string
+    number: 3
+    desc: "Abbreviation of car-hire provider(broker) company name"
+  - name: client_id
+    type: ClientID
+    number: 4
+    ref: ClientID
+    desc: "Business which calls vendor-mapping api, obtained from the header of http, including Jacquard and Egressor"
+  - name: unmapped_partner_vendor_names
+    type: string
+    number: 5
+    desc: "a comma-seperated string"
+  - name: unconfirmed_partner_vendor_names
+    type: string
+    number: 6
+    desc: "a comma-seperated string"
+  - name: mapped_with_other_partner_vendor_names
+    type: string
+    number: 7
+    desc: "a comma-seperated string"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义

@@ -1,0 +1,40 @@
+# AUTO-GENERATED from proto/car_hire.proto.
+enum: SearchControlItem
+package: car_hire
+source_file: car_hire.proto
+group: core
+desc: "Component in Search Control"
+values:
+  - num: 0
+    name: UNSET_SEARCH_CONTROL_ITEM
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: PICKUP_LOCATION_INPUT
+    meaning: ""   # TODO 待确认业务含义
+  - num: 2
+    name: DROPOFF_LOCATION_INPUT
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: RETURN_CHECKBOX
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: PICKUP_DATE_SELECTED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 5
+    name: PICKUP_TIME_SELECTED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 6
+    name: DROPOFF_DATE_SELECTED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 7
+    name: DROPOFF_TIME_SELECTED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 8
+    name: AGE_CHECKBOX
+    meaning: ""   # TODO 待确认业务含义
+  - num: 9
+    name: AGE_SELECTED
+    meaning: ""   # TODO 待确认业务含义
+  - num: 10
+    name: SEARCH_BUTTON
+    meaning: ""   # TODO 待确认业务含义

@@ -1,0 +1,18 @@
+# AUTO-GENERATED skeleton from proto/car_hire_quote_search.proto. Enrich desc / relationships by hand.
+message: CancellationPolicy
+package: car_hire_quote_search
+source_file: car_hire_quote_search.proto
+group: core
+description: "取消政策building block（是否免费取消 + 最晚可免费取消小时数）。"   # curated (overlay.yaml)
+grain: "复用型嵌套消息"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: free_cancellation
+    type: bool
+    number: 1
+    desc: "Indicates if free cancellation is available"
+  - name: latest_cancellation_hour
+    type: uint32
+    number: 2
+    desc: "Hours before pick-up when free cancellation is still available"

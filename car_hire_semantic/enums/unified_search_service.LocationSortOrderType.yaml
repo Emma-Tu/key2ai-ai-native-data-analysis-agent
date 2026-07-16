@@ -1,0 +1,22 @@
+# AUTO-GENERATED from proto/unified_search_service.proto.
+enum: LocationSortOrderType
+package: unified_search_service
+source_file: unified_search_service.proto
+group: shared
+desc: "USS 地点排序方式：相关性/热门度/最便宜机票。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_LOCATION_SORT_ORDER_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: LOCATION_SORT_ORDER_TYPE_UNKNOWN
+    meaning: "Used when mini-event schema becomes outdated with USS schemas"
+  - num: 2
+    name: LOCATION_SORT_ORDER_TYPE_RELEVANCE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 3
+    name: LOCATION_SORT_ORDER_TYPE_POPULARITY
+    meaning: ""   # TODO 待确认业务含义
+  - num: 4
+    name: LOCATION_SORT_ORDER_TYPE_CHEAPEST_FLIGHTS
+    meaning: ""   # TODO 待确认业务含义

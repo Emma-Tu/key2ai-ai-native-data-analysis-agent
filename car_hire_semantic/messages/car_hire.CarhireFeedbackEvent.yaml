@@ -1,0 +1,37 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarhireFeedbackEvent
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "前端：用户对聊天机器人回复的点赞/点踩反馈。"   # curated (overlay.yaml)
+grain: "一行 = 一次反馈（关联 message_id）"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.LightHeader
+    number: 1
+    ref: commons.LightHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: utid
+    type: string
+    number: 2
+    desc: ""   # TODO 待补充业务含义
+  - name: search_guid
+    type: string
+    number: 3
+    desc: "associate it with search"
+  - name: message_id
+    type: string
+    number: 4
+    desc: "associate it with mini search"
+  - name: feedback_type
+    type: Feedback
+    number: 5
+    ref: Feedback
+    desc: "feedback type provided by the user"
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "Grappler Receive Timestamp added by SDK"

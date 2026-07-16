@@ -1,0 +1,50 @@
+# AUTO-GENERATED skeleton from proto/car_hire.proto. Enrich desc / relationships by hand.
+message: CarHireSearchButton
+package: car_hire
+source_file: car_hire.proto
+group: core
+description: "前端：租车搜索按钮点击事件（含所在页面类型 PageType）。"   # curated (overlay.yaml)
+grain: "一行 = 一次搜索按钮事件"   # curated (overlay.yaml)
+domain: car_hire
+
+fields:
+  - name: header
+    type: commons.MiniHeader
+    number: 1
+    ref: commons.MiniHeader   # 外部类型，见 generated/external_refs.yaml
+    desc: ""   # TODO 待补充业务含义
+  - name: grappler_receive_timestamp
+    type: commons.DateTime
+    number: 1998
+    ref: commons.DateTime   # 外部类型，见 generated/external_refs.yaml
+    desc: "Grappler Receive Timestamp added by SDK ie., time when slipstream receives an event."
+  - name: page_type
+    type: PageType
+    number: 2
+    ref: PageType
+    desc: ""   # TODO 待补充业务含义
+
+nested_enums:
+  - name: PageType
+    values:
+      0: UNSET_CAR_HIRE_OTHER
+      1: CAR_HIRE_HOME
+      2: CAR_HIRE_RESULTS
+      3: CAR_HIRE_ALL_AIRPORTS
+      4: CAR_HIRE_ALL_CITIES
+      5: CAR_HIRE_ALL_PROVIDERS
+      6: CAR_HIRE_ALL_COUNTRIES
+      7: CAR_HIRE_FAQ
+      8: CAR_HIRE_AIRPORT
+      9: CAR_HIRE_LOCATION
+      10: CAR_HIRE_PROVIDER
+      11: CAR_HIRE_COUNTRIES
+      12: CAR_HIRE_WITH_PROVIDER
+      13: CAR_HIRE_TRAIN_STATION
+      14: CAR_HIRE_COUNTRY
+      15: CAR_HIRE_NEIGHBOURHOOD
+      16: CAR_HIRE_REGION
+      17: CAR_HIRE_PROVIDER_IN_CITY
+      18: CAR_HIRE_PROVIDER_AT_AIRPORT
+      19: CAR_HIRE_PROVIDER_IN_COUNTRY
+      20: CAR_HIRE_CAR_TYPE

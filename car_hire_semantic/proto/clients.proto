@@ -1,0 +1,1278 @@
+// Owner: YoHoHo Squad (Slack: #trusted-funnel-design; Email: YohohoSquad@skyscanner.net)
+// Schema for client side traveller events.
+// Being logged as part of the trusted funnel data goal.
+syntax = "proto3";
+
+package clients;
+option go_package = "github.com/skyscanner/go-schemas/clients";
+option java_package = "net.skyscanner.schemas";
+option csharp_namespace = "net.skyscanner.schemas";
+option objc_class_prefix = "SKYSchemaClients";
+
+import "commons.proto";
+import "flights.proto";
+import "car_hire.proto";
+import "flights_search.proto";
+
+
+// Capture when a set of experiments are allocated to a client.
+//
+// Populating the header experiment allocation id:
+// The experimentation_allocation_id, which is a unique identifier for the experimentation set,
+// on an event of this kind, is the source for the the experiment_allocation_id
+// header field in all following events.
+// All following events from the client must use this experimentation_allocation_id in
+// their header.
+message ExperimentAllocation {
+  commons.MiniHeader header = 1;
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  message Experiment {
+    string name = 1;
+    string variant = 2;
+    uint32 version = 3;
+  }
+
+  // Though this is to be considered a set, the semantics (list) of
+  // allocations does not guarantee uniqueness of an experiment item.
+  repeated Experiment experiments = 2;
+}
+
+// The user interface style that the client user agent is configured
+// to prefer.
+// Will be unset for those agents that have no preference or events
+// prior to this being added.
+enum UserInterfaceStyle {
+  USER_INTERFACE_STYLE_UNSET = 0; // The value is unknown or couldn't be determined
+  USER_INTERFACE_STYLE_UNSPECIFIED = 1; // The user agent doesn't specify one or the other
+  USER_INTERFACE_STYLE_LIGHT = 2; // Light mode preference
+  USER_INTERFACE_STYLE_DARK = 3; // Dark mode preference
+}
+
+// The user preference event is emitted when a user makes changes to their preference, OR
+// when the application starts a new session with a user. The latter is to ensure we have at
+// least one snapshot of the user preferences in Grappler.
+message UserPreferences {
+  commons.MiniHeader header = 1;
+  // Core Grappler fields
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // The country chosen by the user. This property is also often referred to as 'market'.
+  // We're using the name country here, as that is what the user is presented with.
+  string country = 2;
+  // The currency of choice for the user.
+  string currency = 3; // It should be the currency code as returned by culture service. e.g. USD
+  // The preferred language and dialect as chosen by the user. e.g. en-US, en-GB.
+  string locale = 4;
+  // GDPR flag set by user to determine if they wish to receive personalised ads
+  bool is_optedin_for_personalised = 5;
+  // GDPR flag: whether 'information/optimisation' tracking has been enabled by the user
+  bool is_optedin_for_optimization = 6;
+  // GDPR flag: whether GDPR was 'active' at the time of preference change/session start.
+  // This is controlled by saddlebag-tracking-preferences, based on market and a potentially
+  // changing list of regulated markets.
+  bool is_gdpr_active = 7;
+  // GDPR flag: the version of the GDPR cookie that the user has; this indicates what the user
+  // actually agreed to/saw in the consent form.
+  uint32 gdpr_cookie_version = 8;
+  // GDPR flag: whether the GDPR cookie was initialised for the user at the time of this event.
+  bool is_gdpr_initialised = 9;
+
+  // The user interface style the user agent prefers
+  UserInterfaceStyle preferred_user_interface_style = 10;
+}
+
+// The View event captures content that was displayed to the user. This includes while screen and page views, but also
+// represents content and components within these pages, e.g adverts and pop ups.
+//
+// Events may be logged on the initial loading of a view, or on a refresh of a view with updated data. It is also
+// possible that a view is presented, but is in spinner mode, while loading the content.
+message View {
+  commons.MiniHeader header = 1;
+  // Core Grappler fields
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // A logical name for the view. I.e. 'DayView', or 'DetailView'.
+  string name = 2;
+
+  // A path of logical names for parent object for instance.
+  // I.e. a DetailView in DayView would be ('DetailView, ['DayView']);
+  repeated string ancestors = 3;
+
+  // Some views will have a place in an array, like each item in a search
+  // result. Populating this property makes sorting and evaluating rank of
+  // displayed items easier.
+  uint32 ordinal = 4;
+
+  // The referrer URL of the current page-view. Will be empty for app pages.
+  string referrer_url = 5;
+
+  // The optional ID of the event associated with the activity that led to
+  // the user's exposure to the view emitting this event.
+  string referrer_id = 6;
+
+  // The optional `name` field of the page/screen prior to the one emitting this View event.
+  string previous_name = 7;
+}
+
+// The desired outcome is that we know when user dismiss the ShieldsUp modal
+// The exact method how this is done is not desired, therefore no fields needed
+message ShieldsUpDismissed {
+  option deprecated=true;
+
+  // Headers
+  commons.MiniHeader header = 1;
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // Field specifies screen shields up is dismissed from
+  string from_identifier = 2;
+  // Specifies time its spent on screen
+  commons.TimeInterval time_on_screen = 3;
+}
+
+// The search event captures a travellers intent to search i.e. pressing the search button
+//
+// A traveller may generate multiple search events as they narrow down their options e.g. when progressing
+// from an "Everywhere" search, to a "browse" search, to a search where all locations and dates are specified.
+message Search {
+  commons.MiniHeader header = 1;
+  // Core Grappler fields
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  commons.BusinessDomain business_domain = 2;
+
+  // Try and capture as many common elements of a search. For example, all
+  // searches on Skyscanner involve travel to a place, and between a certain
+  // date range. Sometimes these might not be populated (you won't have a
+  // return date for a one-way flights search), or they might have different
+  // levels of granularity (e.g. we can search for a whole country, a city, or
+  // a particular airport).
+  // CAVEAT: These fields require client side logic to populate for various trip types
+  // which we have concluded as acceptable give the improvements to queryability
+  commons.Location origin = 3;
+  commons.Location destination = 4;
+
+  // Similarly, we can have different levels of date granularity to represent
+  // searches with a wider date range.
+  commons.DateTime start_date = 5;
+  commons.DateTime end_date = 6;
+
+  // Specific details for a particular type of search.
+  oneof search_details {
+    FlightSearch flight_search = 7;
+    HotelSearch hotel_search = 8;
+    CarHireSearch car_hire_search = 9;
+    CombinedSearch combined_search = 10;
+    PackagesSearch packages_search = 11;
+  }
+
+  // this allows to link a Search with a View event (ref https://confluence.skyscannertools.net/display/AP/Correlate+view+and+search+events)
+  string view_id = 12;
+  // this allows to link the event that triggered this search event
+  string previous_event_id = 13;
+  // uniquely generated id identifying this search to allow correlation with other services (e.g. FPS)
+  string request_id = 14;
+}
+
+
+message CombinedSearch {
+  FlightSearch flight_search = 1;
+  HotelSearch hotel_search = 2;
+  CarHireSearch car_hire_search = 3;
+}
+
+// The flight search message provides the flights specific details to the search event above.
+message FlightSearch {
+  flights.CabinClass cabin_class = 1;
+  flights.PassengerGroup passenger_group = 2;
+
+  // The on/off filters
+  bool is_origin_nearby_airport_selected = 3;
+  bool is_destination_nearby_airport_selected = 4;
+  bool is_direct_only_selected = 5;
+
+  message Leg {
+    commons.Location origin = 1;
+    commons.Location destination = 2;
+    // The date provided if available. For a "whole month" search, set the precision of the commons.DateTime
+    // to 'MONTH' otherwise use the 'DAY' precision.
+    // If no specific datetime has been selected, use the is_cheapest_month flag to represent the full year
+    // search
+    commons.DateTime date = 3;
+    bool is_cheapest_month = 4;
+  }
+
+  // Describes a one way search consisting of an origin and destination
+  // where the destination could be "Everywhere".
+  message OneWay {
+    Leg leg = 1;
+  }
+
+  // Describes a return search where the second leg is the inverse of the first
+  // e.g. the destination of leg1 is the origin of leg2.
+  message Return {
+    Leg leg1 = 1;
+    Leg leg2 = 2;
+  }
+
+  // Describes a multi city search of two or more legs. Two leg multi city searches may
+  // be the equivalent of a return search, but the user has specifically selected a multi
+  // city search.
+  message MultiCity {
+    repeated Leg legs = 1;
+  }
+
+  oneof search {
+    OneWay one_way = 6;
+    Return return = 7;
+    MultiCity multi_city = 8;
+  }
+
+  // Describes the search type whether it's a fully qualified search from Day View or from other parts of the app (e.g. Inspiration feed, etc.)
+  flights_search.FlightSearch.Kind search_kind = 9;
+
+  // Describes a search that requests a cabin and/or a checked bag
+  bool is_cabin_bag_required = 10;
+  bool is_checked_bag_required = 11;
+
+  message TotalCostFareAttributeSearch {
+    option deprecated = true;
+    commons.MiniHeader header = 1;
+
+    string fare_attribute_search_guid = 2; // The guid in trusted funnel search event header
+    string parent_session_id = 3; // The FPS session id of the last non-fare-attribute search
+
+    bool is_cabin_bag_required = 4; // True when it's a search that requests for cabin bag
+    bool is_checked_bag_required = 5; // True when it's a search that requests for checked bag
+
+
+    commons.DateTime grappler_receive_timestamp = 1998;
+  }
+}
+
+message HotelSearch {
+    uint32 adults = 1;
+    uint32 rooms = 2;
+    string request_id = 3; // the id of the request that triggered a search in Bellboy - provided in Bellboy response
+    string correlation_id = 4; // correlation id passed by hotel Frontend, e.g. 3f3f625c-084a-4828-a1aa-de224cfa6e27
+    string search_start_finish_cycle_id = 5; // search_start_finish_cycle_id passed by hotel Frontend
+}
+
+message CarHireSearch {
+  enum SourcePage {
+    UNSET_SOURCE_PAGE = 0;
+    CAR_HIRE_HOME = 1;
+    CAR_HIRE_LOCATION = 2;
+    CAR_HIRE_AIRPORT = 3;
+    CAR_HIRE_PROVIDER = 4;
+    CAR_HIRE_COUNTRY = 5;
+    CAR_HIRE_NEIGHBOURHOOD = 6;
+    CAR_HIRE_WITH_PROVIDER = 7;
+    CAR_HIRE_TRAIN_STATION = 8;
+    CAR_HIRE_REGION = 9;
+    CAR_HIRE_PROVIDER_IN_CITY = 10;
+    CAR_HIRE_PROVIDER_AT_AIRPORT = 11;
+    CAR_HIRE_PROVIDER_IN_COUNTRY = 12;
+    CAR_HIRE_CAR_TYPE = 13;
+  }
+
+  enum SourceComponent {
+    UNSET_SOURCE_COMPONENT = 0;
+    CAR_HIRE_SEARCH_CONTROLS = 1;
+    CAR_HIRE_INDICATIVE_DEALS = 2;
+    CAR_HIRE_MAP = 3;
+    CAR_HIRE_PROVIDER_LOGOS = 4;
+    ROUTE_STATISTICS = 5;
+    CAR_HIRE_CONFIDENCE_PANELS = 6;
+    ROUTE_FAQS = 7 [deprecated=true]; // use FAQ instead 
+    PROVIDER_LOGOS = 8;
+    POPULAR_DESTINATIONS = 9;
+    CONTENT_BLOCK = 10;
+    PROVIDER_RATING = 11;
+    SEO_CROSS_LINK = 12;
+    SEO_BANNER = 13;
+    INFO_SNIPPET = 14;
+    FAQS = 15;
+    NO_DEALS = 16;
+    ACCORDION = 17;
+  }
+
+  uint32 driver_age = 1;
+  uint32 passengers = 2;
+  SourcePage source_page = 3; // the referring seo page that was search, current we are deprecated this field but may pick up in the future
+  SourceComponent source_component = 4; // the referring seo page's component, current we are deprecated this field but may pick up in the future
+  string backend_version = 5; // the version of the backend that the client is using
+  string source = 6; // the source flag in the URL
+}
+
+// The packages search message provides specific details o packages search event above.
+message PackagesSearch {
+  uint32 adults = 1;
+  // children ages we have restrictions so max of 2 children per adult having this restricted in size
+  repeated uint32 children_ages = 2;
+}
+
+// Fired whenever the user logs in, logs out, etc.
+message AuthenticationStatusChange {
+
+  // The traveller identity of the header is the state
+  // AFTER the change has taken effect.
+  commons.MiniHeader header = 1;
+
+  // Core Grappler fields
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // AuthenticationStatusChange: the traveller identity as it was before
+  // the change took effect.
+  commons.TravellerIdentity previous_traveller_identity = 2;
+}
+
+// ChangeableParameters are for various metadata properties not quite fitting
+// in other messages. It's called 'Changeable' as some of these may
+// change on some client types, and maybe not on others.
+message ChangeableParameters {
+  commons.MiniHeader header = 1;
+  // Core Grappler fields
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // The height of the user view. This may be a window on
+  // a desktop, the full screen on a phone, or part of the screen
+  // in tablet split view.
+  int32 view_height = 2;
+  // The width of the user view. This may be a window on
+  // a desktop, the full screen on a phone, or part of the screen
+  // in tablet split view.
+  int32 view_width = 3;
+
+//  Will possibly be enabled as they become relevant, none are in use yet
+//  string browser_size = 4;
+//  string flash_version = 5;
+//  bool java_enabled = 6;
+//  string browser_language = 7;
+//  string screen_colours = 8;
+}
+
+message Acquisition {
+  // HEADER
+  commons.MiniHeader header = 1;
+  // Core Grappler fields
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // Here we store the information that the application has available to it at
+  // acquisition time, and that won't change.
+
+  enum PlatformType {
+    UNSET_PLATFORM_TYPE = 0;
+    MOBILEAPP = 1;
+    WEB = 2;
+  }
+  PlatformType platform_type = 2;
+
+  enum AcquisitionType {
+    UNSET_ACQ_TYPE = 0;
+    // web sessions are the same
+    WEB_SESSION = 1;
+    // install event tells you the source of the install
+    INSTALL = 2;
+    // you might want to cross reference the source of the install and
+    // the deeplinks afterwards.
+    DEEPLINK = 3;
+  }
+
+  AcquisitionType acquisition_type = 3;
+
+  // The tracking parameters are dependent on the tech we use to track
+  // the source of the installation, and could change if we change
+  // supplier. Use a map, and the consumer of the data can do the
+  // mapping to their business logic.
+  map <string, string> traffic_source = 4;
+
+  // The referral URL is important on web to understand the source of the
+  // traffic, and is also used to identify when we should trigger the
+  // acquisition events.
+  string referral_url = 5;
+
+  // The user agent string contains device information
+  string user_agent_string = 6;
+
+  // Where the user is geographically located.
+  commons.Location user_location = 7;
+  DeviceCategory device_category = 8;
+
+  // these device type parameters might come from device atlas
+  enum DeviceCategory {
+    UNSET_DEVICE_CATEGORY = 0;
+    MOBILE = 1;
+    DESKTOP = 2;
+    TABLET = 3;
+  }
+  string os_name = 9;
+  string os_version = 10;
+  bool is_browser = 11;
+
+  string browser_name = 12;
+  string browser_version = 13;
+  string model_name = 14;
+  string vendor_name = 15;
+  string marketing_name = 16;
+  bool is_robot = 17;
+  string bot_name = 18;
+  string primary_hardware_type = 19;
+
+  string app_version = 20;
+  // Checks to see if ad block has been enabled by user
+  bool is_adblock_enabled = 21;
+  // Is the UTID of the user new?
+  bool is_new_utid = 22;
+}
+
+message SearchResultsOption {
+  // Log the top N (suggested value of N=25) of these itineraries, when the
+  // user clicks to open the booking options.
+  // If the search result clicked is outside the top 25, then log the top 25
+  // plus the one that they clicked on.
+  // https://confluence.skyscannertools.net/display/DP/Search+results+schema+design
+
+  commons.MiniHeader header = 1;
+  // Core Grappler fields
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  string search_results_page_guid = 2;
+
+  // These two numbers tell you the position of the itinerary in the search
+  // results page.
+  uint32 index = 3;
+  uint32 page = 4; // 0 for infinite scroll
+
+  // An itinerary is a set of prices that the user can select from. Link to the
+  // backend service.
+  string itinerary_guid = 5;
+
+  // This item tells us the specific information we present to the user, which
+  // is quite different for each vertical.
+  oneof itinerary_details {
+    FlightsSearchResultsOption flights_search_results_option = 6;
+    car_hire.CarHireSearchResultsOption car_hire_search_results_option = 7;
+    HotelsSearchResultsOption hotels_search_results_option = 8;
+  }
+
+  // The guid of the search event that triggered the search
+  string search_guid = 9;
+  // defines if self transfer is required
+  bool is_self_transfer = 10 [deprecated=true]; // Deprecated and move the field under FlightsSearchResultsOption
+
+  // Opaque token identifying the itinerary, used to join this event with
+  // other funnel events that reference the same itinerary.
+  string itinerary_token = 11;
+}
+
+message FlightsSearchResultsOption {
+  // The contents of the flights itinerary presented to the user
+  commons.Price price = 1;
+
+  // the quality score. 0.0 -> 10.0
+  float quality_score = 2;
+
+  // we tell the user how many deals there are
+  uint32 number_deals = 3;
+
+  // On app labels are show under the rating including "Cheapest" and "Overnight"
+  repeated string labels = 4;
+
+  message OperatingCarrierSafety {
+    bool is_face_masks_compulsory = 1;
+    bool is_aircraft_deep_cleaned_daily = 2;
+    bool is_attendants_wear_ppe = 3;
+    bool has_cleaning_packs_provided = 4;
+    bool has_food_service_changes = 5;
+    uint32 safety_score = 6;
+    uint32 max_safety_score = 7;
+    string safety_url = 8;
+  }
+
+  message Segment {
+    uint32 segment_number = 1;
+    commons.DateTime departure_datetime = 2;
+    commons.DateTime arrival_datetime = 3;
+    flights.Carrier marketing_carrier = 4;
+    flights.Carrier operating_carrier = 5;
+    uint32 duration_mins = 6;
+    commons.Location origin = 7;
+    commons.Location destination = 8;
+    OperatingCarrierSafety operating_carrier_safety = 9;
+  }
+
+  message FlightLeg {
+    uint32 leg_number = 1;
+    repeated Segment segment = 2;
+    commons.Location origin = 3;
+    commons.Location destination = 4;
+    commons.DateTime departure_datetime = 5;
+    commons.DateTime arrival_datetime = 6;
+    uint32 duration_mins = 7;
+
+    // there is sometimes text like "change airport in london". Store this
+    // information here if present
+    string additional_text = 8;
+  }
+  repeated FlightLeg legs = 5;
+
+  // Has this itinerary been highlighted as more 'environmentally friendly'
+  // than the average itinerary on this route.
+  bool is_marked_as_eco_option = 6;
+
+  // This score describes the average safety of the itinerary relating to
+  // covid-19 safety measures taken by the airlines.
+  uint32 safety_score = 7;
+  
+  // True when the itinerary is labelled as self-transfer
+  bool is_self_transfer = 8;
+}
+
+
+message HotelsSearchResultsOption {
+    commons.Money price = 1;
+    commons.LocationAttribute entity_id = 2;
+    bool is_cug_offer = 3; // if the offer contains a closed user group offer
+    string request_id = 4; // the id of the request that triggered a search in Bellboy - provided in Bellboy response
+}
+
+// A time slider filter showing 24h clock times.
+// E.g. when filtering to 18:20, max_time should be set to
+// hour_of_day: 18, minute_of_hour: 20
+message TimeSlider {
+    message TimeValue {
+        uint32 hour_of_day = 1;
+        uint32 minute_of_hour = 2;
+    }
+    TimeValue max_time = 1;
+    TimeValue min_time = 2;
+}
+
+// Representation of the time slider filters for Multicity searches
+// with the index representing the leg number of the trip.
+// The index number begins at 0.
+// E.g. Given NYC -> LDN LDN -> EDI EDI -> CPH, the index of the timeslider
+// for EDI -> CPH is 2.
+message IndexedTimeSlider {
+    TimeSlider time_slider = 1;
+    uint32 index = 2;
+}
+
+// Checkbox style filter.
+message SelectionValue {
+    string label = 1;
+    bool is_checked = 2; // the checkbox is selected
+    bool is_unavailable = 3; // the checkbox is unavailable for selection
+}
+
+// List of dynamic selection filters, e.g Airports
+message SelectionList {
+    repeated SelectionValue values = 1;
+    bool is_collapsed = 2;
+}
+
+// Selection filters for number of stops.
+message StopsSelectedValues {
+    bool is_direct_selected = 1;
+    bool is_one_stop_selected = 2;
+    bool is_two_stops_plus_selected = 3;
+    bool is_collapsed = 4;
+}
+
+// Selection filters for covid safety rating.
+message CovidSafetyRatingValues {
+  SelectionValue five_stars = 1;
+  SelectionValue four_stars = 2;
+  SelectionValue three_and_below_stars = 3;
+}
+
+// Time slider representing durations in minutes.
+message DurationSlider {
+    uint32 max_duration_mins = 1;
+    uint32 min_duration_mins = 2;
+    uint32 current_duration_mins = 3;
+    bool is_collapsed = 4;
+}
+
+// The website has filters only on the departure times. All arrival related filters will be empty.
+// iOS and Android have filters on both departure and arrival times.
+message FlightTimes {
+    message OneWayTimes {
+        TimeSlider outbound_departure = 1;
+        TimeSlider outbound_arrival = 2;
+    }
+
+    message ReturnTimes {
+        TimeSlider outbound_departure = 1;
+        TimeSlider outbound_arrival = 2;
+        TimeSlider inbound_departure = 3;
+        TimeSlider inbound_arrival = 4;
+    }
+
+    message MultiCityTimes {
+        repeated IndexedTimeSlider departures = 1;
+        repeated IndexedTimeSlider arrivals = 2;
+    }
+
+    oneof timeslider {
+        OneWayTimes one_way_times = 1;
+        ReturnTimes return_times = 2;
+        MultiCityTimes multicity_times = 3;
+    }
+
+    bool is_collapsed = 4;
+}
+
+// List of filters that are represented on the flights search results
+// across the website, iOS and Android.
+message FlightsFilterAndSort {
+    enum FlightsSortOrder {
+        UNSET_FLIGHTS_SORT_ORDER = 0;
+        BEST = 1;
+        PRICE = 2;
+        RATING = 3;
+        DURATION = 4;
+        OUTBOUND_TAKEOFF = 5;
+        OUTBOUND_LANDING = 6;
+        INBOUND_TAKEOFF = 7;
+        INBOUND_LANDING = 8;
+        AIRLINE = 9;
+        STOPS = 10;
+    }
+
+    FlightsSortOrder sort_order = 1;
+
+    SelectionList airlines = 2;
+    SelectionList airports = 3;
+    SelectionList alliances = 4;
+    StopsSelectedValues stops = 5;
+    DurationSlider duration = 6;
+    FlightTimes flight_times = 7; // web only uses departure times
+    bool mobile_sites_only = 8; // App only filter
+    bool non_protected_transfers = 9; // App only filter
+    bool eco_flights_only = 10;
+    bool flexible_flights_only = 11;
+    CovidSafetyRatingValues covid_safety_rating = 12;
+}
+
+message PriceSlider {
+    commons.Money min = 1;
+    commons.Money max = 2;
+}
+
+message PriceRangeSelection {
+    commons.Money min = 1;
+    commons.Money max = 2;
+    bool is_selected = 3;
+}
+
+message StarSelectionList {
+    bool is_no_stars_selected = 1;
+    bool is_one_stars_selected = 2;
+    bool is_two_stars_selected = 3;
+    bool is_three_stars_selected = 4;
+    bool is_four_stars_selected = 5;
+    bool is_five_stars_selected = 6;
+}
+
+message PriceRangeSelectionList {
+    repeated PriceRangeSelection price_range_selections = 1;
+}
+
+message PriceSelection {
+    oneof price {
+        PriceSlider price_slider = 1;
+        PriceRangeSelectionList price_range_selection_list = 2;
+    }
+}
+
+message HotelsFilterAndSort {
+    enum HotelsSortOrder {
+        UNSET_HOTELS_SORT_ORDER = 0;
+        PRICE_ASCENDING = 1;
+        PRICE_DESCENDING = 2;
+        DISTANCE = 3;
+        RATING = 4;
+        STARS_ASCENDING = 5;
+        STARS_DESCENDING = 6;
+        BEST = 7;
+    }
+
+    enum PriceDisplay {
+        UNSET_PRICE_DISPLAY = 0;
+        TOTAL = 1;
+        PER_NIGHT = 2;
+    }
+
+    HotelsSortOrder hotels_sort_order = 1;
+
+    PriceDisplay price_display = 2;
+
+    StarSelectionList star_selection_list = 3;
+    PriceSelection price = 4;
+    SelectionList meal_plan = 5;
+    SelectionList guest_rating = 6;
+    SelectionList popular_with = 7;
+
+    bool is_cug_filter_applied = 8;
+    string request_id = 9; // the id of the request that triggered a search in Bellboy - provided in Bellboy response
+}
+
+message CarHireFilterAndSort {
+  // object representing relevant state of passengers filter
+  SelectionList passengers = 1;
+  // types that correspond to class for car types
+  // car type and car class are merged into car type. So this field is not used for the time being.
+  SelectionList car_classes = 2;
+  // types that correspond directly to SIPP codes for car types
+  SelectionList car_types = 3;
+  // Mixed class and type categories
+  SelectionList car_categories = 4;
+  // object representing relevant state of pick up types filter
+  SelectionList pick_up_types = 5;
+  // object representing relevant state of features filter
+  SelectionList features = 6;
+  // object representing relevant state of fuel policies filter
+  // This field is currently included in policies, so it is not used for the time being.
+  SelectionList fuel_policies = 7;
+  // object representing relevant state of star ratings filter: Different from the StarSelectionList type as this filter does not show all star ratings
+  SelectionList star_ratings = 8;
+  // object representing relevant state of possible transmission types filter
+  SelectionList transmissions = 9;
+  // object representing relevant state of booking sites filter
+  SelectionList booking_sites = 10;
+  // object representing relevant state of possible supplier filter
+  SelectionList suppliers = 11;
+  // object representing relevant state of recommended filters filter
+  SelectionList recommended_options = 12;
+
+  enum SortOrder {
+    UNSET_SORT_ORDER = 0;
+    PRICE_ASCENDING = 1; // sort by cheapest
+    BEST_DESCENDING = 2; // sort by a best deal algorithmic model
+  }
+
+  // the type of sort applied
+  SortOrder sorted_by = 13;
+
+  // object representing relevant state of filter for free cancellation policies
+  SelectionList cancellation_policy = 14;
+
+  // object representing the state of map component
+  car_hire.MapState map_state = 15;
+
+  // object representing relevant state of greener choices filters filter
+  SelectionList greener_choices = 16;
+  
+  // object representing relevant state of policies filter
+  SelectionList policies = 17;
+
+  // object representing relevant state of seats filter
+  SelectionList seats = 18;
+
+  // object representing relevant state of booking options filter
+  SelectionList booking_options = 19;
+
+  // object representing relevant state of price filter
+  SelectionList price = 20;
+}
+
+message SearchResultsPage {
+  // `SearchResultsPage` event is a "View" style event that represents the
+  // state of the search results at a point in time. It is fired when the
+  // user selects a result and is taken to the booking panel view.
+  commons.MiniHeader header = 1;
+
+  // Automatically filled by Slipstream - Core Grappler fields
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // The guid of the search event that caused this set of search results
+  string search_guid = 2;
+
+  commons.BusinessDomain business_domain = 3;
+
+  // The state of the filtering and sorting options at the time this event
+  // was fired.
+  oneof filterandsort {
+      FlightsFilterAndSort flights_filter_and_sort = 4;
+      HotelsFilterAndSort hotels_filter_and_sort = 5;
+      CarHireFilterAndSort car_hire_filter_and_sort = 6;
+  }
+
+  // associate it with mini search
+  string mini_search_guid = 7;
+  string filter_search_guid = 8; // associate it with filter search
+}
+
+// The BookingPanelOption event is logged when the user lands on the booking panel view,
+// which appears after a specific search result is selected.
+// A BookingPanelOption event is fired for each option that is rendered on the booking panel.
+// It is fired the first time each option is rendered.
+// I.e if the option is re-rendered due to the price updating, a new event is not fired.
+//
+// the "search_results_option_guid" can be used to join this event with the SearchResultsOption.
+message BookingPanelOption {
+    commons.MiniHeader header = 1;
+
+    // Core Grappler fields
+    commons.DateTime grappler_receive_timestamp = 1998;
+
+    // Price as displayed for this booking panel option.
+    commons.Money price = 2;
+
+    // Guid of the search result option
+    string search_results_option_guid = 3;
+
+    // The position of the option in the panel: 0=first, 1=second etc
+    uint32 index = 4;
+
+    oneof booking_panel_option {
+        FlightsBookingPanelOption flights_booking_panel_option = 5;
+        CarHireBookingPanelOption car_hire_booking_panel_option = 6;
+        // PLACEHOLDER
+        // HotelsBookingPanelOption hotels_booking_panel_option = 7;
+        // Setting 24 as number as it's the last position
+        PackagesBookingPanelOption packages_booking_panel_option = 24;
+    }
+
+    // The guid of the search event that triggered the search
+    string search_guid = 8;
+
+    string config_page_guid = 9; // guid of the config landing page event
+    string linking_event_guid = 10; // guid of the linking event to link back to a previous step in the funnel
+
+    enum LinkingEventType {
+        UNSET_EVENT_TYPE = 0;
+        SEARCH_RESULTS_OPTION = 1;
+        CONFIG_FARE_FAMILY_OPTION = 2;
+        CONFIG_PAGE_LANDING = 3;
+        FAREHUB_STITCHING_ID = 4;
+    }
+
+    LinkingEventType linking_event_type = 11; // enum of the name of the event to link back to
+    commons.CultureSettings culture_settings = 12; // Country, locale, currency.
+    string correlation_id = 13 [deprecated=true]; // deprecated use flights_config_session_id instead
+    string flights_config_session_id = 14; // correlation id for tracking multiple polls
+
+    enum EntryKind {
+        UNSET_ENTRY_KIND = 0;
+        CONFIG_NO_FARE_FAMILIES = 1; // booking panels opened from no fare families state on config page
+        CONFIG_FARE_FAMILIES = 2; // booking panels opened from fare families state on config page
+        DAYVIEW = 3; // booking panels opened from non-config flow (dayview -> booking panel)
+    }
+    EntryKind entry_kind = 15; // entry kind to booking panel
+
+    // Guid of the search result selected
+    // note tapping a combined results itinerary will cause this to be populated rather than search_results_option_guid
+    string search_result_selected_guid = 16;
+    string itinerary_guid = 17;  // An itinerary is a set of prices that the user can select from. Link to the backend service.
+    string pricing_option_id = 18; // used to join information that lives in the backend, specifically pricing options information
+    FareAttributeOption fare_attribute_option = 19; // Detailed fare information including baggage information - later may have seats, upsell etc.
+    string fps_session_id = 20; // field to reference to the booking session id
+    bool is_upgraded_option = 21; // defines whether pricing option is one of the base displayed options or an upgrade/variant
+    
+    enum FareType {
+      UNSET_FARE_TYPE = 0;
+      BASE_FARE = 1; // the cheapest available option from this parter for given itinerary i.e. most basic available to book
+      BRANDED_FARE_UPSELL = 2; // an upgraded fare type offered by the partner (compared to base option) e.g. Economy Plus
+      CONSTRUCTED_BASE_FARE = 3; // an upgraded option synthetically created by adding baggage (or other extras) to the base fare
+      CONSTRUCTED_BRANDED_FARE_UPSELL = 4; // an upgraded option synthetically created by adding baggage (or other extras) to an upsell fare
+    }
+    FareType fare_type = 22; // describe the fare which this pricing option represents e.g. base (cheapest) or a form of upgrade
+    bool has_transfer_protection = 23 [deprecated=true]; // Deprecated and move the field under FlightsBookingPanelOption
+    // Opaque token identifying the itinerary, used to join this event with
+    // other funnel events that reference the same itinerary.
+    string itinerary_token = 25;
+  }
+
+  message FareAttributeOption {
+    // A Fare Attribute is the fare information linked to each booking panel option
+    message FareAttributes {
+      FareDetails fare_details = 1; // summary of fare details for the entire trip
+      FareLegDetails fare_leg_details = 2; // optional fare leg details 
+    }
+    
+    message BaggageAttribute {
+      string leg_id = 1; // identifier for the leg - only sent from within FareLegDetails
+      Assessment assessment = 2; // High level information regarding bag availability
+      uint32 pieces = 3; // number of pieces included in fare
+      commons.Money fee = 4; // fee to add a bag
+      BaggageWeight weight = 5; // weight of baggage
+    }
+
+    message BaggageWeight {
+      uint32 weight = 1;
+      WeightUnit weight_unit = 2;
+      enum WeightUnit {
+          UNSET_WEIGHT_UNIT = 0;
+          KILOGRAM = 1;
+          POUND = 2;
+      }
+    }
+
+    message FareAttribute {
+      Assessment assessment = 1; // High level information regarding attribute availability
+    }
+
+    message FareDetails {
+      BaggageAttribute cabin_baggage = 1; // cabin bag information
+      BaggageAttribute checked_baggage = 2; // checked bag information - fields below intended for information such as changes & cancellation
+      repeated string brand_names = 3; // name of the fare passed by partner, often 1-2 but at most 1 per segment
+      FareAttribute seat_pre_reservation = 4; // seat selection information
+      FareAttribute advance_change = 5; // advance fare change information
+      FareAttribute cancellation = 6; // fare cancellation information
+      repeated string added_attribute_labels = 7; // attributes added to make a constructed fare, up to the number of possible priced attributes. eg. "CABIN_BAGGAGE, CHECKED_BAGGAGE"
+    }
+
+    message FareLegDetails {
+      FareDetails leg_1 = 1; // fare detail information for first leg
+      FareDetails leg_2 = 2; // fare detail information for second leg - fields 3-6 intended for if we launch TCS with multi-city
+    }
+
+    enum Assessment {
+        UNSET_ASSESSMENT = 0; // UNSET - no information available
+        INCLUDED_ASSESSMENT = 1; // INCLUDED - attribute is included
+        FEE_ASSESSMENT = 2; // FEE - attribute not included but available for a fee
+        UNAVAILABLE_ASSESSMENT = 3; // UNAVAILABLE - attribute is not available
+    }
+  
+    FareAttributes fare_attributes = 1;
+  }
+
+message FlightsBookingPanelOption {
+
+    // A BookingItem is the partner-specific booking option displayed in the booking panel.
+    // If it's a "mashup", a booking panel option is composed of multiple booking items.
+    message BookingItem {
+        // Price as displayed for this specific item.
+        commons.Money price = 1;
+
+        // 4 char Skyscanner partner ID
+        string partner = 2;
+
+        // PQS for this partner
+        float quality_score = 3;
+
+        // Number of reviews that make up the PQS
+        uint32 number_reviews = 4;
+
+        // what kind of booking this will be: redirect to partner, dbook or bws
+        BookingType booking_type = 5 [deprecated=true]; // no longer using dBook and sBook, all redirect
+    }
+
+    enum BookingType {
+        UNSET_BOOKING_TYPE = 0;
+        REDIRECT = 1;
+        DIRECT_BOOKING = 2;
+        BOOK_WITH_SKYSCANNER = 3;
+    }
+
+
+    // If the booking option is a "mashup", this list will contains all the single
+    // items (potentially resulting in different redirects).
+    // If it's not a mashup this list will contain only one booking item.
+    //
+    // Note that if the traveller chooses all the booking_items (in the mashup case)
+    // all the redirects will have the same "booking_panel_option_guid"
+    repeated BookingItem booking_items = 1;
+    
+    // True when the booking option is labelled as self-transfer
+    bool is_self_transfer = 2;
+    
+    // defines whether transport protection is covered or not for booking panel option
+    bool has_transfer_protection = 3;
+}
+
+// Specific packages booking panel option
+message PackagesBookingPanelOption {
+
+  // Quote that can be selected, for now a board type is unique for a given partner (website_id)
+  message PackagesBookingQuote {
+    string board_type = 1;
+    commons.Money price = 2;
+    // saving_price is specific for the quote and not a comparison between other quotes for the same booking panel option (if any)
+    commons.Money saving_price = 3;
+  }
+
+  // Doing as a separate message in case of in future this may be different when including rails (i.e. JP market)
+  // Excluding origin & destination from here as they'll be common on the entire package option
+  message PackagesBookingPanelTransport {
+    commons.DateTime outbound_departure_timestamp = 1;
+    commons.DateTime outbound_arrival_timestamp = 2;
+    string outbound_carrier_name = 3;
+    uint32 outbound_legs_count = 4;
+    commons.DateTime inbound_departure_timestamp = 5;
+    commons.DateTime inbound_arrival_timestamp = 6;
+    string inbound_carrier_name = 7;
+    uint32 inbound_legs_count = 8;
+  }
+
+  message PackagesBookingPanelCombinedOption {
+    repeated PackagesBookingQuote quotes = 1; // the amount of different quotes that can be on the pricing option, the average is 4 and the max is 6.
+    PackagesBookingQuote preselected_quote = 2;
+  }
+
+  message PackagesBookingPanelSingleOption {
+    PackagesBookingQuote quote = 1;
+  }
+
+  string website_id = 1;
+  string hotel_id = 2;
+  commons.Location origin = 3;
+  commons.Location destination = 4;
+  PackagesBookingPanelTransport transport = 5;
+
+  oneof booking_option {
+    PackagesBookingPanelCombinedOption combined_option = 6;
+    PackagesBookingPanelSingleOption single_option = 7;
+  }
+
+}
+
+message CarHireBookingPanelOption {
+  // Details shown on a car hire booking panel option
+  enum CollectionPolicy {
+    // The collection policy for where the user picks up the rental
+    UNSET_COLLECTION_POLICY = 0;
+    TERMINAL_DESK = 1;
+    MEET_AND_GREET = 2;
+    SHUTTLE_BUS = 3;
+  }
+
+  enum FuelPolicy {
+    // The rental fuel policy as visible to the user
+    UNSET_FUEL_POLICY = 0;
+    EMPTY_TO_EMPTY = 1;
+    QUARTER_TO_EMPTY = 2;
+    HALF_TO_EMPTY = 3;
+    FULL_TO_EMPTY = 4;
+    QUARTER_TO_QUARTER = 5;
+    HALF_TO_HALF = 6;
+    FULL_TO_FULL = 7;
+    SAME_TO_SAME = 8;
+    FREE_FULL_TANK = 9;
+  }
+
+  enum BookingType {
+    UNSET_BOOKING_TYPE = 0;
+    REDIRECT = 1;
+    DIRECT_BOOKING = 2;
+  }
+
+  enum PickupMethod {
+    UNSET_PICKUP_METHOD = 0;
+    KEYLESS = 1;
+    KEY_AND_GO = 2;
+    NORMAL = 3;
+  }
+
+  enum FuelType {
+    UNSET_FUEL_TYPE = 0;    // handling exceptions
+    PETROL = 1;              // fuel type is petrol
+    DIESEL = 2;             // fuel type is diesel
+    ELECTRIC = 3;           // fuel type is electric
+    HYBRID = 4;             // fuel type is hybrid
+    OTHER = 5;              // other value
+  }
+
+  enum Transmission {
+    UNSET_TRANSMISSION = 0;     // handling exceptions
+    MANUAL = 1;                 // transmission is manual
+    AUTOMATIC = 2;              // transmission is automatic
+  }
+
+  message Vehicle {
+    string maker = 1;                   // maker of the vehicle
+    string model = 2;                   // model of the vehicle
+    string body = 3;                    // body of the vehicle
+    uint32 passengers = 4;              // passengers number of the vehicle
+    uint32 doors = 5;                   // doors number of the vehicle
+    Transmission transmission = 6;      // transmission of the vehicle
+    FuelType fuel_type = 7;             // fuel type e.g. electric, hybrid
+    uint32 doors_min = 8;               // min doors number of the vehicle
+    uint32 doors_max = 9;               // max doors number of the vehicle
+    bool has_air_conditioning = 10;     // does the vehicle have air conditioning
+    string original_car_name = 11;      // original car name from the partner
+  }
+
+  enum MileageUnit {
+    UNSET_MILEAGE_UNIT = 0;     // handling exceptions or unlimited mileage
+    MILES = 1;                  // miles
+    KILOMETERS = 2;             // kilometers
+  }
+
+  message Mileage {
+    bool is_unlimited_mileage = 1;      // If it is 'unlimited' mileage
+    uint32 included_mileage = 2;        // amount of included mileage, in the unit type defined in MileageUnit
+    MileageUnit mileage_unit = 3;       // unit to use for representing mileage, either miles or kilometers
+  }
+
+  message QuotePickupLocation {
+    string geo_hash = 1;        // hash of geographical data, for aggregation
+    string latitude = 2;             // latitude of the location
+    string longitude = 3;             // longitude of the location
+    string address = 4;         // the address of the location
+  }
+
+  enum PaymentType {
+    UNSET_PAYMENT_TYPE = 0;
+    PAYMENT_TYPE_PRE_PAY = 1; // pay online, pay when booking
+    PAYMENT_TYPE_MIX_PAY = 2; // Pay part of the deposit when booking and the rest when traveler pick up the car
+    PAYMENT_TYPE_ARRIVAL_PAY = 3; // pay when traveler pick up the car
+  }
+
+  BookingType booking_type = 1; // type of booking
+  string partner_id = 2; // four letter official id of the redirect partner
+  float star_rating = 3; // star rating of the deal
+  uint32 number_of_reviews = 4; // number of reviews listed on the quote
+  FuelPolicy fuel_policy = 5;
+  CollectionPolicy collection_policy = 6;
+  float quality_score = 7; // The deal quality score
+  uint32 supplier_id = 8; // The integer which acts as a vendor id
+  repeated string value_adds = 9; // list of deal value-adds offered by particular partner/vendor combo
+  string office_id = 10; // The office id of the booking panel
+  commons.Money insurance_excess = 11; // The insurance excess of the booking panel
+  PickupMethod pickup_method = 12; // method of pickup
+  Vehicle vehicle = 13; //vehicle of booking panel option
+  bool is_free_cancellation = 14;   // If it is free cancellation
+  Mileage mileage = 15; // The mileage included in the car rental
+  CollectionPolicy return_policy = 16;  //state where the customer will drop the car off
+  QuotePickupLocation quote_pickup_location = 17; // pickup location get from the quote
+  uint32 seat = 18; // The seat value from the quote
+  string sipp = 19; // origin sipp in the quote
+  PaymentType payment_type = 20; // payment type of the quote
+  string car_image_file_name = 21; // car image file name
+  string card_id = 22; // Unique ID of the search result card, used to identify all booking panel of a card, example: mntm000698bsrywbxf
+  uint32 bags = 23; // The bags value from the quote
+  commons.DateTime cache_create_timestamp = 24; // The time when the quote was created in the cache
+}
+
+message SearchResultSelected {
+    // Log a booking option selected by the user.
+
+    commons.MiniHeader header = 1;
+    // Core Grappler fields
+    commons.DateTime grappler_receive_timestamp = 1998;
+
+    string search_results_page_guid = 2;
+
+    // These two numbers tell you the position of the itinerary in the search
+    // results page.
+    uint32 index = 3;
+    uint32 page = 4;
+
+    // The guid of the search event that triggered the search
+    string search_guid = 5;
+
+    // This item tells us the specific information we present to the user, which
+    // is quite different for each vertical.
+    oneof itinerary_details {
+        CarHireGroupVisibleProperties car_hire_search_result_selected = 6;
+        HotelsSearchResultsOption hotels_search_result_selected = 7;
+    }
+
+    // this item tells us the platform of the user
+    commons.Platform platform = 8;
+    // associate it with mini search
+    string mini_search_guid = 9;
+    // Guid of the search result option
+    string search_results_option_guid = 10;
+
+    // this item is that we record the common variables of all quotes in the same group.
+    car_hire.Quote.ValueAdds value_adds = 11;
+}
+
+message SearchPillSelected {
+  option deprecated = true;
+  // Log the search pill selected by the user.
+  // https://confluence.skyscannertools.net/display/RP/Minimum+Viable+Dataset
+
+  commons.MiniHeader header = 1;
+  // Core Grappler fields
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // The guid of the Search event that triggered the search
+  string search_guid = 2;
+
+  // The guid of the SearchResultsPage event specifying the business domain
+  // for this interaction
+  string search_results_page_guid = 3;
+
+  // These two numbers tell you the position of the pill in the search
+  // results page. This index starts from zero.
+  uint32 index = 4;
+  uint32 page = 5; // 0 for infinite scroll and for Combined Results
+
+  // An identifier that uniquely identifies the search pill within the context of the
+  // business_domain.
+  string pill_identifier = 6;
+}
+
+message SearchViewMoreSelected {
+  option deprecated = true; 
+  // Log that the user performed an interaction indicating interest in
+  // seeing additional priced inventory items.
+  // https://confluence.skyscannertools.net/display/RP/Minimum+Viable+Dataset
+
+  commons.MiniHeader header = 1;
+  // Core Grappler fields
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // The guid of the Search event that triggered the search
+  string search_guid = 2;
+
+  // The guid of the SearchResultsPage event specifying the business domain
+  // for this interaction
+  string search_results_page_guid = 3;
+}
+
+message CarHireGroupVisibleProperties {
+  // The contents of the car hire itinerary that are presented to the user.
+  string itinerary_id = 1;
+
+  car_hire.CarType car_type = 2 [deprecated=true]; // ACRISS car type
+  car_hire.CarCategory car_category = 3 [deprecated=true]; // ACRISS car category
+  car_hire.Transmission transmission = 4 [deprecated=true]; // ACRISS transmission type
+  uint32 max_seats = 5; // the maximum seats available to the user
+  uint32 max_bags = 6; // the maximum number of bags available to the user
+  bool has_air_conditioning = 7; // does the rental have a/c
+  uint32 number_of_deals = 8; // how many deals are in the group
+  float group_score = 9; // the deal score calculated for the group (visible in app and soon web)
+
+  commons.Price price = 10; // represented price of the option
+  string sipp_code = 11; // the code that encodes the ACRISS properties of the car in a string
+  uint32 initial_group_index = 12; // The index number tell you the initial group position in total results, start from 0
+  uint32 recommended_ranking_index = 13; // The index number tell you the recommended position in total results, start from 0
+  uint32 total_number_of_deals = 14; // total deals count in the group
+  car_hire.GroupCardType card_type = 15; // card type of values NORMAL/HEARTED/HIGHLIGHT
+  string car_name = 16; // it is from group.car_name
+  sint32 vendor_id = 17;   // it comes from the key of group.vendors
+  string vendor_name = 18; // it comes from the value of group.vendors
+}
+
+message ViewLifecycle {
+  commons.MiniHeader header = 1;
+
+  // Core Grappler fields
+  commons.DateTime grappler_receive_timestamp = 1998;
+
+  // Lifecycle Event
+  LifecycleEvent event = 2;
+}
+
+enum LifecycleEvent {
+  LIFECYCLE_EVENT_UNSPECIFIED = 0;
+  LIFECYCLE_EVENT_NAVIGATION_FORWARD = 1;
+  LIFECYCLE_EVENT_NAVIGATION_BACKWARDS = 2;
+}
+
+// System  information about the user device and environment
+message SystemInfo {
+    commons.MiniHeader header = 1;
+
+    // Core Grappler fields
+    commons.DateTime grappler_receive_timestamp = 1998;
+
+    commons.ClientDetails client_details = 2;
+}

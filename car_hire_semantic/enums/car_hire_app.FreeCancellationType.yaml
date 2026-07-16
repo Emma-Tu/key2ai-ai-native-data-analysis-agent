@@ -1,0 +1,19 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: FreeCancellationType
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "免费取消类型：可免费取消/部分 deal 可/不可。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_FREE_CANCELLATION_TYPE
+    meaning: "Default unset value"
+  - num: 1
+    name: FREE_CANCELLATION
+    meaning: "Free cancellation available"
+  - num: 2
+    name: SOME_DEALS_FREE_CANCELLATION
+    meaning: "Some deals have free cancellation"
+  - num: 3
+    name: NO_FREE_CANCELLATION
+    meaning: "No free cancellation available"

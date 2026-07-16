@@ -1,0 +1,73 @@
+# AUTO-GENERATED from proto/car_hire_app.proto.
+enum: ActionType
+package: car_hire_app
+source_file: car_hire_app.proto
+group: core
+desc: "App 端用户动作类型（应用筛选/点标记/点报价/查看历史/快捷筛选等）。决定 UserAction 的 oneof 分支。"   # curated (overlay.yaml)
+values:
+  - num: 0
+    name: UNSET_ACTION_TYPE
+    meaning: ""   # TODO 待确认业务含义
+  - num: 1
+    name: APPLY_FILTER
+    meaning: "When a filter is applied from the filter screen"
+  - num: 2
+    name: TAP_MARKER
+    meaning: "When a marker is selected"
+  - num: 3
+    name: RESET_MARKER_FILTER
+    meaning: "When the selected marker is reset to `null`"
+  - num: 4
+    name: TAP_SEARCH_CONTROL
+    meaning: "When the search control is interacted with"
+  - num: 5
+    name: INTERACT_MAP
+    meaning: "When the map is moved/zoomed/select a marker"
+  - num: 6
+    name: INTERACT_BOTTOM_SHEET
+    meaning: "When the bottom sheet is moved."
+  - num: 7
+    name: TAP_FOCUS_RESULTS
+    meaning: "Button to zoom back to all results and apply default zoom."
+  - num: 8
+    name: TAP_SEARCH_THIS_AREA
+    meaning: "Button to do a search with coordinates for the current center of the map"
+  - num: 9
+    name: TAP_QUOTE
+    meaning: "Button to go to DBook or provider's site"
+  - num: 10
+    name: VH_TAP_MANAGE
+    meaning: "Button to manage View History data"
+  - num: 11
+    name: VH_CHANGE_SAVE_STATE
+    meaning: "Change the state of View History (Save or don't save)"
+  - num: 12
+    name: VH_CLEAR_ALL_DATA
+    meaning: "Clear all saved view history data"
+  - num: 13
+    name: VH_TAP_EMPTY_VIEW_FIND_CARS
+    meaning: "Button on empty view to cta the user"
+  - num: 14
+    name: VH_TAP_RESULT
+    meaning: "Selecting an item on the view history"
+  - num: 15
+    name: TAP_QUICK_FILTER_PILL
+    meaning: "When a quick filter pill is selected"
+  - num: 16
+    name: INTERACT_QUICK_FILTER_BOTTOM_SHEET
+    meaning: "When the quick filter bottom sheet is closed/clear all"
+  - num: 17
+    name: APPLY_QUICK_FILTER
+    meaning: "When a filter is applied from the quick filter bottom sheet"
+  - num: 18
+    name: TAP_INSURANCE_EXPANDABLE
+    meaning: "when clicking insurance"
+  - num: 20
+    name: VIEWED
+    meaning: "Used when the event belongs to an exposure"
+  - num: 21
+    name: TAP_SUPPLIER_RATING
+    meaning: "When user tap on the supplier rating cta"
+  - num: 22
+    name: TAP_GROUP_CARD_SAVING_BADGE
+    meaning: "When user taps the saving badge (e.g. \"Save 18%\") on a group card"

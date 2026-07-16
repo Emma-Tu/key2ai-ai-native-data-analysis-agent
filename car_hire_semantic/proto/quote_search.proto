@@ -1,0 +1,46 @@
+// Owner: Tiger (Slack: #tiger-public; Email: TigerSquad@skyscanner.net)
+// common schema for generating events for flight/hotel/carHire quote search
+
+syntax = "proto3";
+package quote_search;
+option go_package = "github.com/skyscanner/go-schemas/quote_search";
+option java_package = "net.skyscanner.schemas";
+option objc_class_prefix = "SKYSchemaQuoteSearch";
+import "commons.proto";
+
+message TravelNode {
+  string location_id = 1;                              // office_id for carHire, hotel_id for hotel, route_id for flight
+  commons.DateTime date_time = 2;                      // pickup_date/drop_off_date for carHire, check_in_date/check_out_date for hotel, departure_date/arrival_date for flight
+  LocationReferenceType location_reference_type = 3;   // location id reference type
+  string entity_id = 4;                                // Unique ID for GEO entity
+}
+
+enum QuoteSource {
+  UNSET_QUOTE_SOURCE = 0;                            // Default value
+  LIVE_UPDATE = 1;                                   // LIVE_UPDATE is set as default to save space
+  AUTO_REFRESH = 2;                                  // Auto refresh
+
+}
+
+message TravellerContext {
+  string market = 1;                                 // User-selected market (e.g., "UK")
+  string locale = 2;                                 // Four-letter locale (e.g., "en-GB")
+  string currency = 3;                               // ISO currency code (e.g., "GBP")
+}
+
+enum ClientId {
+  UNSET_CLIENT_ID = 0;                                 // Default value
+  CLIENT_ID_CARHIRE_SEARCH = 1;                        // normal carhire search, include web, app, desktop home page
+  CLIENT_ID_CARHIRE_SCHEDULER = 2;                     // SEO search price
+  CLIENT_ID_CARHIRE_PRICE_COMPETITIVERNESS = 3;        // price competitiveness fetch price
+  CLIENT_ID_CARHIRE_B2B = 4;                           // serving carhire data to our B2B partners
+  CLIENT_ID_CARHIRE_TRAVEL_RANKING = 5;                //client id for car hire travel ranking
+}
+
+enum LocationReferenceType {
+  UNSET_LOCATION_REFERENCE_TYPE = 0;            // Default value
+  LOCATION_REFERENCE_TYPE_OFFICE_ID = 1;        // office id type for carHire
+  LOCATION_REFERENCE_TYPE_HOTEL_ID  = 2;        // hotel_id type for hotel
+  LOCATION_REFERENCE_TYPE_ROUTE_ID  = 3;        // route_id type for flight
+}
+

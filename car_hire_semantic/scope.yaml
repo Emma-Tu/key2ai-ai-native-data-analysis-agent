@@ -1,0 +1,57 @@
+# Declares how each proto in proto/ is treated by generate_yaml.py.
+#
+#   mode: full          -> generate YAML for every message + enum in the file
+#   mode: subset        -> only generate types listed in `types:` (+ enums they use)
+#   mode: messages_only -> only generate the messages listed in `messages:`
+#
+# Rationale: car_hire protos are car-hire-only -> full. Shared protos (commons,
+# clients, quote_search, ...) contain the whole company's types -> we only want
+# the handful car_hire references. redirects/booking are multi-vertical -> we
+# only want the messages that touch car hire (the conversion tail).
+
+protos:
+  # ---- core car_hire (original 6) ----
+  car_hire.proto:                       { mode: full, group: core }
+  car_hire_app.proto:                   { mode: full, group: core }
+  car_hire_indicative_price.proto:      { mode: full, group: core }
+  car_hire_no_quote_request_blocking.proto: { mode: full, group: core }
+  car_hire_quote_search.proto:          { mode: full, group: core }
+
+  # ---- B2B car hire (scope extension) ----
+  b2b_carhire_indicative.proto:         { mode: full, group: b2b }
+  b2b_carhire_live.proto:               { mode: full, group: b2b }
+
+  # ---- conversion tail: only the car-hire-touching messages ----
+  redirects.proto:
+    mode: messages_only
+    group: conversion
+    messages: [Redirect, RedirectCompleted, RedirectEnrichedForInsights]
+    note: Redirect embeds car_hire.CarHireItinerary and carries search_guid + revenue.
+  booking.proto:
+    mode: messages_only
+    group: conversion
+    messages: [BookingStep, BookingEvent, BookingStitchedEvent]
+    note: joins to redirect via redirect_id; embeds car_hire.CarHireBookingExtra.
+
+  # ---- shared dependency types: only the referenced subset ----
+  commons.proto:
+    mode: subset
+    group: shared
+    types: [LightHeader, MiniHeader, DateTime, Date, Time, Money, Price, Location, Geo, CultureSettings, Platform, DownstreamPartner, EventHeader, BusinessDomain]
+  clients.proto:
+    mode: subset
+    group: shared
+    types: [Search, CarHireFilterAndSort, BookingPanelOption, CarHireGroupVisibleProperties]
+  quote_search.proto:
+    mode: subset
+    group: shared
+    types: [TravelNode, TravellerContext, QuoteSource, ClientId]
+  unified_search_service.proto:
+    mode: subset
+    group: shared
+    types: [CreateSearchRequest, CreateExploreRequest, PollSearchRequest, GeoLevel]
+    note: THE BRIDGE — carries uss_search_id + session_id + search_guid together.
+  vehicle.proto:
+    mode: subset
+    group: shared
+    types: [VehicleType, VehicleCategory]

@@ -4,6 +4,25 @@ Storage layer for the **AI Native Data Analysis Agent**. Turns the Skyscanner
 car_hire proto schemas into structured knowledge the agent can retrieve and put
 into a prompt to generate correct queries.
 
+## Web UI (quickest way to try it)
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # first time
+.venv/bin/python app.py           # -> http://127.0.0.1:8765
+```
+
+Three views:
+- **查询操作台 (Query console)** — ask in natural language, see the retrieved
+  tables (with proto→Databricks physical mapping, curated-vs-bronze, platform-split
+  warnings), matched metrics/enums, and the assembled agent prompt (one-click copy).
+- **数据目录 (Catalog)** — browse all 131 messages + 65 enums, filter by group,
+  click any for fields + physical mapping.
+- **关系 & 指标 (Knowledge)** — join-key namespaces, the conversion funnel, metric
+  definitions, and open confirmations.
+
+`app.py` (stdlib `http.server`) reuses `assemble_prompt.py` — the UI and CLI
+share one retrieval codebase. `ui.html` is a single self-contained page.
+
 ## Scope
 
 Scope is declared in `scope.yaml` and grouped. Current coverage: **131 messages +

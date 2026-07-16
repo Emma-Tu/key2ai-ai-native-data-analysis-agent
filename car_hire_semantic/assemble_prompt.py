@@ -439,6 +439,135 @@ def assemble(question, top_k=6, dialect=None):
     return "\n".join(out), meta
 
 
+# ---------------------------------------------------------------------------
+# structured output for the web UI (rich JSON, reuses the same retrieval)
+# ---------------------------------------------------------------------------
+def _load_docs_and_enums():
+    docs = {}
+    for path in glob.glob(os.path.join(MSG_DIR, "*.yaml")):
+        d = load_message(path)
+        if d and d.get("message"):
+            with open(path) as f:
+                raw = f.read()
+            d["description_raw"] = "curated" if "curated (overlay.yaml)" in raw else ""
+            docs[f"{d['package']}.{d['message']}"] = d
+            docs.setdefault(d["message"], d)
+    enum_by_key = {}
+    for path in glob.glob(os.path.join(ENUM_DIR, "*.yaml")):
+        d = load_message(path)
+        if d and d.get("enum"):
+            enum_by_key[f"{d['package']}.{d['enum']}"] = d
+    return docs, enum_by_key
+
+
+def assemble_structured(question, top_k=6, dialect=None):
+    """Rich JSON-ready result for the web UI. Reuses retrieval + physical map.
+    Also returns the assembled prompt so the UI can show/copy it."""
+    prompt, meta = assemble(question, top_k=top_k, dialect=dialect)
+    index = load_index()
+    physical, phys_meta = load_physical()
+    docs, enum_by_key = _load_docs_and_enums()
+    metrics_doc = yaml.safe_load(open(METRICS)) or {} if os.path.exists(METRICS) else {}
+
+    # rebuild the selection deterministically (same as assemble)
+    scored = score_messages(question, index, docs, enum_by_key)
+    selected = scored[:top_k]
+    hit_metrics, hit_gloss = match_metrics(question, metrics_doc)
+    already = {f"{(d or {}).get('package','')}.{n}" for _, n, _, d in selected}
+    for m in hit_metrics:
+        for tk in m.get("tables", []) or []:
+            if tk not in already and tk in docs:
+                selected.append((0.0, docs[tk]["message"], "", docs[tk]))
+                already.add(tk)
+
+    def field_view(fld):
+        return {"name": fld.get("name"), "type": fld.get("type"),
+                "desc": fld.get("desc", "") or "", "oneof": fld.get("oneof"),
+                "ref": fld.get("ref")}
+
+    tables = []
+    wanted_enums = set()
+    for score, name, _f, doc in selected:
+        if not doc:
+            continue
+        key = f"{doc['package']}.{doc['message']}"
+        wanted_enums |= referenced_enums(doc, enum_by_key)
+        pm = physical.get(key) or {}
+        tables.append({
+            "key": key, "message": doc["message"], "package": doc["package"],
+            "group": doc.get("group"), "score": round(score, 2),
+            "description": doc.get("description", ""), "grain": doc.get("grain", ""),
+            "fields": [field_view(f) for f in doc.get("fields", []) or []],
+            "physical": {
+                "bronze": _as_list(pm.get("bronze")),
+                "curated": _as_list(pm.get("curated")),
+                "note": pm.get("note", ""),
+                "nested": pm.get("nested"),
+                "platform_split": len(_as_list(pm.get("bronze"))) > 1,
+                "mapped": bool(pm),
+            },
+        })
+
+    enums = []
+    for en in sorted(wanted_enums):
+        ed = enum_by_key.get(en)
+        if ed:
+            enums.append({"key": en, "name": ed["enum"], "package": ed["package"],
+                          "desc": ed.get("desc", ""),
+                          "values": ed.get("values", [])})
+
+    # runnable starter SQL scaffold: real table + a real recent dt so it executes
+    # immediately (user edits into their aggregate). NOT full NL2SQL.
+    # Prefer a table referenced by a matched metric (authoritative for the
+    # question, and a populated event table) over whatever ranked first — some
+    # retrieved tables (e.g. sampling tables) are sparse and return 0 rows.
+    import datetime
+    recent = (datetime.date.today() - datetime.timedelta(days=2)).isoformat()
+    metric_tbls = set()
+    for m in hit_metrics:
+        for tk in m.get("tables", []) or []:
+            metric_tbls.add(tk)
+
+    def _phys_tbl(t):
+        p = t["physical"]
+        return (p["curated"] or p["bronze"] or [None])[0]
+
+    chosen = None
+    for t in tables:                                  # 1st choice: metric-referenced + mapped
+        if t["key"] in metric_tbls and _phys_tbl(t):
+            chosen = t; break
+    if not chosen:
+        for t in tables:                              # fallback: first mapped table
+            if _phys_tbl(t):
+                chosen = t; break
+    starter_sql = ""
+    if chosen:
+        starter_sql = (
+            f"-- 起始脚手架（真实表+近期分区，可直接执行；改成你要的聚合即可）\n"
+            f"-- {chosen['package']}.{chosen['message']}\n"
+            f"SELECT *\n"
+            f"FROM {_phys_tbl(chosen)}\n"
+            f"WHERE dt = '{recent}'\n"
+            f"LIMIT 100"
+        )
+
+    return {
+        "question": question,
+        "dialect": meta["dialect"],
+        "phys_meta": {k: phys_meta.get(k) for k in
+                      ("enum_storage", "nested_strategy", "gold_entrypoints")},
+        "starter_sql": starter_sql,
+        "tables": tables,
+        "enums": enums,
+        "metrics": [{"metric": m.get("metric"), "definition": m.get("definition"),
+                     "caveat": m.get("caveat"), "unit": m.get("unit"),
+                     "tables": m.get("tables", [])} for m in hit_metrics],
+        "glossary": [{"term": g.get("term"), "maps_to": g.get("maps_to"),
+                      "note": g.get("note", "")} for g in hit_gloss],
+        "prompt": prompt,
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("question", help="自然语言分析问题")

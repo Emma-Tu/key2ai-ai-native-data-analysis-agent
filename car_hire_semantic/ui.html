@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Hire Semantic Layer</title>
+<style>
+  :root{
+    --bg:#0b1020; --bg-soft:#121a30; --panel:#141d33; --panel-2:#0f1728;
+    --line:#233052; --line-soft:#1b2540;
+    --text:#e8eefc; --muted:#8fa0c4; --faint:#5f6f92;
+    --brand:#2ec5ff; --brand-2:#1d8fe0; --brand-ink:#04121f;
+    --green:#37d39b; --amber:#ffcf6b; --violet:#b78cff; --pink:#ff8fb3;
+    /* dataviz palette (reference dark categorical + sequential blue), see dataviz skill */
+    --viz-surface:#141d33; --viz-grid:#2c2c2a; --viz-axis:#383835;
+    --viz-ink:#e8eefc; --viz-ink2:#c3c2b7; --viz-muted:#898781;
+    --seq-1:#cde2fb; --seq-2:#6da7ec; --seq-3:#3987e5; --seq-4:#256abf; --seq-5:#184f95;
+    --cat-1:#3987e5; --cat-2:#199e70; --cat-3:#c98500; --cat-4:#008300;
+    --cat-5:#9085e9; --cat-6:#e66767; --cat-7:#d55181; --cat-8:#d95926;
+    --radius:14px; --radius-sm:9px;
+    --shadow:0 10px 40px rgba(0,0,0,.35);
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Roboto,Helvetica,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:radial-gradient(1200px 600px at 80% -10%,rgba(46,197,255,.10),transparent 60%),var(--bg);
+    color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.55;
+    display:flex;min-height:100vh;
+  }
+  ::selection{background:rgba(46,197,255,.3)}
+  /* ---- sidebar ---- */
+  .sidebar{
+    width:230px;flex:none;background:linear-gradient(180deg,var(--panel-2),var(--bg));
+    border-right:1px solid var(--line-soft);padding:22px 16px;display:flex;flex-direction:column;gap:6px;
+    position:sticky;top:0;height:100vh;
+  }
+  .brand{display:flex;align-items:center;gap:11px;padding:4px 8px 18px;}
+  .brand .logo{width:34px;height:34px;border-radius:9px;flex:none;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    display:grid;place-items:center;color:var(--brand-ink);font-weight:800;font-size:19px;
+    box-shadow:0 6px 18px rgba(46,197,255,.35);}
+  .brand h1{font-size:14.5px;margin:0;font-weight:700;letter-spacing:.2px}
+  .brand p{font-size:11px;margin:0;color:var(--faint)}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:var(--radius-sm);
+    color:var(--muted);cursor:pointer;font-weight:600;font-size:13px;transition:.15s;border:1px solid transparent}
+  .nav-item svg{width:17px;height:17px;flex:none}
+  .nav-item:hover{background:var(--bg-soft);color:var(--text)}
+  .nav-item.active{background:linear-gradient(90deg,rgba(46,197,255,.16),rgba(46,197,255,.04));
+    color:var(--text);border-color:var(--line)}
+  .nav-item.active svg{color:var(--brand)}
+  .side-foot{margin-top:auto;font-size:11px;color:var(--faint);padding:12px 8px 0;border-top:1px solid var(--line-soft)}
+  .side-foot b{color:var(--muted)}
+  /* ---- main ---- */
+  .main{flex:1;min-width:0;padding:30px 40px 60px;max-width:1180px;margin:0 auto;width:100%}
+  .view{display:none;animation:fade .25s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h2.title{font-size:22px;margin:0 0 4px;font-weight:750;letter-spacing:.2px}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 22px}
+  /* ---- query console ---- */
+  .console{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;box-shadow:var(--shadow)}
+  .qrow{display:flex;gap:12px;align-items:stretch}
+  .qbox{flex:1;position:relative}
+  .qbox textarea{width:100%;resize:none;background:var(--panel-2);border:1px solid var(--line);
+    color:var(--text);border-radius:var(--radius-sm);padding:14px 15px;font-size:15px;font-family:var(--sans);
+    min-height:54px;outline:none;transition:.15s;line-height:1.5}
+  .qbox textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(46,197,255,.14)}
+  .qside{display:flex;flex-direction:column;gap:10px;width:150px;flex:none}
+  .btn{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:var(--brand-ink);
+    border:none;border-radius:var(--radius-sm);font-weight:750;font-size:14px;padding:0 18px;height:54px;
+    cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .btn:active{transform:none}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .topk{display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:var(--radius-sm);padding:0 12px;height:40px;color:var(--muted);font-size:12.5px}
+  .topk input{width:48px;background:transparent;border:none;color:var(--text);font-size:14px;
+    font-weight:700;outline:none;font-family:var(--mono)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .chip{background:var(--bg-soft);border:1px solid var(--line-soft);color:var(--muted);
+    border-radius:100px;padding:6px 13px;font-size:12.5px;cursor:pointer;transition:.15s}
+  .chip:hover{border-color:var(--brand);color:var(--text);background:var(--panel)}
+  .chip b{color:var(--faint);font-weight:600;margin-right:6px}
+  /* ---- result layout ---- */
+  .results{margin-top:24px;display:none}
+  .results.show{display:block}
+  .metabar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);
+    padding:11px 16px;min-width:104px}
+  .stat .k{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.6px}
+  .stat .v{font-size:20px;font-weight:750;margin-top:2px;font-family:var(--mono)}
+  .stat .v.brand{color:var(--brand)} .stat .v.green{color:var(--green)}
+  .stat .v.violet{color:var(--violet)} .stat .v.amber{color:var(--amber)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  @media(max-width:1000px){.grid{grid-template-columns:1fr}}
+  .section-h{display:flex;align-items:center;gap:9px;margin:0 0 12px;font-size:13px;font-weight:700;
+    color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+  .section-h .dot{width:7px;height:7px;border-radius:50%;background:var(--brand)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 17px;margin-bottom:14px;transition:.15s}
+  .card:hover{border-color:#2c3d68}
+  .card .head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+  .card .mname{font-family:var(--mono);font-size:13.5px;font-weight:700;color:var(--text);word-break:break-all}
+  .card .mpkg{color:var(--faint)}
+  .tag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:100px;text-transform:uppercase;
+    letter-spacing:.4px;flex:none}
+  .tag.core{background:rgba(46,197,255,.15);color:var(--brand)}
+  .tag.shared{background:rgba(183,140,255,.15);color:var(--violet)}
+  .tag.conversion{background:rgba(55,211,155,.15);color:var(--green)}
+  .tag.b2b{background:rgba(255,207,107,.15);color:var(--amber)}
+  .tag.score{background:var(--bg-soft);color:var(--muted);font-family:var(--mono)}
+  .card .desc{color:var(--muted);font-size:12.5px;margin:2px 0 10px}
+  .card .grain{color:var(--faint);font-size:11.5px;margin-bottom:10px}
+  .card .grain b{color:var(--muted)}
+  .phys{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:9px;padding:10px 12px;
+    margin-bottom:10px;font-size:11.5px}
+  .phys .pl{display:flex;gap:8px;margin:3px 0;align-items:baseline}
+  .phys .pl .lbl{flex:none;width:58px;color:var(--faint);font-weight:600}
+  .phys .tbl{font-family:var(--mono);color:var(--green);word-break:break-all;font-size:11px}
+  .phys .tbl.bronze{color:var(--brand)}
+  .phys .warn{color:var(--amber);font-size:11px}
+  .phys .note{color:var(--faint);font-style:italic}
+  details.fields{margin-top:4px}
+  details.fields summary{cursor:pointer;color:var(--faint);font-size:11.5px;font-weight:600;
+    list-style:none;user-select:none;padding:3px 0}
+  details.fields summary::-webkit-details-marker{display:none}
+  details.fields summary:before{content:"▸ ";color:var(--brand)}
+  details.fields[open] summary:before{content:"▾ "}
+  .fieldtbl{width:100%;border-collapse:collapse;margin-top:8px;font-size:11.5px}
+  .fieldtbl td{padding:4px 8px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  .fieldtbl .fn{font-family:var(--mono);color:var(--text);white-space:nowrap}
+  .fieldtbl .ft{font-family:var(--mono);color:var(--faint);white-space:nowrap}
+  .fieldtbl .fd{color:var(--muted)}
+  .oneof{font-size:9px;background:rgba(183,140,255,.18);color:var(--violet);padding:1px 5px;border-radius:4px;margin-left:5px}
+  /* enum & metric chips */
+  .enum-card,.metric-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;margin-bottom:12px}
+  .enum-card .en{font-family:var(--mono);font-weight:700;font-size:13px}
+  .enum-card .ed{color:var(--muted);font-size:12px;margin:3px 0 8px}
+  .enum-vals{display:flex;flex-wrap:wrap;gap:6px}
+  .ev{font-family:var(--mono);font-size:11px;background:var(--bg-soft);border:1px solid var(--line-soft);
+    border-radius:6px;padding:3px 8px;color:var(--muted)}
+  .ev b{color:var(--brand)}
+  .metric-card .mt{font-weight:700;font-size:13.5px;color:var(--green)}
+  .metric-card .mdef{font-family:var(--mono);font-size:11.5px;background:var(--panel-2);border:1px solid var(--line-soft);
+    border-radius:8px;padding:9px 11px;margin:8px 0;color:var(--text);white-space:pre-wrap;word-break:break-word}
+  .metric-card .mcav{color:var(--amber);font-size:11.5px}
+  /* prompt output */
+  .prompt-wrap{margin-top:22px}
+  .prompt-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .prompt-box{background:#070c17;border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;font-family:var(--mono);font-size:12px;line-height:1.7;color:#c7d3ee;
+    white-space:pre-wrap;word-break:break-word;max-height:520px;overflow:auto}
+  .copybtn{background:var(--bg-soft);border:1px solid var(--line);color:var(--muted);border-radius:8px;
+    padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s}
+  .copybtn:hover{border-color:var(--brand);color:var(--text)}
+  .copybtn.ok{border-color:var(--green);color:var(--green)}
+  /* catalog */
+  .toolbar{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;align-items:center}
+  .search-in{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--line);color:var(--text);
+    border-radius:var(--radius-sm);padding:11px 15px;font-size:14px;outline:none}
+  .search-in:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(46,197,255,.12)}
+  .filters{display:flex;gap:6px}
+  .fbtn{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:100px;
+    padding:7px 15px;font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s}
+  .fbtn:hover{color:var(--text)} .fbtn.active{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+  .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .cat-item{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;
+    cursor:pointer;transition:.15s}
+  .cat-item:hover{border-color:var(--brand);transform:translateY(-2px);box-shadow:var(--shadow)}
+  .cat-item .ci-h{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:6px}
+  .cat-item .ci-n{font-family:var(--mono);font-size:13px;font-weight:700;word-break:break-all}
+  .cat-item .ci-d{color:var(--muted);font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .cat-item .ci-meta{color:var(--faint);font-size:11px;margin-top:8px;font-family:var(--mono)}
+  /* knowledge */
+  .kcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-bottom:16px}
+  .kcard h3{margin:0 0 12px;font-size:15px;display:flex;align-items:center;gap:9px}
+  .kcard h3 .ic{width:22px;height:22px;border-radius:6px;background:var(--bg-soft);display:grid;place-items:center;font-size:13px}
+  .funnel{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+  .fstep{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:12px}
+  .fstep .fn2{font-family:var(--mono);font-size:11px;color:var(--brand)}
+  .fstep .fk{color:var(--faint);font-size:10.5px}
+  .farrow{color:var(--faint);font-size:16px}
+  .keytag{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--bg-soft);
+    border:1px solid var(--line-soft);border-radius:5px;padding:2px 7px;margin:2px}
+  .keytag.be{color:var(--amber);border-color:rgba(255,207,107,.3)}
+  .keytag.fe{color:var(--brand);border-color:rgba(46,197,255,.3)}
+  .oc{border-left:3px solid var(--amber);padding:10px 14px;margin-bottom:10px;background:var(--panel-2);border-radius:0 9px 9px 0}
+  .oc .ocq{font-weight:600;font-size:12.5px}
+  .oc .ocm{color:var(--faint);font-size:11px;margin-top:4px;font-family:var(--mono);word-break:break-all}
+  .pitfall{display:flex;gap:9px;padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:12.5px;color:var(--muted)}
+  .pitfall:before{content:"⚠";color:var(--amber);flex:none}
+  .loading{display:flex;align-items:center;gap:11px;color:var(--muted);padding:40px;justify-content:center}
+  .spin{width:20px;height:20px;border:2.5px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .empty{text-align:center;color:var(--faint);padding:50px 20px}
+  .empty svg{width:44px;height:44px;opacity:.4;margin-bottom:12px}
+  .err{background:rgba(255,143,179,.12);border:1px solid rgba(255,143,179,.3);color:var(--pink);
+    border-radius:9px;padding:12px 16px;font-size:13px}
+  .modal{position:fixed;inset:0;background:rgba(4,8,18,.7);backdrop-filter:blur(4px);display:none;
+    align-items:center;justify-content:center;z-index:50;padding:30px}
+  .modal.show{display:flex}
+  .modal-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);max-width:720px;
+    width:100%;max-height:82vh;overflow:auto;padding:24px 26px;box-shadow:var(--shadow)}
+  .modal-box .close{float:right;cursor:pointer;color:var(--faint);font-size:22px;line-height:1}
+  .modal-box .close:hover{color:var(--text)}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo">C</div>
+    <div><h1>Car Hire</h1><p>Semantic Layer</p></div>
+  </div>
+  <div class="nav-item active" data-view="query">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    查询操作台
+  </div>
+  <div class="nav-item" data-view="catalog">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    数据目录
+  </div>
+  <div class="nav-item" data-view="knowledge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>
+    关系 & 指标
+  </div>
+  <div class="side-foot">
+    <div><b>方言</b> <span id="foot-dialect">databricks</span></div>
+    <div style="margin-top:4px"><b>范围</b> 6 protos · 131 msgs</div>
+    <div style="margin-top:4px">AI-Native Data Analysis</div>
+  </div>
+</aside>
+
+<main class="main">
+  <!-- QUERY VIEW -->
+  <section class="view active" id="view-query">
+    <h2 class="title">查询操作台</h2>
+    <p class="sub">用自然语言提问 → 看到检索命中的表 / 指标 / 枚举 → 生成给分析 Agent 的 prompt</p>
+    <div class="console">
+      <div class="qrow">
+        <div class="qbox">
+          <textarea id="q" placeholder="例如：上个月每个 market 的搜索量和平均报价数" rows="1"></textarea>
+        </div>
+        <div class="qside">
+          <div class="topk">Top-K <input id="topk" type="number" min="1" max="15" value="6"></div>
+          <button class="btn" id="run">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 12 14 0M13 6l6 6-6 6"/></svg>
+            生成
+          </button>
+        </div>
+      </div>
+      <div class="chips" id="examples"></div>
+    </div>
+
+    <div class="results" id="results"></div>
+  </section>
+
+  <!-- CATALOG VIEW -->
+  <section class="view" id="view-catalog">
+    <h2 class="title">数据目录</h2>
+    <p class="sub">浏览语义层里的全部 message 与 enum，点开看字段与物理映射</p>
+    <div class="toolbar">
+      <input class="search-in" id="cat-search" placeholder="搜索表名 / 描述…">
+      <div class="filters" id="cat-filters">
+        <button class="fbtn active" data-f="all">全部</button>
+        <button class="fbtn" data-f="core">core</button>
+        <button class="fbtn" data-f="shared">shared</button>
+        <button class="fbtn" data-f="conversion">conversion</button>
+        <button class="fbtn" data-f="b2b">b2b</button>
+        <button class="fbtn" data-f="enum">枚举</button>
+      </div>
+    </div>
+    <div class="cat-grid" id="cat-grid"></div>
+  </section>
+
+  <!-- KNOWLEDGE VIEW -->
+  <section class="view" id="view-knowledge">
+    <h2 class="title">关系 & 指标</h2>
+    <p class="sub">Join key 命名空间、转化漏斗、指标口径、待确认项——Agent 每次都会加载这些</p>
+    <div id="knowledge"></div>
+  </section>
+</main>
+
+<div class="modal" id="modal"><div class="modal-box" id="modal-box"></div></div>
+
+<script src="/charts.js"></script>
+<script>
+const EXAMPLES = [
+  ["搜索","上个月每个 market 的搜索量和平均报价数"],
+  ["拦截率","各 market 的无报价拦截率，排除 holdout"],
+  ["漏斗","分组卡片曝光到报价点选的转化率"],
+  ["绿色出行","电动车和混动车在报价里的占比"],
+  ["转化","跳转到成交的营收"],
+  ["桥接","USS 怎么把 uss_search_id 和 search_guid 关联"],
+];
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+// esc() comes from /charts.js
+
+// nav
+$$('.nav-item').forEach(n=>n.onclick=()=>{
+  $$('.nav-item').forEach(x=>x.classList.remove('active'));
+  $$('.view').forEach(x=>x.classList.remove('active'));
+  n.classList.add('active');
+  $('#view-'+n.dataset.view).classList.add('active');
+  if(n.dataset.view==='catalog'&&!catalogLoaded)loadCatalog();
+  if(n.dataset.view==='knowledge'&&!knowledgeLoaded)loadKnowledge();
+});
+
+// examples
+$('#examples').innerHTML=EXAMPLES.map(([t,q])=>`<span class="chip" data-q="${esc(q)}"><b>${esc(t)}</b>${esc(q)}</span>`).join('');
+$$('#examples .chip').forEach(c=>c.onclick=()=>{$('#q').value=c.dataset.q;autosize();run();});
+
+// textarea autosize
+const ta=$('#q');
+function autosize(){ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,160)+'px';}
+ta.addEventListener('input',autosize);
+ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){run();}});
+
+// ---- query ----
+$('#run').onclick=run;
+async function run(){
+  const question=ta.value.trim();
+  if(!question)return;
+  const box=$('#results');box.classList.add('show');
+  box.innerHTML='<div class="loading"><div class="spin"></div>检索语义层并组装 prompt…</div>';
+  $('#run').disabled=true;
+  try{
+    const r=await fetch('/api/assemble',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({question,top_k:+$('#topk').value||6})});
+    const d=await r.json();
+    if(d.error){box.innerHTML='<div class="err">出错：'+esc(d.error)+'</div>';return;}
+    renderResult(d);
+  }catch(e){box.innerHTML='<div class="err">请求失败：'+esc(e.message)+'</div>';}
+  finally{$('#run').disabled=false;}
+}
+
+function physBlock(p){
+  if(!p||!p.mapped) return `<div class="phys"><div class="pl"><span class="lbl">物理表</span><span class="note">未映射，Agent 按逻辑层推理并声明假设</span></div></div>`;
+  let h='<div class="phys">';
+  if(p.curated&&p.curated.length) h+=`<div class="pl"><span class="lbl">推荐</span><span class="tbl">${p.curated.map(esc).join('<br>')}</span></div>`;
+  if(p.bronze&&p.bronze.length) h+=`<div class="pl"><span class="lbl">原始</span><span class="tbl bronze">${p.bronze.map(esc).join('<br>')}</span></div>`;
+  if(p.platform_split) h+=`<div class="pl"><span class="lbl"></span><span class="warn">⚠ 按平台拆表，跨平台需 UNION</span></div>`;
+  if(p.nested) h+=`<div class="pl"><span class="lbl">嵌套</span><span class="note">${esc(JSON.stringify(p.nested))}</span></div>`;
+  if(p.note) h+=`<div class="pl"><span class="lbl">备注</span><span class="note">${esc(p.note)}</span></div>`;
+  return h+'</div>';
+}
+function fieldsBlock(fs){
+  if(!fs||!fs.length)return'';
+  const rows=fs.map(f=>`<tr><td class="fn">${esc(f.name)}${f.oneof?`<span class="oneof">oneof</span>`:''}</td><td class="ft">${esc(f.type)}</td><td class="fd">${esc(f.desc)}</td></tr>`).join('');
+  return `<details class="fields"><summary>字段 (${fs.length})</summary><table class="fieldtbl">${rows}</table></details>`;
+}
+function tableCard(t){
+  return `<div class="card">
+    <div class="head"><span class="mname"><span class="mpkg">${esc(t.package)}.</span>${esc(t.message)}</span>
+      <span style="display:flex;gap:6px;flex:none"><span class="tag ${esc(t.group)}">${esc(t.group)}</span><span class="tag score">${t.score}</span></span></div>
+    <div class="desc">${esc(t.description)||'<i style="color:var(--faint)">无描述</i>'}</div>
+    ${t.grain?`<div class="grain"><b>粒度</b> ${esc(t.grain)}</div>`:''}
+    ${physBlock(t.physical)}
+    ${fieldsBlock(t.fields)}
+  </div>`;
+}
+function renderResult(d){
+  $('#foot-dialect').textContent=d.dialect;
+  const nBronze=d.tables.filter(t=>t.physical.mapped).length;
+  const meta=`<div class="metabar">
+    <div class="stat"><div class="k">命中表</div><div class="v brand">${d.tables.length}</div></div>
+    <div class="stat"><div class="k">已映射物理表</div><div class="v green">${nBronze}</div></div>
+    <div class="stat"><div class="k">命中指标</div><div class="v violet">${d.metrics.length}</div></div>
+    <div class="stat"><div class="k">相关枚举</div><div class="v amber">${d.enums.length}</div></div>
+    <div class="stat"><div class="k">方言</div><div class="v">${esc(d.dialect)}</div></div>
+  </div>`;
+
+  const left=`<div><div class="section-h"><span class="dot"></span>相关表结构（含物理映射）</div>
+    ${d.tables.length?d.tables.map(tableCard).join(''):'<div class="empty">未命中任何表，换个说法试试</div>'}</div>`;
+
+  let right='<div>';
+  if(d.metrics.length){
+    right+='<div class="section-h"><span class="dot" style="background:var(--green)"></span>命中指标口径</div>';
+    right+=d.metrics.map(m=>`<div class="metric-card"><div class="mt">${esc(m.metric)}</div>
+      <div class="mdef">${esc(m.definition)}</div>
+      ${m.caveat?`<div class="mcav">⚠ ${esc(m.caveat)}</div>`:''}
+      ${m.unit?`<div style="color:var(--faint);font-size:11.5px;margin-top:4px">单位：${esc(m.unit)}</div>`:''}</div>`).join('');
+  }
+  if(d.enums.length){
+    right+='<div class="section-h" style="margin-top:18px"><span class="dot" style="background:var(--amber)"></span>相关枚举</div>';
+    right+=d.enums.map(e=>`<div class="enum-card"><div class="en">${esc(e.name)}</div>
+      ${e.desc?`<div class="ed">${esc(e.desc)}</div>`:''}
+      <div class="enum-vals">${(e.values||[]).slice(0,14).map(v=>`<span class="ev"><b>${v.num}</b> ${esc(v.name)}</span>`).join('')}${e.values.length>14?`<span class="ev">…+${e.values.length-14}</span>`:''}</div></div>`).join('');
+  }
+  if(d.glossary.length){
+    right+='<div class="section-h" style="margin-top:18px"><span class="dot" style="background:var(--violet)"></span>术语</div>';
+    right+='<div class="card">'+d.glossary.map(g=>`<div style="font-size:12.5px;margin:4px 0"><b style="font-family:var(--mono)">${esc(g.term)}</b> <span style="color:var(--faint)">→</span> <span style="color:var(--muted)">${esc(g.maps_to)}</span></div>`).join('')+'</div>';
+  }
+  right+='</div>';
+
+  const prompt=`<div class="prompt-wrap"><div class="prompt-head">
+    <div class="section-h" style="margin:0"><span class="dot" style="background:#fff"></span>组装好的 Agent Prompt</div>
+    <button class="copybtn" id="copyp">复制</button></div>
+    <div class="prompt-box" id="pbox">${esc(d.prompt)}</div></div>`;
+
+  // ★ 查询结果放最前面：SQL + 执行 + 图表报告
+  const runner=`<div class="prompt-wrap" style="margin-top:0">
+    <div class="prompt-head">
+      <div class="section-h" style="margin:0"><span class="dot" style="background:var(--green)"></span>查询结果（连 Databricks 真执行 · 只读护栏：仅 SELECT · 自动 LIMIT）</div>
+      <div style="display:flex;gap:8px">
+        <button class="copybtn" id="valbtn">校验</button>
+        <button class="btn" id="runsql" style="height:34px;padding:0 16px;font-size:13px">▶ 执行</button>
+      </div>
+    </div>
+    <div id="sqlresult" style="margin-bottom:12px"></div>
+    <details><summary style="cursor:pointer;color:var(--faint);font-size:11.5px;font-weight:600;list-style:none;margin-bottom:8px">▸ SQL（可编辑；起始脚手架已是可直接执行的真实表查询）</summary>
+      <textarea id="sqlbox" spellcheck="false" style="width:100%;min-height:120px;background:#070c17;border:1px solid var(--line);border-radius:12px;padding:14px;font-family:var(--mono);font-size:12px;color:#c7d3ee;line-height:1.6;outline:none;resize:vertical">${esc(d.starter_sql||'')}</textarea>
+      <div style="color:var(--faint);font-size:11px;margin-top:6px">改成你要的聚合/时间即可。大表整月聚合可能超时，先缩到单日验证。</div>
+    </details>
+  </div>`;
+
+  // 语义层参考（prompt + 表结构 + 指标/枚举）折叠在结果下方
+  const reference=`<div style="margin-top:24px;border-top:1px solid var(--line-soft);padding-top:20px">
+    <div class="section-h" style="margin-bottom:14px"><span class="dot" style="background:var(--faint)"></span>语义层参考（检索命中的表 / 指标 / 枚举 + Agent Prompt）</div>
+    <div class="grid">${left}${right}</div>${prompt}</div>`;
+
+  $('#results').innerHTML=meta+runner+reference;
+  $('#copyp').onclick=()=>{navigator.clipboard.writeText(d.prompt);const b=$('#copyp');b.textContent='已复制 ✓';b.classList.add('ok');setTimeout(()=>{b.textContent='复制';b.classList.remove('ok');},1500);};
+  wireRunner();
+  // 结果区一开始给个引导
+  $('#sqlresult').innerHTML='<div class="empty" style="padding:22px">点上方 <b style="color:var(--green)">▶ 执行</b> 运行下方 SQL，结果与图表会显示在这里</div>';
+}
+
+function wireRunner(){
+  const runBtn=$('#runsql'),valBtn=$('#valbtn'),out=$('#sqlresult');
+  if(!runBtn)return;
+  valBtn.onclick=async()=>{
+    const sql=$('#sqlbox').value;
+    out.innerHTML='<div class="loading"><div class="spin"></div>校验中…</div>';
+    try{const r=await fetch('/api/validate-sql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql})});
+      const d=await r.json();
+      if(d.error)out.innerHTML='<div class="err">'+esc(d.error)+'</div>';
+      else if(d.ok===false)out.innerHTML='<div class="err">护栏：'+esc(d.guardrail)+'</div>';
+      else out.innerHTML='<div style="color:var(--green);font-size:12.5px;padding:8px 0">✓ 校验通过，可执行</div>';
+    }catch(e){out.innerHTML='<div class="err">'+esc(e.message)+'</div>';}
+  };
+  runBtn.onclick=async()=>{
+    const sql=$('#sqlbox').value;
+    out.innerHTML='<div class="loading"><div class="spin"></div>在 Databricks 上执行（大表可能需数十秒）…</div>';
+    runBtn.disabled=true;
+    try{const r=await fetch('/api/run-sql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql,limit:200,question:($('#q').value||'').trim()})});
+      const d=await r.json();
+      renderSqlResult(d,out);
+    }catch(e){out.innerHTML='<div class="err">请求失败：'+esc(e.message)+'</div>';}
+    finally{runBtn.disabled=false;}
+  };
+}
+// chart functions live in /charts.js (shared with the report page)
+const SHAPE_LABEL={kpi:'单值 → KPI 卡',bar:'类别+数值 → 柱状图',pie:'占比 → 饼图',line:'时间序列 → 折线',smallmult:'多指标 → 小多图',multiline:'多指标时序 → 多折线',table:'原始/嵌套数据 → 表格'};
+function renderSqlResult(d,out){
+  if(d.error){out.innerHTML='<div class="err">'+esc(d.error)+'</div>';return;}
+  if(d.success===false){out.innerHTML='<div class="err">查询失败：'+esc(d.error||JSON.stringify(d.validation_errors||d))+'</div>';return;}
+  const cols=(d.data&&d.data.columns)||[],rows=(d.data&&d.data.rows)||[];
+  if(!rows.length){
+    const ms=d.execution_time_ms||0;
+    const hint=ms>=25000?`（${ms}ms — 疑似全表扫描超时，缩小 dt 范围或用更轻的聚合）`
+              :`（${ms}ms，很快 → 不是超时：该表在这个 dt 分区没有数据，换个日期或换张表）`;
+    out.innerHTML='<div class="empty" style="padding:24px">✓ 执行成功，无结果行 '+hint+'</div>';return;}
+  const {dims,meas,skip}=classify(cols,rows);
+  const auto=pickForm(dims,meas,rows,skip);
+  const avail=availTypes(dims,meas,skip);
+  const btns=avail.map(([k,lbl])=>`<button class="fbtn rep-t" data-t="${k}">${lbl}</button>`).join('');
+  const rid=d.report_id?`<a class="copybtn" style="text-decoration:none" href="/report?id=${d.report_id}" target="_blank">↗ 打开完整报告</a>`:'';
+  out.innerHTML=`<div style="display:flex;gap:14px;color:var(--faint);font-size:11.5px;margin-bottom:10px;align-items:center;flex-wrap:wrap">
+      <span>✅ ${d.row_count} 行</span><span>⏱ ${d.execution_time_ms}ms</span>${d.truncated?'<span style="color:var(--amber)">已截断</span>':''}
+      <span style="color:var(--viz-muted)">· 自动识别：${SHAPE_LABEL[auto]||auto}</span>
+      <span style="margin-left:auto;display:flex;gap:6px;align-items:center">${rid}${btns}</span></div>
+    <div id="repbody" style="background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:16px"></div>`;
+  const draw=t=>{const form=(t==='auto')?auto:t;$('#repbody').innerHTML=buildChart(form,cols,rows,dims,meas);};
+  out.querySelectorAll('.rep-t').forEach(b=>b.onclick=()=>{out.querySelectorAll('.rep-t').forEach(x=>x.classList.remove('active'));b.classList.add('active');draw(b.dataset.t);});
+  const first=out.querySelector('.rep-t');if(first)first.classList.add('active');
+  draw('auto');
+}
+
+// ---- catalog ----
+let catalogLoaded=false,catalogData={messages:[],enums:[]},catFilter='all',catQuery='';
+async function loadCatalog(){
+  catalogLoaded=true;
+  $('#cat-grid').innerHTML='<div class="loading"><div class="spin"></div>加载目录…</div>';
+  const d=await (await fetch('/api/catalog')).json();
+  catalogData=d;renderCatalog();
+}
+$('#cat-search').addEventListener('input',e=>{catQuery=e.target.value.toLowerCase();renderCatalog();});
+$$('#cat-filters .fbtn').forEach(b=>b.onclick=()=>{$$('#cat-filters .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');catFilter=b.dataset.f;renderCatalog();});
+function renderCatalog(){
+  let items=[];
+  const showEnum=catFilter==='enum'||catFilter==='all';
+  const showMsg=catFilter!=='enum';
+  if(showMsg) catalogData.messages.filter(m=>catFilter==='all'||catFilter==='enum'||m.group===catFilter).forEach(m=>items.push({...m,kind:'msg'}));
+  if(showEnum) catalogData.enums.forEach(e=>items.push({...e,kind:'enum'}));
+  if(catQuery) items=items.filter(i=>(i.key+' '+(i.description||i.desc||'')).toLowerCase().includes(catQuery));
+  items.sort((a,b)=>a.key.localeCompare(b.key));
+  $('#cat-grid').innerHTML=items.length?items.map(i=>i.kind==='msg'?
+    `<div class="cat-item" onclick="openMsg('${esc(i.key)}')">
+      <div class="ci-h"><span class="ci-n">${esc(i.message)}</span><span class="tag ${esc(i.group)}">${esc(i.group)}</span></div>
+      <div class="ci-d">${esc(i.description)||'<i>无描述</i>'}</div>
+      <div class="ci-meta">${esc(i.package)} · ${i.field_count} 字段</div></div>`:
+    `<div class="cat-item" onclick="openEnum('${esc(i.key)}')">
+      <div class="ci-h"><span class="ci-n">${esc(i.name)}</span><span class="tag score">enum</span></div>
+      <div class="ci-d">${esc(i.desc)||'<i>无描述</i>'}</div>
+      <div class="ci-meta">${esc(i.package)} · ${i.value_count} 取值</div></div>`
+  ).join(''):'<div class="empty">没有匹配项</div>';
+}
+async function openMsg(key){
+  const d=await (await fetch('/api/message?key='+encodeURIComponent(key))).json();
+  const p=d._physical;
+  let phys='';
+  if(p){const b=[].concat(p.bronze||[]),c=[].concat(p.curated||[]);
+    phys=`<div class="phys" style="margin:12px 0">${c.length?`<div class="pl"><span class="lbl">推荐</span><span class="tbl">${c.map(esc).join('<br>')}</span></div>`:''}${b.length?`<div class="pl"><span class="lbl">原始</span><span class="tbl bronze">${b.map(esc).join('<br>')}</span></div>`:''}${p.note?`<div class="pl"><span class="lbl">备注</span><span class="note">${esc(p.note)}</span></div>`:''}</div>`;}
+  const fs=(d.fields||[]).map(f=>`<tr><td class="fn">${esc(f.name)}</td><td class="ft">${esc(f.type)}</td><td class="fd">${esc(f.desc||'')}</td></tr>`).join('');
+  showModal(`<span class="close" onclick="closeModal()">×</span>
+    <div style="font-family:var(--mono);font-weight:700;font-size:16px">${esc(d.package)}.${esc(d.message)}</div>
+    <div style="margin:6px 0"><span class="tag ${esc(d.group)}">${esc(d.group)}</span></div>
+    <div style="color:var(--muted);font-size:13px;margin:8px 0">${esc(d.description)||''}</div>
+    ${d.grain?`<div style="color:var(--faint);font-size:12px"><b>粒度</b> ${esc(d.grain)}</div>`:''}
+    ${phys}
+    <table class="fieldtbl" style="margin-top:10px">${fs}</table>`);
+}
+async function openEnum(key){
+  const d=await (await fetch('/api/enum?key='+encodeURIComponent(key))).json();
+  const vs=(d.values||[]).map(v=>`<tr><td class="ft">${v.num}</td><td class="fn">${esc(v.name)}</td><td class="fd">${esc(v.meaning||'')}</td></tr>`).join('');
+  showModal(`<span class="close" onclick="closeModal()">×</span>
+    <div style="font-family:var(--mono);font-weight:700;font-size:16px">enum ${esc(d.package)}.${esc(d.enum)}</div>
+    <div style="color:var(--muted);font-size:13px;margin:8px 0">${esc(d.desc)||''}</div>
+    <table class="fieldtbl" style="margin-top:6px">${vs}</table>`);
+}
+function showModal(h){$('#modal-box').innerHTML=h;$('#modal').classList.add('show');}
+function closeModal(){$('#modal').classList.remove('show');}
+$('#modal').onclick=e=>{if(e.target===$('#modal'))closeModal();};
+
+// ---- knowledge ----
+let knowledgeLoaded=false;
+async function loadKnowledge(){
+  knowledgeLoaded=true;
+  const box=$('#knowledge');box.innerHTML='<div class="loading"><div class="spin"></div>加载…</div>';
+  const d=await (await fetch('/api/knowledge')).json();
+  let h='';
+  // join keys
+  h+=`<div class="kcard"><h3><span class="ic">🔑</span>Join Key 命名空间</h3>
+    <p style="color:var(--muted);font-size:12.5px;margin:0 0 10px">两个不直接相连的 ID 空间——这是写错查询的头号来源。</p>`;
+  (d.join_keys||[]).forEach(k=>{const be=/backend/.test(k.namespace||'');
+    h+=`<div style="margin:8px 0"><span class="keytag ${be?'be':'fe'}">${esc(k.key)}</span> <span style="color:var(--faint);font-size:12px">${esc(k.namespace||'')}</span></div>`;});
+  h+=`</div>`;
+  // funnel
+  if(d.funnel&&d.funnel.length){
+    h+=`<div class="kcard"><h3><span class="ic">🛣️</span>转化漏斗</h3><div class="funnel">`;
+    d.funnel.forEach((s,i)=>{h+=`${i?'<span class="farrow">→</span>':''}<div class="fstep"><div>${esc((s.stage||'').replace(/_/g,' '))}</div><div class="fn2">${esc(s.event||'')}</div><div class="fk">key: ${esc(s.key||(s.keys?Object.values(s.keys)[0]:'')||'')}</div></div>`;});
+    h+=`</div></div>`;
+  }
+  // metrics
+  if(d.metrics&&d.metrics.length){
+    h+=`<div class="kcard"><h3><span class="ic">📊</span>指标口径 (${d.metrics.length})</h3>`;
+    d.metrics.forEach(m=>{h+=`<div class="metric-card" style="margin-bottom:10px"><div class="mt">${esc(m.metric)}</div><div class="mdef">${esc(m.definition)}</div>${m.caveat?`<div class="mcav">⚠ ${esc(m.caveat)}</div>`:''}</div>`;});
+    h+=`</div>`;
+  }
+  // open confirmations
+  if(d.open_confirmations&&d.open_confirmations.length){
+    h+=`<div class="kcard"><h3><span class="ic">❓</span>待确认项 (${d.open_confirmations.length})</h3>`;
+    d.open_confirmations.forEach(o=>{const fields=[].concat(o.affects_fields||[],o.affects_tables||[]);
+      h+=`<div class="oc"><div class="ocq">${esc(o.question||o.id)}</div>${o.impact?`<div style="color:var(--muted);font-size:11.5px;margin-top:3px">${esc(o.impact)}</div>`:''}${fields.length?`<div class="ocm">${fields.map(esc).join('<br>')}</div>`:''}${o.owner?`<div style="color:var(--faint);font-size:11px;margin-top:4px">owner: ${esc(o.owner)}</div>`:''}</div>`;});
+    h+=`</div>`;
+  }
+  // pitfalls
+  if(d.pitfalls&&d.pitfalls.length){
+    h+=`<div class="kcard"><h3><span class="ic">⚠️</span>陷阱</h3>`;
+    d.pitfalls.forEach(p=>{h+=`<div class="pitfall">${esc(typeof p==='string'?p:JSON.stringify(p))}</div>`;});
+    h+=`</div>`;
+  }
+  box.innerHTML=h;
+}
+autosize();
+</script>
+</body>
+</html>

@@ -32,7 +32,10 @@
   .topbar{display:flex;align-items:center;gap:12px;margin-bottom:30px}
   .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:grid;place-items:center;color:var(--brand-ink);font-weight:800;font-size:19px;box-shadow:0 8px 22px rgba(55,199,255,.4)}
   .topbar .name{font-weight:700;font-size:14px}.topbar .name small{display:block;color:var(--faint);font-size:11px;font-weight:500}
-  .back{margin-left:auto;color:var(--brand);text-decoration:none;font-size:12.5px;padding:8px 15px;border:1px solid var(--line);border-radius:100px;transition:.15s}
+  .langtoggle{margin-left:auto;display:flex;gap:3px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:100px;padding:3px}
+  .langtoggle button{background:none;border:none;color:var(--muted);font-size:12px;font-weight:600;padding:5px 12px;border-radius:100px;cursor:pointer;transition:.15s}
+  .langtoggle button.active{background:var(--brand);color:var(--brand-ink)}
+  .back{margin-left:12px;color:var(--brand);text-decoration:none;font-size:12.5px;padding:8px 15px;border:1px solid var(--line);border-radius:100px;transition:.15s}
   .back:hover{background:rgba(55,199,255,.1)}
   .eyebrow{color:var(--brand);font-size:11.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
   .qtitle{font-size:34px;font-weight:800;margin:0 0 8px;letter-spacing:.2px;line-height:1.25;max-width:800px}
@@ -138,15 +141,65 @@
 const $=s=>document.querySelector(s);
 const id=new URLSearchParams(location.search).get('id');
 const CATV=['--cat-1','--cat-2','--cat-3','--cat-4','--cat-5','--cat-6','--cat-7','--cat-8'];
-const FORM_LABEL={kpi:'关键指标',bar:'排名对比',pie:'占比构成',line:'时间趋势',smallmult:'多指标对比',multiline:'多指标趋势',table:'明细表'};
+function caveatBits(sql,lang){
+  sql=(sql||'').toLowerCase();let s='';
+  const cnt=lang==='en'?'metric is event count COUNT(*) (not distinct); ':'指标为事件计数 COUNT(*)（非去重）；';
+  const day=(dt)=>lang==='en'?`sample is a single-day partition ${dt}; `:`样本为单日分区 ${dt}；`;
+  if(/count\(\s*\*\s*\)/.test(sql))s+=cnt;
+  const m=sql.match(/dt\s*=\s*'([^']+)'/);if(m)s+=day(m[1]);
+  return s;
+}
+const DICT={
+  zh:{eyebrow:'分析报告 · Analysis Report', back:'← 返回操作台', unit_rows:'行', view:'视图', cat:'类别', badge:'领跑',
+    noresult:'查询无结果行（该分区无数据或超时）。', autogen:'由数据自动生成', autoform:'自动按数据结构选型', sqlsub:'只读 · Databricks',
+    fl:{kpi:'关键指标',bar:'排名对比',pie:'占比构成',line:'时间趋势',smallmult:'多指标对比',multiline:'多指标趋势',table:'明细表'},
+    sec:{summary:'执行摘要',kpi:'关键指标',overview:'概览',comp:'占比构成',dist:'分布',concl:'结论与建议',detail:'明细数据',sql:'查询 SQL'},
+    k:{rows:'结果行数',cols:'列',total:'合计',avg:'均值',peak:'峰值',median:'中位数',max:'最大',min:'最小',top1:'Top1 占比'},
+    ic:{leader:'领跑者',conc:'头部集中度',tail:'长尾',scale:'整体规模'}, conc:{hi:'高度集中',mid:'中度集中',lo:'相对分散'},
+    foot:'Car Hire Semantic Layer · AI-Native Data Analysis · 报告由查询结果自动生成',
+    lede:(A,dn,mn)=>`共 <b>${A.n}</b> 个${dn}，${mn} 合计 <b>${fmt(A.total)}</b>。<b>${esc(A.leader.k)}</b> 以 <b>${pct(A.leaderShare)}%</b> 领跑，前三名合计占 <b>${pct(A.top3Share)}%</b>。`,
+    ledeNo:'本报告基于 Databricks 实时查询结果自动生成。',
+    insLeader:(A,mn)=>`领跑者 <b>${esc(A.leader.k)}</b>：${mn} 达 <span class="hl">${fmt(A.leader.v)}</span>，占总量 <span class="hl">${pct(A.leaderShare)}%</span>${A.ratio?`，是第二名 <b>${esc(A.second.k)}</b> 的 <span class="hl">${A.ratio.toFixed(1)}×</span>`:''}。`,
+    insConc:(A,cl)=>`头部集中度<b>${cl}</b>：前三名（${esc(A.arr.slice(0,3).map(x=>x.k).join(' / '))}）合计占 <span class="hl-g">${pct(A.top3Share)}%</span>。`,
+    insTail:(A,dn)=>`长尾：其余 <span class="hl-v">${A.tailN}</span> 个${dn}合计仅占 <span class="hl-v">${pct(A.tailShare)}%</span>，呈明显头部效应。`,
+    insScale:(A,dn,mn)=>`整体规模：${A.n} 个${dn}，${mn} 合计 <span class="hl-a">${fmt(A.total)}</span>，均值 <span class="hl-a">${fmt(A.total/A.n)}</span>。`,
+    sortBy:(mn,dn)=>`${mn} 按${dn}排序（高亮为领跑者）`, top20:(n)=>`仅显示前 20（共 ${n}）`,
+    c1:(A)=>`<b>${esc(A.leader.k)} 是绝对核心</b>，单一贡献 ${pct(A.leaderShare)}%${A.ratio&&A.ratio>1.5?`，与第二名拉开 ${A.ratio.toFixed(1)} 倍差距`:''}，资源与运营应优先保障。`,
+    c2:(A)=>`头部前三占 <b>${pct(A.top3Share)}%</b>，${A.top3Share>0.5?'集中度高、抗风险能力弱，需关注头部波动':'分布较均衡，增长机会分散'}。`,
+    c3:(A,dn)=>`长尾 ${A.tailN} 个${dn}合计仅 <b>${pct(A.tailShare)}%</b>，可评估高潜力项的投入产出或做精简。`,
+    cNo:(n)=>`本次为 <b>${n}</b> 行明细/聚合数据，建议改用带 <b>GROUP BY</b> 的聚合查询以获得可视化洞察。`,
+    caveat:(sql)=>`口径说明：${caveatBits(sql,'zh')}数据来自 Databricks <b>prod_trusted</b>（经 dev 工作区读取）；数字由查询结果实时计算，非缓存。`,
+  },
+  en:{eyebrow:'Analysis Report', back:'← Back to console', unit_rows:'rows', view:'View', cat:'categories', badge:'Leader',
+    noresult:'No result rows (no data in that partition, or timed out).', autogen:'auto-generated from data', autoform:'auto-selected by data shape', sqlsub:'read-only · Databricks',
+    fl:{kpi:'Key metrics',bar:'Ranking',pie:'Composition',line:'Trend',smallmult:'Multi-measure',multiline:'Multi-line trend',table:'Detail'},
+    sec:{summary:'Executive summary',kpi:'Key metrics',overview:'Overview',comp:'Composition',dist:'Distribution',concl:'Conclusions & recommendations',detail:'Detail data',sql:'Query SQL'},
+    k:{rows:'Rows',cols:'cols',total:'total',avg:'avg',peak:'peak',median:'median',max:'max',min:'min',top1:'Top-1 share'},
+    ic:{leader:'Leader',conc:'Concentration',tail:'Long tail',scale:'Scale'}, conc:{hi:'highly concentrated',mid:'moderately concentrated',lo:'fairly dispersed'},
+    foot:'Car Hire Semantic Layer · AI-Native Data Analysis · report auto-generated from query results',
+    lede:(A,dn,mn)=>`Across <b>${A.n}</b> ${dn}, ${mn} totals <b>${fmt(A.total)}</b>. <b>${esc(A.leader.k)}</b> leads with <b>${pct(A.leaderShare)}%</b>; the top 3 hold <b>${pct(A.top3Share)}%</b>.`,
+    ledeNo:'This report is auto-generated from live Databricks query results.',
+    insLeader:(A,mn)=>`Leader <b>${esc(A.leader.k)}</b>: ${mn} reaches <span class="hl">${fmt(A.leader.v)}</span>, <span class="hl">${pct(A.leaderShare)}%</span> of total${A.ratio?`, <span class="hl">${A.ratio.toFixed(1)}×</span> the #2 <b>${esc(A.second.k)}</b>`:''}.`,
+    insConc:(A,cl)=>`Head concentration is <b>${cl}</b>: top 3 (${esc(A.arr.slice(0,3).map(x=>x.k).join(' / '))}) hold <span class="hl-g">${pct(A.top3Share)}%</span>.`,
+    insTail:(A,dn)=>`Long tail: the remaining <span class="hl-v">${A.tailN}</span> ${dn} hold only <span class="hl-v">${pct(A.tailShare)}%</span> — a clear head effect.`,
+    insScale:(A,dn,mn)=>`Scale: ${A.n} ${dn}, ${mn} totals <span class="hl-a">${fmt(A.total)}</span>, avg <span class="hl-a">${fmt(A.total/A.n)}</span>.`,
+    sortBy:(mn,dn)=>`${mn} by ${dn} (leader highlighted)`, top20:(n)=>`Top 20 of ${n}`,
+    c1:(A)=>`<b>${esc(A.leader.k)} is the core segment</b>, contributing ${pct(A.leaderShare)}% alone${A.ratio&&A.ratio>1.5?`, ${A.ratio.toFixed(1)}× ahead of #2`:''}; prioritise resources here.`,
+    c2:(A)=>`Top 3 hold <b>${pct(A.top3Share)}%</b> — ${A.top3Share>0.5?'high concentration, low resilience; watch head volatility':'fairly balanced, growth spread across segments'}.`,
+    c3:(A,dn)=>`The long tail of ${A.tailN} ${dn} holds only <b>${pct(A.tailShare)}%</b>; assess ROI of high-potential ones or trim.`,
+    cNo:(n)=>`This result is <b>${n}</b> detail/aggregate rows; use a <b>GROUP BY</b> aggregate query for visual insights.`,
+    caveat:(sql)=>`Notes: ${caveatBits(sql,'en')}data from Databricks <b>prod_trusted</b> (read via dev workspace); figures computed live from the query result, not cached.`,
+  }
+};
+function L(){return DICT[curLang()]||DICT.zh;}
 
+let _rep=null;
 async function load(){
-  if(!id){$('#root').innerHTML='<div class="page"><div class="err">缺少报告 id</div></div>';return;}
-  let rep;
-  try{rep=await (await fetch('/api/report?id='+encodeURIComponent(id))).json();}
-  catch(e){$('#root').innerHTML='<div class="page"><div class="err">加载失败：'+esc(e.message)+'</div></div>';return;}
-  if(rep.error){$('#root').innerHTML='<div class="page"><div class="err">'+esc(rep.error)+'</div></div>';return;}
-  render(rep);
+  if(!id){$('#root').innerHTML='<div class="page"><div class="err">missing report id</div></div>';return;}
+  try{_rep=await (await fetch('/api/report?id='+encodeURIComponent(id))).json();}
+  catch(e){$('#root').innerHTML='<div class="page"><div class="err">'+esc(e.message)+'</div></div>';return;}
+  if(_rep.error){$('#root').innerHTML='<div class="page"><div class="err">'+esc(_rep.error)+'</div></div>';return;}
+  render(_rep);
 }
 
 function pct(x){return (x*100).toFixed(1);}
@@ -161,127 +214,114 @@ function analyze(dim,m,rows){
 }
 
 function render(rep){
-  const d=rep.result||{}, cols=(d.data&&d.data.columns)||[], rows=(d.data&&d.data.rows)||[];
+  const T=L(), d=rep.result||{}, cols=(d.data&&d.data.columns)||[], rows=(d.data&&d.data.rows)||[];
   const {dims,meas,skip}=classify(cols,rows);
   const form=pickForm(dims,meas,rows,skip);
-  const now=new Date().toLocaleString('zh-CN',{hour12:false});
+  const now=new Date().toLocaleString(curLang()==='en'?'en-GB':'zh-CN',{hour12:false});
   const catDim=dims.filter(x=>x.role==='cat');
   const isRank=(form==='bar')&&catDim.length>=1&&meas.length===1;
   const A=isRank?analyze(catDim[0],meas[0],rows):null;
-  const dimName=catDim[0]?catDim[0].name:'类别', mName=meas[0]?meas[0].name:'';
+  const dimName=catDim[0]?catDim[0].name:T.cat, mName=meas[0]?meas[0].name:'';
+  const fl=T.fl[form]||form;
 
-  // ---- lede (one-line auto summary) ----
-  let lede='本报告基于 Databricks 实时查询结果自动生成。';
-  if(A) lede=`共 <b>${A.n}</b> 个${esc(dimName)}，${esc(mName)} 合计 <b>${fmt(A.total)}</b>。<b>${esc(A.leader.k)}</b> 以 <b>${pct(A.leaderShare)}%</b> 的占比领跑，前三名合计占 <b>${pct(A.top3Share)}%</b>。`;
+  const lede=A?T.lede(A,esc(dimName),esc(mName)):T.ledeNo;
 
   let h=`<div class="cover"><div class="cover-in">
-    <div class="topbar"><div class="logo">C</div><div class="name">Car Hire<small>AI-Native Data Analysis</small></div><a class="back" href="/">← 返回操作台</a></div>
-    <div class="eyebrow reveal">分析报告 · Analysis Report</div>
-    <h1 class="qtitle reveal">${esc(rep.question||'查询结果')}</h1>
+    <div class="topbar"><div class="logo">C</div><div class="name">Car Hire<small>AI-Native Data Analysis</small></div>
+      <div class="langtoggle" id="langtoggle"><button data-lang="zh">中</button><button data-lang="en">EN</button></div>
+      <a class="back" href="/">${T.back}</a></div>
+    <div class="eyebrow reveal">${T.eyebrow}</div>
+    <h1 class="qtitle reveal">${esc(rep.question||'')}</h1>
     <div class="lede reveal">${lede}</div>
     <div class="chips reveal">
-      <span class="chip"><span class="d" style="background:var(--green)"></span>${(d.row_count||rows.length)} 行</span>
+      <span class="chip"><span class="d" style="background:var(--green)"></span>${(d.row_count||rows.length)} ${T.unit_rows}</span>
       <span class="chip">⏱ ${d.execution_time_ms||0} ms</span>
       <span class="chip"><b>databricks</b></span>
-      <span class="chip">视图 <b>${FORM_LABEL[form]||form}</b></span>
+      <span class="chip">${T.view} <b>${fl}</b></span>
       <span class="chip">${esc(now)}</span>
     </div></div></div><div class="page">`;
 
-  if(!rows.length){h+='<div class="err">查询无结果行（该分区无数据或超时）。</div></div>';$('#root').innerHTML=h;finish();return;}
+  if(!rows.length){h+='<div class="err">'+T.noresult+'</div></div>';$('#root').innerHTML=h;wireLang();finish();return;}
 
-  // ---- 01 executive summary (图文) ----
   if(A){
-    const conc=A.top3Share>0.6?'高度集中':A.top3Share>0.4?'中度集中':'相对分散';
-    h+=`<div class="sec reveal"><div class="sechead"><span class="secno">01</span><span class="sectitle">执行摘要</span><span class="secsub">由数据自动生成</span></div>
+    const cl=A.top3Share>0.6?T.conc.hi:A.top3Share>0.4?T.conc.mid:T.conc.lo;
+    h+=`<div class="sec reveal"><div class="sechead"><span class="secno">01</span><span class="sectitle">${T.sec.summary}</span><span class="secsub">${T.autogen}</span></div>
       <div class="insights">
-        <div class="insight"><div class="ic">🏆</div><div class="tx">领跑者 <b>${esc(A.leader.k)}</b>：${esc(mName)} 达 <span class="hl">${fmt(A.leader.v)}</span>，占总量 <span class="hl">${pct(A.leaderShare)}%</span>${A.ratio?`，是第二名 <b>${esc(A.second.k)}</b> 的 <span class="hl">${A.ratio.toFixed(1)}×</span>`:''}。</div></div>
-        <div class="insight"><div class="ic">📊</div><div class="tx">头部集中度<b>${conc}</b>：前三名（${esc(A.arr.slice(0,3).map(x=>x.k).join(' / '))}）合计占 <span class="hl-g">${pct(A.top3Share)}%</span>。</div></div>
-        <div class="insight"><div class="ic">📉</div><div class="tx">长尾：其余 <span class="hl-v">${A.tailN}</span> 个${esc(dimName)}合计仅占 <span class="hl-v">${pct(A.tailShare)}%</span>，呈明显头部效应。</div></div>
-        <div class="insight"><div class="ic">Σ</div><div class="tx">整体规模：${A.n} 个${esc(dimName)}，${esc(mName)} 合计 <span class="hl-a">${fmt(A.total)}</span>，均值 <span class="hl-a">${fmt(A.total/A.n)}</span>。</div></div>
+        <div class="insight"><div class="ic">🏆</div><div class="tx">${T.insLeader(A,esc(mName))}</div></div>
+        <div class="insight"><div class="ic">📊</div><div class="tx">${T.insConc(A,cl)}</div></div>
+        <div class="insight"><div class="ic">📉</div><div class="tx">${T.insTail(A,esc(dimName))}</div></div>
+        <div class="insight"><div class="ic">Σ</div><div class="tx">${T.insScale(A,esc(dimName),esc(mName))}</div></div>
       </div></div>`;
   }
 
-  // ---- 02 KPI ----
   const accents=['--brand','--green','--violet','--amber'];
-  h+='<div class="sec reveal"><div class="sechead"><span class="secno">02</span><span class="sectitle">关键指标</span></div><div class="kpirow">';
-  h+=`<div class="kpi" style="--accent:var(--brand)"><div class="k">结果行数</div><div class="v cnt" data-to="${d.row_count||rows.length}" style="color:var(--brand)">0</div><div class="sub">${cols.length} 列</div></div>`;
+  h+=`<div class="sec reveal"><div class="sechead"><span class="secno">02</span><span class="sectitle">${T.sec.kpi}</span></div><div class="kpirow">`;
+  h+=`<div class="kpi" style="--accent:var(--brand)"><div class="k">${T.k.rows}</div><div class="v cnt" data-to="${d.row_count||rows.length}" style="color:var(--brand)">0</div><div class="sub">${cols.length} ${T.k.cols}</div></div>`;
   meas.slice(0,3).forEach((m,idx)=>{const s=stats(rows,m);if(!s)return;
-    h+=`<div class="kpi" style="--accent:var(${accents[(idx+1)%4]})"><div class="k">${esc(m.name)} · 合计</div><div class="v cnt" data-to="${s.sum}" style="color:var(${accents[(idx+1)%4]})">0</div><div class="sub">均值 ${fmt(s.avg)} · 峰值 ${fmt(s.max)}</div></div>`;});
+    h+=`<div class="kpi" style="--accent:var(${accents[(idx+1)%4]})"><div class="k">${esc(m.name)} · ${T.k.total}</div><div class="v cnt" data-to="${s.sum}" style="color:var(${accents[(idx+1)%4]})">0</div><div class="sub">${T.k.avg} ${fmt(s.avg)} · ${T.k.peak} ${fmt(s.max)}</div></div>`;});
   h+='</div></div>';
 
-  // ---- 03 primary chart ----
-  h+=`<div class="sec reveal"><div class="sechead"><span class="secno">03</span><span class="sectitle">概览 · ${FORM_LABEL[form]||form}</span><span class="secsub">自动按数据结构选型</span></div><div class="card">`;
+  h+=`<div class="sec reveal"><div class="sechead"><span class="secno">03</span><span class="sectitle">${T.sec.overview} · ${fl}</span><span class="secsub">${T.autoform}</span></div><div class="card">`;
   if(isRank){
-    h+=`<div style="color:var(--viz-muted);font-size:12px;margin-bottom:14px">${esc(mName)} 按${esc(dimName)}排序（高亮为领跑者）</div><div class="bars">`;
+    h+=`<div style="color:var(--viz-muted);font-size:12px;margin-bottom:14px">${T.sortBy(esc(mName),esc(dimName))}</div><div class="bars">`;
     A.arr.slice(0,20).forEach((x,idx)=>{const w=(x.v/A.leader.v*100);
-      h+=`<div class="bar-row ${idx===0?'top':''}"><div class="lbl">${esc(String(x.k))}</div><div class="bar-track"><div class="bar-fill" data-w="${w.toFixed(2)}"></div></div><div class="val">${fmt(x.v)}${idx===0?'<span class="badge">领跑</span>':''}</div></div>`;});
+      h+=`<div class="bar-row ${idx===0?'top':''}"><div class="lbl">${esc(String(x.k))}</div><div class="bar-track"><div class="bar-fill" data-w="${w.toFixed(2)}"></div></div><div class="val">${fmt(x.v)}${idx===0?`<span class="badge">${T.badge}</span>`:''}</div></div>`;});
     h+='</div>';
-    if(A.n>20)h+=`<div style="color:var(--faint);font-size:11px;margin-top:10px">仅显示前 20（共 ${A.n}）</div>`;
-  }else{
-    h+=buildChart(form,cols,rows,dims,meas);
-  }
+    if(A.n>20)h+=`<div style="color:var(--faint);font-size:11px;margin-top:10px">${T.top20(A.n)}</div>`;
+  }else{ h+=buildChart(form,cols,rows,dims,meas); }
   h+='</div></div>';
 
-  // ---- 04 composition + distribution ----
   if(isRank){
-    const seg=donutSVG(A);
     const s=stats(rows,meas[0]);
     h+=`<div class="sec reveal"><div class="two">
-      <div><div class="sechead"><span class="secno">04</span><span class="sectitle">占比构成</span></div><div class="card">${seg}</div></div>
-      <div><div class="sechead"><span class="secno">05</span><span class="sectitle">${esc(mName)} 分布</span></div><div class="card"><div class="statgrid">
-        <div class="ministat"><div class="k">合计</div><div class="v" style="color:var(--green)">${fmt(s.sum)}</div></div>
-        <div class="ministat"><div class="k">均值</div><div class="v">${fmt(s.avg)}</div></div>
-        <div class="ministat"><div class="k">中位数</div><div class="v">${fmt(median(A.arr.map(x=>x.v)))}</div></div>
-        <div class="ministat"><div class="k">最大</div><div class="v" style="color:var(--brand)">${fmt(s.max)}</div></div>
-        <div class="ministat"><div class="k">最小</div><div class="v">${fmt(s.min)}</div></div>
-        <div class="ministat"><div class="k">Top1 占比</div><div class="v" style="color:var(--violet)">${pct(A.leaderShare)}%</div></div>
+      <div><div class="sechead"><span class="secno">04</span><span class="sectitle">${T.sec.comp}</span></div><div class="card">${donutSVG(A)}</div></div>
+      <div><div class="sechead"><span class="secno">05</span><span class="sectitle">${esc(mName)} · ${T.sec.dist}</span></div><div class="card"><div class="statgrid">
+        <div class="ministat"><div class="k">${T.k.total}</div><div class="v" style="color:var(--green)">${fmt(s.sum)}</div></div>
+        <div class="ministat"><div class="k">${T.k.avg}</div><div class="v">${fmt(s.avg)}</div></div>
+        <div class="ministat"><div class="k">${T.k.median}</div><div class="v">${fmt(median(A.arr.map(x=>x.v)))}</div></div>
+        <div class="ministat"><div class="k">${T.k.max}</div><div class="v" style="color:var(--brand)">${fmt(s.max)}</div></div>
+        <div class="ministat"><div class="k">${T.k.min}</div><div class="v">${fmt(s.min)}</div></div>
+        <div class="ministat"><div class="k">${T.k.top1}</div><div class="v" style="color:var(--violet)">${pct(A.leaderShare)}%</div></div>
       </div></div></div></div></div>`;
   }
 
-  // ---- 06 conclusions ----
   const secC=isRank?'06':'04';
-  h+=`<div class="sec reveal"><div class="sechead"><span class="secno">${secC}</span><span class="sectitle">结论与建议</span></div><div class="concl"><ul>`;
+  h+=`<div class="sec reveal"><div class="sechead"><span class="secno">${secC}</span><span class="sectitle">${T.sec.concl}</span></div><div class="concl"><ul>`;
   if(A){
-    h+=`<li><span class="n">1</span><div><b>${esc(A.leader.k)} 是绝对核心市场</b>，单一贡献 ${pct(A.leaderShare)}%${A.ratio&&A.ratio>1.5?`，与第二名拉开 ${A.ratio.toFixed(1)} 倍差距`:''}，资源与运营应优先保障。</div></li>`;
-    h+=`<li><span class="n">2</span><div>头部前三占 <b>${pct(A.top3Share)}%</b>，${A.top3Share>0.5?'集中度高、抗风险能力弱，需关注头部市场波动':'分布较均衡，增长机会分散在多个市场'}。</div></li>`;
-    h+=`<li><span class="n">3</span><div>长尾 ${A.tailN} 个${esc(dimName)}合计仅 <b>${pct(A.tailShare)}%</b>，可评估其中高潜力市场的投入产出，或做精简。</div></li>`;
-  }else{
-    h+=`<li><span class="n">1</span><div>本次结果为 <b>${d.row_count||rows.length}</b> 行明细/聚合数据，建议改用带 <b>GROUP BY</b> 的聚合查询以获得可视化洞察。</div></li>`;
-  }
-  h+=`</ul><div class="caveat">口径说明：${sqlCaveat(rep.sql)}数据来自 Databricks <b>prod_trusted</b>（经 dev 工作区读取）；本报告数字由查询结果实时计算，非预先缓存。</div></div></div>`;
+    h+=`<li><span class="n">1</span><div>${T.c1(A)}</div></li><li><span class="n">2</span><div>${T.c2(A)}</div></li><li><span class="n">3</span><div>${T.c3(A,esc(dimName))}</div></li>`;
+  }else{ h+=`<li><span class="n">1</span><div>${T.cNo(d.row_count||rows.length)}</div></li>`; }
+  h+=`</ul><div class="caveat">${T.caveat(rep.sql)}</div></div></div>`;
 
-  // ---- detail table ----
   const secT=isRank?'07':'05';
-  h+=`<div class="sec reveal"><div class="sechead"><span class="secno">${secT}</span><span class="sectitle">明细数据</span><span class="secsub">${rows.length} 行 · ${cols.length} 列</span></div>
+  h+=`<div class="sec reveal"><div class="sechead"><span class="secno">${secT}</span><span class="sectitle">${T.sec.detail}</span><span class="secsub">${rows.length} ${T.unit_rows} · ${cols.length} ${T.k.cols}</span></div>
     <div class="tablewrap"><table class="dt"><thead><tr>${cols.map(c=>`<th>${esc(c.name)} <span style="color:var(--faint);font-weight:400">${esc(c.type||'')}</span></th>`).join('')}</tr></thead>
     <tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${esc(typeof r[c.name]==='object'?JSON.stringify(r[c.name]):r[c.name])}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
 
-  // ---- SQL ----
   const secS=isRank?'08':'06';
-  h+=`<div class="sec reveal"><div class="sechead"><span class="secno">${secS}</span><span class="sectitle">查询 SQL</span><span class="secsub">只读 · Databricks</span></div><pre class="sql">${esc(rep.sql||'')}</pre></div>`;
-  h+='<div class="foot">Car Hire Semantic Layer · AI-Native Data Analysis · 报告由查询结果自动生成</div></div>';
+  h+=`<div class="sec reveal"><div class="sechead"><span class="secno">${secS}</span><span class="sectitle">${T.sec.sql}</span><span class="secsub">${T.sqlsub}</span></div><pre class="sql">${esc(rep.sql||'')}</pre></div>`;
+  h+=`<div class="foot">${T.foot}</div></div>`;
 
   $('#root').innerHTML=h;
+  wireLang();
   finish();
+}
+function wireLang(){
+  const box=document.querySelector('#langtoggle');if(!box)return;
+  box.querySelectorAll('button').forEach(b=>{b.classList.toggle('active',b.dataset.lang===curLang());
+    b.onclick=()=>{setLang(b.dataset.lang);render(_rep);};});
 }
 
 function median(v){const a=[...v].sort((x,y)=>x-y),m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2;}
-function sqlCaveat(sql){
-  sql=(sql||'').toLowerCase();let s='';
-  if(/count\(\s*\*\s*\)/.test(sql))s+='指标为事件计数 COUNT(*)（非去重）；';
-  const m=sql.match(/dt\s*=\s*'([^']+)'/);if(m)s+=`样本为单日分区 ${m[1]}；`;
-  return s;
-}
 function donutSVG(A){
   const N=Math.min(A.arr.length,8);let items=A.arr.slice(0,N).map(x=>({k:x.k,v:x.v}));
-  if(A.arr.length>N)items.push({k:'其他',v:A.arr.slice(N).reduce((s,x)=>s+x.v,0)});
+  if(A.arr.length>N)items.push({k:t('c_other'),v:A.arr.slice(N).reduce((s,x)=>s+x.v,0)});
   const total=items.reduce((s,x)=>s+x.v,0)||1, R=80, C=2*Math.PI*R, cx=110,cy=110,sw=30;
   let off=0,seg='',leg='';
   items.forEach((it,k)=>{const frac=it.v/total, len=frac*C, col=`var(${CATV[k%8]})`;
     seg+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})"><title>${esc(it.k)}: ${fmt(it.v)} (${pct(frac)}%)</title></circle>`;
     leg+=`<div class="lg"><span class="sw" style="background:${col}"></span><span>${esc(it.k)}</span><span class="lv">${fmt(it.v)}</span><span class="lp">${pct(frac)}%</span></div>`;
     off+=len;});
-  return `<div class="donut-wrap"><div class="donut"><svg viewBox="0 0 220 220" width="220" height="220">${seg}</svg><div class="center"><div class="cv">${A.n}</div><div class="cl">${esc(A.leader?'类别':'')}类别</div></div></div><div class="legend">${leg}</div></div>`;
+  return `<div class="donut-wrap"><div class="donut"><svg viewBox="0 0 220 220" width="220" height="220">${seg}</svg><div class="center"><div class="cv">${A.n}</div><div class="cl">${L().cat}</div></div></div><div class="legend">${leg}</div></div>`;
 }
 
 function finish(){

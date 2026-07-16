@@ -3,6 +3,84 @@
    charts on the dark surface using the dataviz reference palette.
    Loaded as a plain <script> (functions are global). */
 
+/* ---- i18n (shared) ---- */
+const I18N={
+  zh:{
+    brand_sub:"语义层", nav_query:"查询操作台", nav_catalog:"数据目录", nav_know:"关系 & 指标",
+    foot_dialect:"方言", foot_scope:"范围", foot_tag:"AI-Native 数据分析",
+    q_title:"查询操作台", q_sub:"用自然语言提问 → 看到检索命中的表 / 指标 / 枚举 → 生成给分析 Agent 的 prompt",
+    q_ph:"例如：上个月每个 market 的搜索量和平均报价数", btn_gen:"生成",
+    st_tables:"命中表", st_mapped:"已映射物理表", st_metrics:"命中指标", st_enums:"相关枚举", st_dialect:"方言",
+    res_title:"查询结果（连 Databricks 真执行 · 只读护栏：仅 SELECT · 自动 LIMIT）",
+    btn_validate:"校验", btn_run:"执行", open_report:"↗ 打开完整报告",
+    sql_summary:"SQL（可编辑；起始脚手架已是可直接执行的真实表查询）",
+    sql_hint:"改成你要的聚合/时间即可。大表整月聚合可能超时，先缩到单日验证。",
+    run_placeholder:"点上方 ▶ 执行 运行下方 SQL，结果与图表会显示在这里",
+    running:"在 Databricks 上执行（大表可能需数十秒）…",
+    validating:"校验中…", validated_ok:"✓ 校验通过，可执行",
+    rows:"行", auto_detect:"自动识别", truncated:"已截断",
+    t_auto:"自动", t_bar:"柱状", t_pie:"饼图", t_line:"折线", t_table:"表格",
+    ref_title:"语义层参考（检索命中的表 / 指标 / 枚举 + Agent Prompt）",
+    sec_tables:"相关表结构（含物理映射）", sec_metrics:"命中指标口径", sec_enums:"相关枚举", sec_gloss:"术语",
+    prompt_title:"组装好的 Agent Prompt", btn_copy:"复制", copied:"已复制 ✓",
+    phys_title:"物理映射", phys_reco:"推荐", phys_raw:"原始", phys_unmapped:"未映射，Agent 按逻辑层推理并声明假设",
+    phys_union:"⚠ 按平台拆表，跨平台需 UNION", phys_note:"备注", phys_nested:"嵌套",
+    fields:"字段", grain:"粒度", no_desc:"无描述", meaning:"含义",
+    empty_hit:"未命中任何表，换个说法试试",
+    cat_title:"数据目录", cat_sub:"浏览语义层里的全部 message 与 enum，点开看字段与物理映射",
+    cat_ph:"搜索表名 / 描述…", f_all:"全部", f_enum:"枚举", cat_fields:"字段", cat_values:"取值", cat_nomatch:"没有匹配项",
+    know_title:"关系 & 指标", know_sub:"Join key 命名空间、转化漏斗、指标口径、待确认项——Agent 每次都会加载这些",
+    k_joinkey:"Join Key 命名空间", k_joinkey_sub:"两个不直接相连的 ID 空间——这是写错查询的头号来源。",
+    k_funnel:"转化漏斗", k_metrics:"指标口径", k_open:"待确认项", k_pitfall:"陷阱",
+    loading:"加载中…", exec_ok:"执行成功", no_rows:"无结果行",
+    hint_timeout:"疑似全表扫描超时，缩小 dt 范围或用更轻的聚合",
+    hint_nodata:"很快 → 不是超时：该表在这个 dt 分区没有数据，换个日期或换张表",
+    // chart internals
+    c_bymag:"· 按量级排序", c_overtime:"· 随时间", c_other:"其他", c_topn:"仅显示前 {n} 项（共 {total}）",
+    // shape labels
+    s_kpi:"单值 → KPI 卡", s_bar:"类别+数值 → 柱状图", s_pie:"占比 → 饼图", s_line:"时间序列 → 折线",
+    s_smallmult:"多指标 → 小多图", s_multiline:"多指标时序 → 多折线", s_table:"原始/嵌套数据 → 表格",
+  },
+  en:{
+    brand_sub:"Semantic Layer", nav_query:"Query Console", nav_catalog:"Data Catalog", nav_know:"Relations & Metrics",
+    foot_dialect:"Dialect", foot_scope:"Scope", foot_tag:"AI-Native Data Analysis",
+    q_title:"Query Console", q_sub:"Ask in natural language → see the matched tables / metrics / enums → generate the analysis-agent prompt",
+    q_ph:"e.g. searches and avg quotes per market last month", btn_gen:"Generate",
+    st_tables:"Tables", st_mapped:"Mapped", st_metrics:"Metrics", st_enums:"Enums", st_dialect:"Dialect",
+    res_title:"Results (live Databricks · read-only: SELECT only · auto LIMIT)",
+    btn_validate:"Validate", btn_run:"Run", open_report:"↗ Open full report",
+    sql_summary:"SQL (editable; the starter scaffold is already a runnable real-table query)",
+    sql_hint:"Edit into your own aggregate / time window. Full-month aggregates on big tables may time out — try a single day first.",
+    run_placeholder:"Click ▶ Run above to execute the SQL below; results and charts appear here",
+    running:"Running on Databricks (big tables may take tens of seconds)…",
+    validating:"Validating…", validated_ok:"✓ Valid, ready to run",
+    rows:"rows", auto_detect:"Auto-detected", truncated:"truncated",
+    t_auto:"Auto", t_bar:"Bar", t_pie:"Pie", t_line:"Line", t_table:"Table",
+    ref_title:"Semantic layer reference (matched tables / metrics / enums + Agent Prompt)",
+    sec_tables:"Relevant tables (with physical mapping)", sec_metrics:"Matched metric definitions", sec_enums:"Relevant enums", sec_gloss:"Glossary",
+    prompt_title:"Assembled Agent Prompt", btn_copy:"Copy", copied:"Copied ✓",
+    phys_title:"Physical mapping", phys_reco:"Curated", phys_raw:"Bronze", phys_unmapped:"Unmapped — agent reasons at the logical level and states assumptions",
+    phys_union:"⚠ Split by platform; UNION across platforms", phys_note:"Note", phys_nested:"Nested",
+    fields:"fields", grain:"grain", no_desc:"no description", meaning:"meaning",
+    empty_hit:"No table matched — try rephrasing",
+    cat_title:"Data Catalog", cat_sub:"Browse every message and enum in the semantic layer; click for fields and physical mapping",
+    cat_ph:"Search name / description…", f_all:"All", f_enum:"Enums", cat_fields:"fields", cat_values:"values", cat_nomatch:"No match",
+    know_title:"Relations & Metrics", know_sub:"Join-key namespaces, the conversion funnel, metric definitions and open confirmations — always loaded for the agent",
+    k_joinkey:"Join-key namespaces", k_joinkey_sub:"Two ID spaces that don't directly connect — the #1 source of wrong queries.",
+    k_funnel:"Conversion funnel", k_metrics:"Metric definitions", k_open:"Open confirmations", k_pitfall:"Pitfalls",
+    loading:"Loading…", exec_ok:"Executed", no_rows:"no rows",
+    hint_timeout:"likely a full-scan timeout — narrow the dt range or use a lighter aggregate",
+    hint_nodata:"fast → not a timeout: this table has no data in that dt partition; try another date or table",
+    c_bymag:"· by magnitude", c_overtime:"· over time", c_other:"Other", c_topn:"Top {n} of {total}",
+    s_kpi:"single value → KPI", s_bar:"category + measure → bar", s_pie:"share → pie", s_line:"time series → line",
+    s_smallmult:"multi-measure → small multiples", s_multiline:"multi-measure time series → multi-line", s_table:"raw / nested → table",
+  }
+};
+function curLang(){try{return localStorage.getItem('ch_lang')||'zh';}catch(e){return 'zh';}}
+function setLang(l){try{localStorage.setItem('ch_lang',l);}catch(e){}}
+function t(k,vars){let s=(I18N[curLang()]||{})[k];if(s==null)s=(I18N.zh[k]!=null?I18N.zh[k]:k);
+  if(vars)for(const kk in vars)s=s.split('{'+kk+'}').join(vars[kk]);return s;}
+
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function num(v){const x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isNaN(x)?null:x;}
 function fmt(n){if(n==null)return '';const a=Math.abs(n);return a>=1000?n.toLocaleString('en-US',{maximumFractionDigits:2}):(Math.round(n*1000)/1000).toString();}
@@ -53,12 +131,12 @@ function barChart(labels,vals,measName){
     bars+=`<text x="${gut-8}" y="${y+(rowH-12)/2}" text-anchor="end" dominant-baseline="central" fill="var(--viz-ink2)" font-size="12">${esc(String(labels[k]).slice(0,24))}</text>`;
     bars+=`<text x="${gut+w+6}" y="${y+(rowH-12)/2}" dominant-baseline="central" fill="var(--viz-ink)" font-size="11.5" style="font-variant-numeric:tabular-nums">${fmt(vals[k])}</text>`;
   }
-  const note=labels.length>N?`<div style="color:var(--faint);font-size:11px;margin-top:6px">仅显示前 ${N} 项（共 ${labels.length}）</div>`:'';
-  return `<div style="color:var(--viz-muted);font-size:11.5px;margin-bottom:6px">${esc(measName)} · 按量级排序</div><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">${bars}</svg>${note}`;
+  const note=labels.length>N?`<div style="color:var(--faint);font-size:11px;margin-top:6px">${t('c_topn',{n:N,total:labels.length})}</div>`:'';
+  return `<div style="color:var(--viz-muted);font-size:11.5px;margin-bottom:6px">${esc(measName)} ${t('c_bymag')}</div><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">${bars}</svg>${note}`;
 }
 function pieChart(labels,vals){
   const N=Math.min(labels.length,8);let L=labels.slice(0,N),V=vals.slice(0,N);
-  if(labels.length>N){L=L.concat(['其他']);V=V.concat([vals.slice(N).reduce((a,b)=>a+b,0)]);}
+  if(labels.length>N){L=L.concat([t('c_other')]);V=V.concat([vals.slice(N).reduce((a,b)=>a+b,0)]);}
   const total=V.reduce((a,b)=>a+b,0)||1,cx=150,cy=150,r=120,W=560,H=300;
   const cats=['--cat-1','--cat-2','--cat-3','--cat-4','--cat-5','--cat-6','--cat-7','--cat-8'];
   let ang=-Math.PI/2,seg='',leg='';
@@ -83,7 +161,7 @@ function lineChart(labels,vals,measName){
   const step=Math.max(1,Math.ceil(n/8));
   labels.forEach((l,i)=>{if(i%step===0)ticks+=`<text x="${xs(i)}" y="${H-12}" text-anchor="middle" fill="var(--viz-muted)" font-size="10">${esc(String(l).slice(5))}</text>`;});
   [max,(max+min)/2,min].forEach(gv=>{ticks+=`<text x="${padL-8}" y="${ys(gv)}" text-anchor="end" dominant-baseline="central" fill="var(--viz-muted)" font-size="10" style="font-variant-numeric:tabular-nums">${fmt(gv)}</text><line x1="${padL}" y1="${ys(gv)}" x2="${W-padR}" y2="${ys(gv)}" stroke="var(--line-soft)" stroke-width="1"/>`;});
-  return `<div style="color:var(--viz-muted);font-size:11.5px;margin-bottom:6px">${esc(measName)} · 随时间</div><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">${ticks}<path d="${path}" fill="none" stroke="var(--seq-3)" stroke-width="2"/>${dots}</svg>`;
+  return `<div style="color:var(--viz-muted);font-size:11.5px;margin-bottom:6px">${esc(measName)} ${t('c_overtime')}</div><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">${ticks}<path d="${path}" fill="none" stroke="var(--seq-3)" stroke-width="2"/>${dots}</svg>`;
 }
 function kpiTiles(meas,row){
   const cols=['--cat-1','--cat-2','--cat-3','--cat-5'];
@@ -109,13 +187,14 @@ function buildChart(form,cols,rows,dims,meas){
   return dataTable(cols,rows);
 }
 function availTypes(dims,meas,skip){
-  const a=[['auto','自动']];
+  const a=[['auto',t('t_auto')]];
   const catOrDate=dims.filter(d=>d.role==='cat'||d.role==='date').length;
-  if(!(skip&&skip.length)&&catOrDate>=1&&meas.length>=1){a.push(['bar','柱状']);a.push(['pie','饼图']);}
-  if(!(skip&&skip.length)&&dims.some(d=>d.role==='date')&&meas.length>=1)a.push(['line','折线']);
-  a.push(['table','表格']);
+  if(!(skip&&skip.length)&&catOrDate>=1&&meas.length>=1){a.push(['bar',t('t_bar')]);a.push(['pie',t('t_pie')]);}
+  if(!(skip&&skip.length)&&dims.some(d=>d.role==='date')&&meas.length>=1)a.push(['line',t('t_line')]);
+  a.push(['table',t('t_table')]);
   return a;
 }
+function shapeLabel(form){return t('s_'+form)||form;}
 function stats(rows,m){
   const v=rows.map(r=>num(r[m.name])).filter(x=>x!=null);
   if(!v.length)return null;

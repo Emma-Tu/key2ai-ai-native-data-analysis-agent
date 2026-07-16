@@ -50,6 +50,9 @@
   .nav-item.active{background:linear-gradient(90deg,rgba(46,197,255,.16),rgba(46,197,255,.04));
     color:var(--text);border-color:var(--line)}
   .nav-item.active svg{color:var(--brand)}
+  .langtoggle{display:flex;gap:4px;background:var(--panel-2);border:1px solid var(--line);border-radius:100px;padding:3px;margin:2px 8px 12px}
+  .langtoggle button{flex:1;background:none;border:none;color:var(--muted);font-size:12px;font-weight:600;padding:5px 0;border-radius:100px;cursor:pointer;transition:.15s}
+  .langtoggle button.active{background:var(--brand);color:var(--brand-ink)}
   .side-foot{margin-top:auto;font-size:11px;color:var(--faint);padding:12px 8px 0;border-top:1px solid var(--line-soft)}
   .side-foot b{color:var(--muted)}
   /* ---- main ---- */
@@ -213,42 +216,45 @@
 <aside class="sidebar">
   <div class="brand">
     <div class="logo">C</div>
-    <div><h1>Car Hire</h1><p>Semantic Layer</p></div>
+    <div><h1>Car Hire</h1><p data-i18n="brand_sub">Semantic Layer</p></div>
+  </div>
+  <div class="langtoggle" id="langtoggle">
+    <button data-lang="zh">中</button><button data-lang="en">EN</button>
   </div>
   <div class="nav-item active" data-view="query">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-    查询操作台
+    <span data-i18n="nav_query">查询操作台</span>
   </div>
   <div class="nav-item" data-view="catalog">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    数据目录
+    <span data-i18n="nav_catalog">数据目录</span>
   </div>
   <div class="nav-item" data-view="knowledge">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>
-    关系 & 指标
+    <span data-i18n="nav_know">关系 & 指标</span>
   </div>
   <div class="side-foot">
-    <div><b>方言</b> <span id="foot-dialect">databricks</span></div>
-    <div style="margin-top:4px"><b>范围</b> 6 protos · 131 msgs</div>
-    <div style="margin-top:4px">AI-Native Data Analysis</div>
+    <div><b data-i18n="foot_dialect">方言</b> <span id="foot-dialect">databricks</span></div>
+    <div style="margin-top:4px"><b data-i18n="foot_scope">范围</b> 6 protos · 131 msgs</div>
+    <div style="margin-top:4px" data-i18n="foot_tag">AI-Native Data Analysis</div>
   </div>
 </aside>
 
 <main class="main">
   <!-- QUERY VIEW -->
   <section class="view active" id="view-query">
-    <h2 class="title">查询操作台</h2>
-    <p class="sub">用自然语言提问 → 看到检索命中的表 / 指标 / 枚举 → 生成给分析 Agent 的 prompt</p>
+    <h2 class="title" data-i18n="q_title">查询操作台</h2>
+    <p class="sub" data-i18n="q_sub">用自然语言提问 → 看到检索命中的表 / 指标 / 枚举 → 生成给分析 Agent 的 prompt</p>
     <div class="console">
       <div class="qrow">
         <div class="qbox">
-          <textarea id="q" placeholder="例如：上个月每个 market 的搜索量和平均报价数" rows="1"></textarea>
+          <textarea id="q" data-i18n-ph="q_ph" placeholder="例如：上个月每个 market 的搜索量和平均报价数" rows="1"></textarea>
         </div>
         <div class="qside">
           <div class="topk">Top-K <input id="topk" type="number" min="1" max="15" value="6"></div>
           <button class="btn" id="run">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 12 14 0M13 6l6 6-6 6"/></svg>
-            生成
+            <span data-i18n="btn_gen">生成</span>
           </button>
         </div>
       </div>
@@ -260,17 +266,17 @@
 
   <!-- CATALOG VIEW -->
   <section class="view" id="view-catalog">
-    <h2 class="title">数据目录</h2>
-    <p class="sub">浏览语义层里的全部 message 与 enum，点开看字段与物理映射</p>
+    <h2 class="title" data-i18n="cat_title">数据目录</h2>
+    <p class="sub" data-i18n="cat_sub">浏览语义层里的全部 message 与 enum，点开看字段与物理映射</p>
     <div class="toolbar">
-      <input class="search-in" id="cat-search" placeholder="搜索表名 / 描述…">
+      <input class="search-in" id="cat-search" data-i18n-ph="cat_ph" placeholder="搜索表名 / 描述…">
       <div class="filters" id="cat-filters">
-        <button class="fbtn active" data-f="all">全部</button>
+        <button class="fbtn active" data-f="all" data-i18n="f_all">全部</button>
         <button class="fbtn" data-f="core">core</button>
         <button class="fbtn" data-f="shared">shared</button>
         <button class="fbtn" data-f="conversion">conversion</button>
         <button class="fbtn" data-f="b2b">b2b</button>
-        <button class="fbtn" data-f="enum">枚举</button>
+        <button class="fbtn" data-f="enum" data-i18n="f_enum">枚举</button>
       </div>
     </div>
     <div class="cat-grid" id="cat-grid"></div>
@@ -278,8 +284,8 @@
 
   <!-- KNOWLEDGE VIEW -->
   <section class="view" id="view-knowledge">
-    <h2 class="title">关系 & 指标</h2>
-    <p class="sub">Join key 命名空间、转化漏斗、指标口径、待确认项——Agent 每次都会加载这些</p>
+    <h2 class="title" data-i18n="know_title">关系 & 指标</h2>
+    <p class="sub" data-i18n="know_sub">Join key 命名空间、转化漏斗、指标口径、待确认项——Agent 每次都会加载这些</p>
     <div id="knowledge"></div>
   </section>
 </main>
@@ -288,16 +294,35 @@
 
 <script src="/charts.js"></script>
 <script>
-const EXAMPLES = [
-  ["搜索","上个月每个 market 的搜索量和平均报价数"],
-  ["拦截率","各 market 的无报价拦截率，排除 holdout"],
-  ["漏斗","分组卡片曝光到报价点选的转化率"],
-  ["绿色出行","电动车和混动车在报价里的占比"],
-  ["转化","跳转到成交的营收"],
-  ["桥接","USS 怎么把 uss_search_id 和 search_guid 关联"],
-];
+const EXAMPLES = {
+  zh:[["搜索","上个月每个 market 的搜索量和平均报价数"],["拦截率","各 market 的无报价拦截率，排除 holdout"],
+      ["漏斗","分组卡片曝光到报价点选的转化率"],["绿色出行","电动车和混动车在报价里的占比"],
+      ["转化","跳转到成交的营收"],["桥接","USS 怎么把 uss_search_id 和 search_guid 关联"]],
+  en:[["Search","Searches and avg quotes per market last month"],["Block rate","No-quote block rate per market, excluding holdout"],
+      ["Funnel","Group-card impression to quote-selection conversion"],["Green","Share of electric & hybrid cars in quotes"],
+      ["Convert","Revenue from redirect to booking"],["Bridge","How USS links uss_search_id and search_guid"]]
+};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-// esc() comes from /charts.js
+// esc(), t(), curLang(), setLang() come from /charts.js
+const SHAPE_KEY={kpi:'s_kpi',bar:'s_bar',pie:'s_pie',line:'s_line',smallmult:'s_smallmult',multiline:'s_multiline',table:'s_table'};
+
+function applyI18n(){
+  $$('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
+  $$('[data-i18n-ph]').forEach(el=>el.placeholder=t(el.dataset.i18nPh));
+  renderExamples();
+}
+function renderExamples(){
+  $('#examples').innerHTML=(EXAMPLES[curLang()]||EXAMPLES.zh).map(([tag,q])=>`<span class="chip" data-q="${esc(q)}"><b>${esc(tag)}</b>${esc(q)}</span>`).join('');
+  $$('#examples .chip').forEach(c=>c.onclick=()=>{$('#q').value=c.dataset.q;autosize();run();});
+}
+// language toggle
+function setActiveLangBtn(){$$('#langtoggle button').forEach(b=>b.classList.toggle('active',b.dataset.lang===curLang()));}
+$$('#langtoggle button').forEach(b=>b.onclick=()=>{
+  setLang(b.dataset.lang);setActiveLangBtn();applyI18n();
+  if(lastResult)renderResult(lastResult);          // re-render results
+  if(catalogLoaded)renderCatalog();
+  if(knowledgeLoaded){knowledgeLoaded=false;loadKnowledge();}
+});
 
 // nav
 $$('.nav-item').forEach(n=>n.onclick=()=>{
@@ -309,10 +334,6 @@ $$('.nav-item').forEach(n=>n.onclick=()=>{
   if(n.dataset.view==='knowledge'&&!knowledgeLoaded)loadKnowledge();
 });
 
-// examples
-$('#examples').innerHTML=EXAMPLES.map(([t,q])=>`<span class="chip" data-q="${esc(q)}"><b>${esc(t)}</b>${esc(q)}</span>`).join('');
-$$('#examples .chip').forEach(c=>c.onclick=()=>{$('#q').value=c.dataset.q;autosize();run();});
-
 // textarea autosize
 const ta=$('#q');
 function autosize(){ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,160)+'px';}
@@ -320,113 +341,111 @@ ta.addEventListener('input',autosize);
 ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){run();}});
 
 // ---- query ----
+let lastResult=null;
 $('#run').onclick=run;
 async function run(){
   const question=ta.value.trim();
   if(!question)return;
   const box=$('#results');box.classList.add('show');
-  box.innerHTML='<div class="loading"><div class="spin"></div>检索语义层并组装 prompt…</div>';
+  box.innerHTML='<div class="loading"><div class="spin"></div>'+t('loading')+'</div>';
   $('#run').disabled=true;
   try{
     const r=await fetch('/api/assemble',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({question,top_k:+$('#topk').value||6})});
     const d=await r.json();
-    if(d.error){box.innerHTML='<div class="err">出错：'+esc(d.error)+'</div>';return;}
-    renderResult(d);
-  }catch(e){box.innerHTML='<div class="err">请求失败：'+esc(e.message)+'</div>';}
+    if(d.error){box.innerHTML='<div class="err">'+esc(d.error)+'</div>';return;}
+    lastResult=d; renderResult(d);
+  }catch(e){box.innerHTML='<div class="err">'+esc(e.message)+'</div>';}
   finally{$('#run').disabled=false;}
 }
 
 function physBlock(p){
-  if(!p||!p.mapped) return `<div class="phys"><div class="pl"><span class="lbl">物理表</span><span class="note">未映射，Agent 按逻辑层推理并声明假设</span></div></div>`;
+  if(!p||!p.mapped) return `<div class="phys"><div class="pl"><span class="lbl">${t('phys_title')}</span><span class="note">${t('phys_unmapped')}</span></div></div>`;
   let h='<div class="phys">';
-  if(p.curated&&p.curated.length) h+=`<div class="pl"><span class="lbl">推荐</span><span class="tbl">${p.curated.map(esc).join('<br>')}</span></div>`;
-  if(p.bronze&&p.bronze.length) h+=`<div class="pl"><span class="lbl">原始</span><span class="tbl bronze">${p.bronze.map(esc).join('<br>')}</span></div>`;
-  if(p.platform_split) h+=`<div class="pl"><span class="lbl"></span><span class="warn">⚠ 按平台拆表，跨平台需 UNION</span></div>`;
-  if(p.nested) h+=`<div class="pl"><span class="lbl">嵌套</span><span class="note">${esc(JSON.stringify(p.nested))}</span></div>`;
-  if(p.note) h+=`<div class="pl"><span class="lbl">备注</span><span class="note">${esc(p.note)}</span></div>`;
+  if(p.curated&&p.curated.length) h+=`<div class="pl"><span class="lbl">${t('phys_reco')}</span><span class="tbl">${p.curated.map(esc).join('<br>')}</span></div>`;
+  if(p.bronze&&p.bronze.length) h+=`<div class="pl"><span class="lbl">${t('phys_raw')}</span><span class="tbl bronze">${p.bronze.map(esc).join('<br>')}</span></div>`;
+  if(p.platform_split) h+=`<div class="pl"><span class="lbl"></span><span class="warn">${t('phys_union')}</span></div>`;
+  if(p.nested) h+=`<div class="pl"><span class="lbl">${t('phys_nested')}</span><span class="note">${esc(JSON.stringify(p.nested))}</span></div>`;
+  if(p.note) h+=`<div class="pl"><span class="lbl">${t('phys_note')}</span><span class="note">${esc(p.note)}</span></div>`;
   return h+'</div>';
 }
 function fieldsBlock(fs){
   if(!fs||!fs.length)return'';
   const rows=fs.map(f=>`<tr><td class="fn">${esc(f.name)}${f.oneof?`<span class="oneof">oneof</span>`:''}</td><td class="ft">${esc(f.type)}</td><td class="fd">${esc(f.desc)}</td></tr>`).join('');
-  return `<details class="fields"><summary>字段 (${fs.length})</summary><table class="fieldtbl">${rows}</table></details>`;
+  return `<details class="fields"><summary>${t('fields')} (${fs.length})</summary><table class="fieldtbl">${rows}</table></details>`;
 }
-function tableCard(t){
+function tableCard(tb){
   return `<div class="card">
-    <div class="head"><span class="mname"><span class="mpkg">${esc(t.package)}.</span>${esc(t.message)}</span>
-      <span style="display:flex;gap:6px;flex:none"><span class="tag ${esc(t.group)}">${esc(t.group)}</span><span class="tag score">${t.score}</span></span></div>
-    <div class="desc">${esc(t.description)||'<i style="color:var(--faint)">无描述</i>'}</div>
-    ${t.grain?`<div class="grain"><b>粒度</b> ${esc(t.grain)}</div>`:''}
-    ${physBlock(t.physical)}
-    ${fieldsBlock(t.fields)}
+    <div class="head"><span class="mname"><span class="mpkg">${esc(tb.package)}.</span>${esc(tb.message)}</span>
+      <span style="display:flex;gap:6px;flex:none"><span class="tag ${esc(tb.group)}">${esc(tb.group)}</span><span class="tag score">${tb.score}</span></span></div>
+    <div class="desc">${esc(tb.description)||'<i style="color:var(--faint)">'+t('no_desc')+'</i>'}</div>
+    ${tb.grain?`<div class="grain"><b>${t('grain')}</b> ${esc(tb.grain)}</div>`:''}
+    ${physBlock(tb.physical)}
+    ${fieldsBlock(tb.fields)}
   </div>`;
 }
 function renderResult(d){
   $('#foot-dialect').textContent=d.dialect;
-  const nBronze=d.tables.filter(t=>t.physical.mapped).length;
+  const nBronze=d.tables.filter(x=>x.physical.mapped).length;
   const meta=`<div class="metabar">
-    <div class="stat"><div class="k">命中表</div><div class="v brand">${d.tables.length}</div></div>
-    <div class="stat"><div class="k">已映射物理表</div><div class="v green">${nBronze}</div></div>
-    <div class="stat"><div class="k">命中指标</div><div class="v violet">${d.metrics.length}</div></div>
-    <div class="stat"><div class="k">相关枚举</div><div class="v amber">${d.enums.length}</div></div>
-    <div class="stat"><div class="k">方言</div><div class="v">${esc(d.dialect)}</div></div>
+    <div class="stat"><div class="k">${t('st_tables')}</div><div class="v brand">${d.tables.length}</div></div>
+    <div class="stat"><div class="k">${t('st_mapped')}</div><div class="v green">${nBronze}</div></div>
+    <div class="stat"><div class="k">${t('st_metrics')}</div><div class="v violet">${d.metrics.length}</div></div>
+    <div class="stat"><div class="k">${t('st_enums')}</div><div class="v amber">${d.enums.length}</div></div>
+    <div class="stat"><div class="k">${t('st_dialect')}</div><div class="v">${esc(d.dialect)}</div></div>
   </div>`;
 
-  const left=`<div><div class="section-h"><span class="dot"></span>相关表结构（含物理映射）</div>
-    ${d.tables.length?d.tables.map(tableCard).join(''):'<div class="empty">未命中任何表，换个说法试试</div>'}</div>`;
+  const left=`<div><div class="section-h"><span class="dot"></span>${t('sec_tables')}</div>
+    ${d.tables.length?d.tables.map(tableCard).join(''):'<div class="empty">'+t('empty_hit')+'</div>'}</div>`;
 
   let right='<div>';
   if(d.metrics.length){
-    right+='<div class="section-h"><span class="dot" style="background:var(--green)"></span>命中指标口径</div>';
+    right+=`<div class="section-h"><span class="dot" style="background:var(--green)"></span>${t('sec_metrics')}</div>`;
     right+=d.metrics.map(m=>`<div class="metric-card"><div class="mt">${esc(m.metric)}</div>
       <div class="mdef">${esc(m.definition)}</div>
       ${m.caveat?`<div class="mcav">⚠ ${esc(m.caveat)}</div>`:''}
-      ${m.unit?`<div style="color:var(--faint);font-size:11.5px;margin-top:4px">单位：${esc(m.unit)}</div>`:''}</div>`).join('');
+      ${m.unit?`<div style="color:var(--faint);font-size:11.5px;margin-top:4px">${esc(m.unit)}</div>`:''}</div>`).join('');
   }
   if(d.enums.length){
-    right+='<div class="section-h" style="margin-top:18px"><span class="dot" style="background:var(--amber)"></span>相关枚举</div>';
+    right+=`<div class="section-h" style="margin-top:18px"><span class="dot" style="background:var(--amber)"></span>${t('sec_enums')}</div>`;
     right+=d.enums.map(e=>`<div class="enum-card"><div class="en">${esc(e.name)}</div>
       ${e.desc?`<div class="ed">${esc(e.desc)}</div>`:''}
       <div class="enum-vals">${(e.values||[]).slice(0,14).map(v=>`<span class="ev"><b>${v.num}</b> ${esc(v.name)}</span>`).join('')}${e.values.length>14?`<span class="ev">…+${e.values.length-14}</span>`:''}</div></div>`).join('');
   }
   if(d.glossary.length){
-    right+='<div class="section-h" style="margin-top:18px"><span class="dot" style="background:var(--violet)"></span>术语</div>';
+    right+=`<div class="section-h" style="margin-top:18px"><span class="dot" style="background:var(--violet)"></span>${t('sec_gloss')}</div>`;
     right+='<div class="card">'+d.glossary.map(g=>`<div style="font-size:12.5px;margin:4px 0"><b style="font-family:var(--mono)">${esc(g.term)}</b> <span style="color:var(--faint)">→</span> <span style="color:var(--muted)">${esc(g.maps_to)}</span></div>`).join('')+'</div>';
   }
   right+='</div>';
 
   const prompt=`<div class="prompt-wrap"><div class="prompt-head">
-    <div class="section-h" style="margin:0"><span class="dot" style="background:#fff"></span>组装好的 Agent Prompt</div>
-    <button class="copybtn" id="copyp">复制</button></div>
+    <div class="section-h" style="margin:0"><span class="dot" style="background:#fff"></span>${t('prompt_title')}</div>
+    <button class="copybtn" id="copyp">${t('btn_copy')}</button></div>
     <div class="prompt-box" id="pbox">${esc(d.prompt)}</div></div>`;
 
-  // ★ 查询结果放最前面：SQL + 执行 + 图表报告
   const runner=`<div class="prompt-wrap" style="margin-top:0">
     <div class="prompt-head">
-      <div class="section-h" style="margin:0"><span class="dot" style="background:var(--green)"></span>查询结果（连 Databricks 真执行 · 只读护栏：仅 SELECT · 自动 LIMIT）</div>
+      <div class="section-h" style="margin:0"><span class="dot" style="background:var(--green)"></span>${t('res_title')}</div>
       <div style="display:flex;gap:8px">
-        <button class="copybtn" id="valbtn">校验</button>
-        <button class="btn" id="runsql" style="height:34px;padding:0 16px;font-size:13px">▶ 执行</button>
+        <button class="copybtn" id="valbtn">${t('btn_validate')}</button>
+        <button class="btn" id="runsql" style="height:34px;padding:0 16px;font-size:13px">▶ ${t('btn_run')}</button>
       </div>
     </div>
     <div id="sqlresult" style="margin-bottom:12px"></div>
-    <details><summary style="cursor:pointer;color:var(--faint);font-size:11.5px;font-weight:600;list-style:none;margin-bottom:8px">▸ SQL（可编辑；起始脚手架已是可直接执行的真实表查询）</summary>
+    <details><summary style="cursor:pointer;color:var(--faint);font-size:11.5px;font-weight:600;list-style:none;margin-bottom:8px">▸ ${t('sql_summary')}</summary>
       <textarea id="sqlbox" spellcheck="false" style="width:100%;min-height:120px;background:#070c17;border:1px solid var(--line);border-radius:12px;padding:14px;font-family:var(--mono);font-size:12px;color:#c7d3ee;line-height:1.6;outline:none;resize:vertical">${esc(d.starter_sql||'')}</textarea>
-      <div style="color:var(--faint);font-size:11px;margin-top:6px">改成你要的聚合/时间即可。大表整月聚合可能超时，先缩到单日验证。</div>
+      <div style="color:var(--faint);font-size:11px;margin-top:6px">${t('sql_hint')}</div>
     </details>
   </div>`;
 
-  // 语义层参考（prompt + 表结构 + 指标/枚举）折叠在结果下方
   const reference=`<div style="margin-top:24px;border-top:1px solid var(--line-soft);padding-top:20px">
-    <div class="section-h" style="margin-bottom:14px"><span class="dot" style="background:var(--faint)"></span>语义层参考（检索命中的表 / 指标 / 枚举 + Agent Prompt）</div>
+    <div class="section-h" style="margin-bottom:14px"><span class="dot" style="background:var(--faint)"></span>${t('ref_title')}</div>
     <div class="grid">${left}${right}</div>${prompt}</div>`;
 
   $('#results').innerHTML=meta+runner+reference;
-  $('#copyp').onclick=()=>{navigator.clipboard.writeText(d.prompt);const b=$('#copyp');b.textContent='已复制 ✓';b.classList.add('ok');setTimeout(()=>{b.textContent='复制';b.classList.remove('ok');},1500);};
+  $('#copyp').onclick=()=>{navigator.clipboard.writeText(d.prompt);const b=$('#copyp');b.textContent=t('copied');b.classList.add('ok');setTimeout(()=>{b.textContent=t('btn_copy');b.classList.remove('ok');},1500);};
   wireRunner();
-  // 结果区一开始给个引导
-  $('#sqlresult').innerHTML='<div class="empty" style="padding:22px">点上方 <b style="color:var(--green)">▶ 执行</b> 运行下方 SQL，结果与图表会显示在这里</div>';
+  $('#sqlresult').innerHTML='<div class="empty" style="padding:22px">'+t('run_placeholder')+'</div>';
 }
 
 function wireRunner(){
@@ -434,17 +453,17 @@ function wireRunner(){
   if(!runBtn)return;
   valBtn.onclick=async()=>{
     const sql=$('#sqlbox').value;
-    out.innerHTML='<div class="loading"><div class="spin"></div>校验中…</div>';
+    out.innerHTML='<div class="loading"><div class="spin"></div>'+t('validating')+'</div>';
     try{const r=await fetch('/api/validate-sql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql})});
       const d=await r.json();
       if(d.error)out.innerHTML='<div class="err">'+esc(d.error)+'</div>';
-      else if(d.ok===false)out.innerHTML='<div class="err">护栏：'+esc(d.guardrail)+'</div>';
-      else out.innerHTML='<div style="color:var(--green);font-size:12.5px;padding:8px 0">✓ 校验通过，可执行</div>';
+      else if(d.ok===false)out.innerHTML='<div class="err">'+esc(d.guardrail)+'</div>';
+      else out.innerHTML='<div style="color:var(--green);font-size:12.5px;padding:8px 0">'+t('validated_ok')+'</div>';
     }catch(e){out.innerHTML='<div class="err">'+esc(e.message)+'</div>';}
   };
   runBtn.onclick=async()=>{
     const sql=$('#sqlbox').value;
-    out.innerHTML='<div class="loading"><div class="spin"></div>在 Databricks 上执行（大表可能需数十秒）…</div>';
+    out.innerHTML='<div class="loading"><div class="spin"></div>'+t('running')+'</div>';
     runBtn.disabled=true;
     try{const r=await fetch('/api/run-sql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql,limit:200,question:($('#q').value||'').trim()})});
       const d=await r.json();
@@ -454,27 +473,25 @@ function wireRunner(){
   };
 }
 // chart functions live in /charts.js (shared with the report page)
-const SHAPE_LABEL={kpi:'单值 → KPI 卡',bar:'类别+数值 → 柱状图',pie:'占比 → 饼图',line:'时间序列 → 折线',smallmult:'多指标 → 小多图',multiline:'多指标时序 → 多折线',table:'原始/嵌套数据 → 表格'};
 function renderSqlResult(d,out){
   if(d.error){out.innerHTML='<div class="err">'+esc(d.error)+'</div>';return;}
-  if(d.success===false){out.innerHTML='<div class="err">查询失败：'+esc(d.error||JSON.stringify(d.validation_errors||d))+'</div>';return;}
+  if(d.success===false){out.innerHTML='<div class="err">'+esc(d.error||JSON.stringify(d.validation_errors||d))+'</div>';return;}
   const cols=(d.data&&d.data.columns)||[],rows=(d.data&&d.data.rows)||[];
   if(!rows.length){
     const ms=d.execution_time_ms||0;
-    const hint=ms>=25000?`（${ms}ms — 疑似全表扫描超时，缩小 dt 范围或用更轻的聚合）`
-              :`（${ms}ms，很快 → 不是超时：该表在这个 dt 分区没有数据，换个日期或换张表）`;
-    out.innerHTML='<div class="empty" style="padding:24px">✓ 执行成功，无结果行 '+hint+'</div>';return;}
+    const hint=`（${ms}ms — ${ms>=25000?t('hint_timeout'):t('hint_nodata')}）`;
+    out.innerHTML='<div class="empty" style="padding:24px">✓ '+t('exec_ok')+' · '+t('no_rows')+' '+hint+'</div>';return;}
   const {dims,meas,skip}=classify(cols,rows);
   const auto=pickForm(dims,meas,rows,skip);
   const avail=availTypes(dims,meas,skip);
   const btns=avail.map(([k,lbl])=>`<button class="fbtn rep-t" data-t="${k}">${lbl}</button>`).join('');
-  const rid=d.report_id?`<a class="copybtn" style="text-decoration:none" href="/report?id=${d.report_id}" target="_blank">↗ 打开完整报告</a>`:'';
+  const rid=d.report_id?`<a class="copybtn" style="text-decoration:none" href="/report?id=${d.report_id}" target="_blank">${t('open_report')}</a>`:'';
   out.innerHTML=`<div style="display:flex;gap:14px;color:var(--faint);font-size:11.5px;margin-bottom:10px;align-items:center;flex-wrap:wrap">
-      <span>✅ ${d.row_count} 行</span><span>⏱ ${d.execution_time_ms}ms</span>${d.truncated?'<span style="color:var(--amber)">已截断</span>':''}
-      <span style="color:var(--viz-muted)">· 自动识别：${SHAPE_LABEL[auto]||auto}</span>
+      <span>✅ ${d.row_count} ${t('rows')}</span><span>⏱ ${d.execution_time_ms}ms</span>${d.truncated?`<span style="color:var(--amber)">${t('truncated')}</span>`:''}
+      <span style="color:var(--viz-muted)">· ${t('auto_detect')}：${t(SHAPE_KEY[auto]||'')||auto}</span>
       <span style="margin-left:auto;display:flex;gap:6px;align-items:center">${rid}${btns}</span></div>
     <div id="repbody" style="background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:16px"></div>`;
-  const draw=t=>{const form=(t==='auto')?auto:t;$('#repbody').innerHTML=buildChart(form,cols,rows,dims,meas);};
+  const draw=ty=>{const form=(ty==='auto')?auto:ty;$('#repbody').innerHTML=buildChart(form,cols,rows,dims,meas);};
   out.querySelectorAll('.rep-t').forEach(b=>b.onclick=()=>{out.querySelectorAll('.rep-t').forEach(x=>x.classList.remove('active'));b.classList.add('active');draw(b.dataset.t);});
   const first=out.querySelector('.rep-t');if(first)first.classList.add('active');
   draw('auto');
@@ -484,7 +501,7 @@ function renderSqlResult(d,out){
 let catalogLoaded=false,catalogData={messages:[],enums:[]},catFilter='all',catQuery='';
 async function loadCatalog(){
   catalogLoaded=true;
-  $('#cat-grid').innerHTML='<div class="loading"><div class="spin"></div>加载目录…</div>';
+  $('#cat-grid').innerHTML='<div class="loading"><div class="spin"></div>'+t('loading')+'</div>';
   const d=await (await fetch('/api/catalog')).json();
   catalogData=d;renderCatalog();
 }
@@ -501,26 +518,26 @@ function renderCatalog(){
   $('#cat-grid').innerHTML=items.length?items.map(i=>i.kind==='msg'?
     `<div class="cat-item" onclick="openMsg('${esc(i.key)}')">
       <div class="ci-h"><span class="ci-n">${esc(i.message)}</span><span class="tag ${esc(i.group)}">${esc(i.group)}</span></div>
-      <div class="ci-d">${esc(i.description)||'<i>无描述</i>'}</div>
-      <div class="ci-meta">${esc(i.package)} · ${i.field_count} 字段</div></div>`:
+      <div class="ci-d">${esc(i.description)||'<i>'+t('no_desc')+'</i>'}</div>
+      <div class="ci-meta">${esc(i.package)} · ${i.field_count} ${t('cat_fields')}</div></div>`:
     `<div class="cat-item" onclick="openEnum('${esc(i.key)}')">
       <div class="ci-h"><span class="ci-n">${esc(i.name)}</span><span class="tag score">enum</span></div>
-      <div class="ci-d">${esc(i.desc)||'<i>无描述</i>'}</div>
-      <div class="ci-meta">${esc(i.package)} · ${i.value_count} 取值</div></div>`
-  ).join(''):'<div class="empty">没有匹配项</div>';
+      <div class="ci-d">${esc(i.desc)||'<i>'+t('no_desc')+'</i>'}</div>
+      <div class="ci-meta">${esc(i.package)} · ${i.value_count} ${t('cat_values')}</div></div>`
+  ).join(''):'<div class="empty">'+t('cat_nomatch')+'</div>';
 }
 async function openMsg(key){
   const d=await (await fetch('/api/message?key='+encodeURIComponent(key))).json();
   const p=d._physical;
   let phys='';
   if(p){const b=[].concat(p.bronze||[]),c=[].concat(p.curated||[]);
-    phys=`<div class="phys" style="margin:12px 0">${c.length?`<div class="pl"><span class="lbl">推荐</span><span class="tbl">${c.map(esc).join('<br>')}</span></div>`:''}${b.length?`<div class="pl"><span class="lbl">原始</span><span class="tbl bronze">${b.map(esc).join('<br>')}</span></div>`:''}${p.note?`<div class="pl"><span class="lbl">备注</span><span class="note">${esc(p.note)}</span></div>`:''}</div>`;}
+    phys=`<div class="phys" style="margin:12px 0">${c.length?`<div class="pl"><span class="lbl">${t('phys_reco')}</span><span class="tbl">${c.map(esc).join('<br>')}</span></div>`:''}${b.length?`<div class="pl"><span class="lbl">${t('phys_raw')}</span><span class="tbl bronze">${b.map(esc).join('<br>')}</span></div>`:''}${p.note?`<div class="pl"><span class="lbl">${t('phys_note')}</span><span class="note">${esc(p.note)}</span></div>`:''}</div>`;}
   const fs=(d.fields||[]).map(f=>`<tr><td class="fn">${esc(f.name)}</td><td class="ft">${esc(f.type)}</td><td class="fd">${esc(f.desc||'')}</td></tr>`).join('');
   showModal(`<span class="close" onclick="closeModal()">×</span>
     <div style="font-family:var(--mono);font-weight:700;font-size:16px">${esc(d.package)}.${esc(d.message)}</div>
     <div style="margin:6px 0"><span class="tag ${esc(d.group)}">${esc(d.group)}</span></div>
     <div style="color:var(--muted);font-size:13px;margin:8px 0">${esc(d.description)||''}</div>
-    ${d.grain?`<div style="color:var(--faint);font-size:12px"><b>粒度</b> ${esc(d.grain)}</div>`:''}
+    ${d.grain?`<div style="color:var(--faint);font-size:12px"><b>${t('grain')}</b> ${esc(d.grain)}</div>`:''}
     ${phys}
     <table class="fieldtbl" style="margin-top:10px">${fs}</table>`);
 }
@@ -540,42 +557,45 @@ $('#modal').onclick=e=>{if(e.target===$('#modal'))closeModal();};
 let knowledgeLoaded=false;
 async function loadKnowledge(){
   knowledgeLoaded=true;
-  const box=$('#knowledge');box.innerHTML='<div class="loading"><div class="spin"></div>加载…</div>';
+  const box=$('#knowledge');box.innerHTML='<div class="loading"><div class="spin"></div>'+t('loading')+'</div>';
   const d=await (await fetch('/api/knowledge')).json();
   let h='';
   // join keys
-  h+=`<div class="kcard"><h3><span class="ic">🔑</span>Join Key 命名空间</h3>
-    <p style="color:var(--muted);font-size:12.5px;margin:0 0 10px">两个不直接相连的 ID 空间——这是写错查询的头号来源。</p>`;
+  h+=`<div class="kcard"><h3><span class="ic">🔑</span>${t('k_joinkey')}</h3>
+    <p style="color:var(--muted);font-size:12.5px;margin:0 0 10px">${t('k_joinkey_sub')}</p>`;
   (d.join_keys||[]).forEach(k=>{const be=/backend/.test(k.namespace||'');
     h+=`<div style="margin:8px 0"><span class="keytag ${be?'be':'fe'}">${esc(k.key)}</span> <span style="color:var(--faint);font-size:12px">${esc(k.namespace||'')}</span></div>`;});
   h+=`</div>`;
   // funnel
   if(d.funnel&&d.funnel.length){
-    h+=`<div class="kcard"><h3><span class="ic">🛣️</span>转化漏斗</h3><div class="funnel">`;
+    h+=`<div class="kcard"><h3><span class="ic">🛣️</span>${t('k_funnel')}</h3><div class="funnel">`;
     d.funnel.forEach((s,i)=>{h+=`${i?'<span class="farrow">→</span>':''}<div class="fstep"><div>${esc((s.stage||'').replace(/_/g,' '))}</div><div class="fn2">${esc(s.event||'')}</div><div class="fk">key: ${esc(s.key||(s.keys?Object.values(s.keys)[0]:'')||'')}</div></div>`;});
     h+=`</div></div>`;
   }
   // metrics
   if(d.metrics&&d.metrics.length){
-    h+=`<div class="kcard"><h3><span class="ic">📊</span>指标口径 (${d.metrics.length})</h3>`;
+    h+=`<div class="kcard"><h3><span class="ic">📊</span>${t('k_metrics')} (${d.metrics.length})</h3>`;
     d.metrics.forEach(m=>{h+=`<div class="metric-card" style="margin-bottom:10px"><div class="mt">${esc(m.metric)}</div><div class="mdef">${esc(m.definition)}</div>${m.caveat?`<div class="mcav">⚠ ${esc(m.caveat)}</div>`:''}</div>`;});
     h+=`</div>`;
   }
   // open confirmations
   if(d.open_confirmations&&d.open_confirmations.length){
-    h+=`<div class="kcard"><h3><span class="ic">❓</span>待确认项 (${d.open_confirmations.length})</h3>`;
+    h+=`<div class="kcard"><h3><span class="ic">❓</span>${t('k_open')} (${d.open_confirmations.length})</h3>`;
     d.open_confirmations.forEach(o=>{const fields=[].concat(o.affects_fields||[],o.affects_tables||[]);
       h+=`<div class="oc"><div class="ocq">${esc(o.question||o.id)}</div>${o.impact?`<div style="color:var(--muted);font-size:11.5px;margin-top:3px">${esc(o.impact)}</div>`:''}${fields.length?`<div class="ocm">${fields.map(esc).join('<br>')}</div>`:''}${o.owner?`<div style="color:var(--faint);font-size:11px;margin-top:4px">owner: ${esc(o.owner)}</div>`:''}</div>`;});
     h+=`</div>`;
   }
   // pitfalls
   if(d.pitfalls&&d.pitfalls.length){
-    h+=`<div class="kcard"><h3><span class="ic">⚠️</span>陷阱</h3>`;
+    h+=`<div class="kcard"><h3><span class="ic">⚠️</span>${t('k_pitfall')}</h3>`;
     d.pitfalls.forEach(p=>{h+=`<div class="pitfall">${esc(typeof p==='string'?p:JSON.stringify(p))}</div>`;});
     h+=`</div>`;
   }
   box.innerHTML=h;
 }
+// ---- init i18n ----
+setActiveLangBtn();
+applyI18n();
 autosize();
 </script>
 </body>

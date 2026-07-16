@@ -194,8 +194,64 @@ gold_entrypoints:
   session_metrics: prod_trusted_gold.session.v_car_hire_session_metrics_v2
   ttv:      prod_trusted_gold.bar_understand.car_hire_ttv
 
+# ---------------------------------------------------------------------------
+# OPEN CONFIRMATIONS — 物理层待确认项，逐条标到具体字段/表。
+# 每条推不出、需查数仓真实 schema 或问 owner。未确认时 Agent 按 impact 里的
+# 默认行为走并声明假设，不会硬编错误。
+# ---------------------------------------------------------------------------
 open_confirmations:
-  - "enum_storage: 确认 bronze 各枚举列是 int 还是 string。"
-  - "car_hire_indicative_price_search_event vs indicative_carhire_search_event 哪个是权威源。"
-  - "car_hire_quotes / car_hire_response_quote 是否为 quotes 展开表。"
-  - "redirect/booking 与 search_guid 的实际 join 列名。"
+  - id: enum_storage
+    question: "bronze 各枚举列存的是 proto 数字值还是字符串名？"
+    affects_fields:                       # 代表性枚举字段（全部枚举字段同理）
+      - "car_hire.Quote.fuel_type (FuelType)         -- 4 还是 'ELECTRIC'"
+      - "car_hire.Quote.pay_type (PayType)           -- 2 还是 'PRE_PAY'"
+      - "car_hire.Quote.transmission (Transmission)"
+      - "car_hire.CarGroupCardEvent.event_type (UIEventType)  -- 2 还是 'VIEWED'"
+      - "car_hire.CarHireQuoteSelected.pickup_type / pickup_method"
+      - "car_hire_app.UserAction.user_action_type (ActionType)"
+    impact: "决定 WHERE 写数字还是字符串。默认按数字（顶部 enum_storage=UNCONFIRMED）。"
+    owner: "数据平台 / bronze schema owner"
+
+  - id: indicative_source_of_truth
+    question: "两张指示价表哪张是权威源？"
+    affects_tables:
+      - "prod_trusted_bronze.internal.car_hire_indicative_price_search_event"
+      - "prod_trusted_bronze.internal.indicative_carhire_search_event"
+    maps_message: "car_hire_indicative_price.CarHireIndicativePriceSearchEvent"
+    impact: "选错 → 数据不全或过时。当前 bronze 映射默认取前者。"
+    owner: "Tiger squad"
+
+  - id: quotes_exploded_tables
+    question: "car_hire_quotes / car_hire_response_quote 是否为 quotes 数组的展开表（一行一报价）？"
+    affects_field: "car_hire_quote_search.CarHireQuoteSearchEvent.quotes (repeated Quote)"
+    affects_tables:
+      - "prod_trusted_bronze.internal.car_hire_quotes"
+      - "prod_trusted_bronze.internal.car_hire_response_quote"
+    impact: "若是 → 直接查展开表；若否 → 在事件表上 explode(quotes)。"
+    owner: "Tiger squad"
+
+  - id: conversion_join_columns
+    question: "redirect / booking 与 search_guid、redirect_id 的真实 join 列名是什么？"
+    affects_fields:
+      - "redirects.Redirect.search_guid (proto 字段42)   -- 物理列名待确认"
+      - "redirects.Redirect.redirect_id"
+      - "booking 表.redirect_id                          -- 与 redirect 关联"
+    affects_tables:
+      - "prod_trusted_silver.redirect.car_hire_redirect"
+      - "prod_trusted_silver.booking.car_hire_booking"
+    impact: "漏斗 搜索→跳转→成交 的 JOIN 靠这些列；列名错则 JOIN 失败。"
+    owner: "转化/预订数据 owner"
+
+  # 第 5 条：与 TEST_REPORT.md 对齐（该项主记录在 relationships.yaml 的 bridge 段）
+  - id: uss_bridge_key
+    question: "后端 car_hire 的 search_request_id 是否等于 USS 的 uss_search_id？"
+    affects_fields:
+      - "car_hire_quote_search.CarHireQuoteSearchEvent.search_request_id"
+      - "unified_search_service.CreateSearchRequest.uss_search_id"
+      - "unified_search_service.CreateSearchRequest.search_guid (桥接到前端)"
+    affects_tables:
+      - "prod_trusted_bronze.internal.car_hire_quote_search_event"
+      - "prod_trusted_bronze.internal.unified_search_service_create_search_request"
+    impact: "确认后打通 backend(search_request_id) ↔ frontend(search_guid) 端到端漏斗。"
+    cross_ref: "relationships.yaml#bridge_backend_to_frontend"
+    owner: "Tiger + Delorean squads"

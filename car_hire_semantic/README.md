@@ -35,7 +35,8 @@ messages/*.yaml        # AUTO-GEN: one file per message (fields/types/refs/comme
 enums/*.yaml           # AUTO-GEN: one file per enum (values + meanings)
 relationships.yaml     # CURATED: join keys, the funnel, the bridge, pitfalls
 metrics.yaml           # CURATED: metric口径, glossary, time handling
-physical_mapping.yaml  # DEFERRED: proto -> warehouse table/column (fill later)
+physical_mapping.yaml  # proto -> Databricks tables (from all_tables.csv); dialect=databricks
+test_assembler.py      # test harness (22 checks); see TEST_REPORT.md
 generated/
   file_index.json      # which messages/enums live in which proto
   external_refs.yaml    # external types used + where

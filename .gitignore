@@ -5,3 +5,6 @@ __pycache__/
 
 # OS junk
 .DS_Store
+
+# Warehouse inventory — already tracked on remote; fetched locally for reference
+/all_tables.csv

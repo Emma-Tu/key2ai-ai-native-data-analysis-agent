@@ -195,12 +195,63 @@ def match_metrics(question, metrics_doc, max_metrics=4):
 # ---------------------------------------------------------------------------
 # rendering
 # ---------------------------------------------------------------------------
-def render_message(doc):
+def load_physical():
+    """Load physical_mapping.yaml -> {'proto.Msg': entry}, plus top-level meta."""
+    if not os.path.exists(PHYSICAL):
+        return {}, {}
+    doc = yaml.safe_load(open(PHYSICAL)) or {}
+    by_proto = {}
+    for m in doc.get("messages", []) or []:
+        key = m.get("proto")
+        if key:
+            by_proto[key] = m
+    meta = {
+        "dialect": doc.get("dialect"),
+        "enum_storage": doc.get("enum_storage"),
+        "nested_strategy": doc.get("nested_strategy"),
+        "time_handling": doc.get("time_handling", {}),
+        "gold_entrypoints": doc.get("gold_entrypoints", {}),
+    }
+    return by_proto, meta
+
+
+def _as_list(v):
+    if v is None:
+        return []
+    return v if isinstance(v, list) else [v]
+
+
+def render_physical(entry):
+    """Render the physical-table block for one message's mapping entry."""
+    if not entry:
+        return "    - 物理表: （未在 physical_mapping.yaml 中映射；按逻辑层推理并声明假设）"
+    lines = []
+    bronze = _as_list(entry.get("bronze"))
+    curated = _as_list(entry.get("curated"))
+    if curated:
+        lines.append(f"    - 推荐(curated): {', '.join(curated)}")
+    if bronze:
+        lines.append(f"    - 原始(bronze): {', '.join(bronze)}")
+    if len(bronze) > 1:
+        lines.append("    - ⚠ 多张 bronze 表（按平台拆分）：跨平台分析需 UNION")
+    if entry.get("nested"):
+        lines.append(f"    - 嵌套: {entry['nested']}")
+    if entry.get("note"):
+        lines.append(f"    - 备注: {entry['note'].strip()}")
+    return "\n".join(lines)
+
+
+def render_message(doc, physical=None):
     lines = [f"### {doc['package']}.{doc['message']}  (group={doc.get('group','?')})"]
     if doc.get("description"):
         lines.append(f"- 含义: {doc['description']}")
     if doc.get("grain"):
         lines.append(f"- 粒度: {doc['grain']}")
+    # physical table mapping (from physical_mapping.yaml)
+    if physical is not None:
+        key = f"{doc['package']}.{doc['message']}"
+        lines.append("- 物理映射:")
+        lines.append(render_physical(physical.get(key)))
     lines.append("- 字段:")
     for fld in doc.get("fields", []) or []:
         t = fld.get("type", "")
@@ -241,8 +292,12 @@ def yaml_section(path, title):
 # ---------------------------------------------------------------------------
 # main assembly
 # ---------------------------------------------------------------------------
-def assemble(question, top_k=6, dialect="TBD"):
+def assemble(question, top_k=6, dialect=None):
     index = load_index()
+    physical, phys_meta = load_physical()
+    # dialect precedence: explicit arg > physical_mapping.yaml > "TBD"
+    if not dialect:
+        dialect = phys_meta.get("dialect") or "TBD"
 
     # load all message docs (small enough; ~131 files)
     docs = {}
@@ -296,14 +351,21 @@ def assemble(question, top_k=6, dialect="TBD"):
     out = []
     out.append("你是 Skyscanner 租车(car hire)数据分析 Agent。根据下面提供的语义层信息，"
                "把用户问题转成一个正确的分析查询。")
-    out.append(f"\n[SQL 方言] {dialect}  （物理表名/列名/枚举存法见 physical_mapping，未定则按逻辑层推理并说明假设）")
+    out.append(f"\n[SQL 方言] {dialect}")
+    if phys_meta.get("nested_strategy"):
+        out.append(f"[嵌套存储] {phys_meta['nested_strategy']}（proto 嵌套落为 STRUCT/ARRAY，用点号/explode 展开）")
+    if phys_meta.get("enum_storage"):
+        out.append(f"[枚举存储] {phys_meta['enum_storage']}")
+    th = phys_meta.get("time_handling") or {}
+    if th.get("to_timestamp"):
+        out.append(f"[时间转换] {th['to_timestamp']}；{th.get('partition_hint','')}")
 
     out.append("\n" + "=" * 60)
-    out.append("## 相关表结构（已按问题裁剪，只列最相关的）")
+    out.append("## 相关表结构（已按问题裁剪；含 proto→物理表映射）")
     if selected:
         for score, name, file, doc in selected:
             if doc:
-                out.append("\n" + render_message(doc))
+                out.append("\n" + render_message(doc, physical))
             else:
                 out.append(f"\n### {name}  (无详细文档，见 {file})")
     else:
@@ -329,6 +391,14 @@ def assemble(question, top_k=6, dialect="TBD"):
         for g in hit_gloss:
             out.append(f"\n- 术语 {g.get('term')} -> {g.get('maps_to')}  {g.get('note','')}")
 
+    # 3c. gold analyst entrypoints (convenience views to start from)
+    ge = phys_meta.get("gold_entrypoints") or {}
+    if ge:
+        out.append("\n" + "=" * 60)
+        out.append("## 分析师常用 gold 视图（常见问题可直接从这些起步，已清洗）")
+        for k, v in ge.items():
+            out.append(f"    - {k}: {v}")
+
     # 4. always-load curated knowledge
     out.append("\n" + "=" * 60)
     rel = yaml_section(RELATIONSHIPS, "关系 / Join Key / 漏斗 / 陷阱（务必遵守）")
@@ -339,22 +409,27 @@ def assemble(question, top_k=6, dialect="TBD"):
     out.append("## 指令")
     out.append(
         "1. 只使用上面列出的表和字段；未出现的表/字段一律不要用。\n"
-        "2. 严格区分两个 join-key 命名空间：backend=search_request_id，"
+        "2. 表选择优先级：能用 gold 视图/curated(silver) 就用，缺字段再降到 bronze 原始表。\n"
+        "3. 严格区分两个 join-key 命名空间：backend=search_request_id，"
         "frontend=search_guid；跨命名空间必须走 relationships.yaml 里的 USS bridge。\n"
-        "3. 枚举字段默认按数字值存储，除非物理层另有说明。\n"
-        "4. repeated 字段需展开(UNNEST/explode)后再按元素聚合。\n"
-        "5. oneof 字段每行只有一个分支被填充，按判别枚举过滤。\n"
-        "6. 时间过滤用 header 时间戳的 unix_time_millis；grappler_receive_timestamp 仅用于管道延迟。\n"
-        "7. 若信息不足以确定表/口径，先提出澄清问题，不要臆测。"
+        "4. 前端事件按平台拆表(android_/ios_/public_)，跨平台需 UNION 各物理表。\n"
+        "5. 枚举字段默认按数字值存储，除非物理层另有说明（enum_storage）。\n"
+        "6. 嵌套(STRUCT)用点号访问；repeated(ARRAY)需 explode 后再按元素聚合。\n"
+        "7. oneof 字段每行只有一个分支被填充，按判别枚举过滤。\n"
+        "8. 时间：用 timestamp_millis(header.*.unix_time_millis)；bronze 表按 dt 分区，"
+        "过滤 dt 做分区裁剪；grappler_receive_timestamp 仅用于管道延迟。\n"
+        "9. 若信息不足以确定表/口径，先提出澄清问题，不要臆测。"
     )
 
     out.append("\n" + "=" * 60)
     out.append(f"## 用户问题\n{question}")
 
     meta = {
+        "dialect": dialect,
         "selected_messages": [
             {"name": f"{(d or {}).get('package','?')}.{n}", "score": round(s, 2),
-             "group": (d or {}).get("group")}
+             "group": (d or {}).get("group"),
+             "physical": bool(physical.get(f"{(d or {}).get('package','')}.{n}"))}
             for s, n, f, d in selected
         ],
         "expanded_enums": sorted(wanted_enums),

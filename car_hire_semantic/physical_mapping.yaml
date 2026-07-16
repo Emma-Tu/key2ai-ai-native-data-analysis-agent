@@ -1,25 +1,201 @@
 # ============================================================================
-# PHYSICAL MAPPING — proto -> warehouse tables/columns.
-# DEFERRED for now (物理层暂不关心). Fill this in once the warehouse is chosen.
-# Until then the agent works at the LOGICAL level and MUST NOT assume:
-#   - exact table names
-#   - enum storage (int vs string)
-#   - how nested/repeated fields are physicalised (STRUCT/ARRAY vs flattened vs child table)
+# PHYSICAL MAPPING — proto message -> Databricks warehouse tables.
+# Source of table names: all_tables.csv (Databricks Unity Catalog inventory).
+# Hand-curated; survives regeneration (generator never writes this file).
+#
+# Layers (Databricks medallion):
+#   bronze  prod_trusted_bronze.internal.*   raw proto events, ~1:1 with messages
+#   silver  prod_trusted_silver.*            cleaned/deduped/curated
+#   gold    prod_trusted_gold.*              analyst-facing views & aggregates
+#
+# GUIDANCE FOR THE AGENT:
+#   - Prefer the `curated` (silver/gold) table when one is listed — it is
+#     cleaned, deduped, and stable.
+#   - Use `bronze` only when you need raw fields not present in curated tables.
+#   - Frontend events are SPLIT BY PLATFORM into separate bronze tables
+#     (android_mini_* / ios_mini_* / public_carhire_* ). To analyse across
+#     platforms you must UNION them. This is listed per message.
 # ============================================================================
 
-dialect: TBD           # e.g. bigquery | clickhouse | snowflake
-enum_storage: TBD      # int | string  (per-table override allowed)
+dialect: databricks            # Databricks SQL (Spark SQL). Backticks for identifiers.
+default_catalog: prod_trusted_bronze
+enum_storage: UNCONFIRMED      # bronze usually keeps proto int; # CONFIRM per column
+nested_strategy: STRUCT        # bronze proto events land as nested STRUCT/ARRAY -> use dot access / explode()
 
-messages: []
-# Template to fill later:
-# messages:
-#   - proto: car_hire_quote_search.CarHireQuoteSearchEvent
-#     physical_table: <db.schema.table>
-#     nested_strategy: STRUCT|FLATTEN|CHILD_TABLE
-#     field_map:
-#       - proto_field: quotes
-#         column: quotes
-#         note: ARRAY<STRUCT> -> UNNEST(quotes)
-#       - proto_field: header.guid
-#         column: header_guid
-#     enum_storage: int
+time_handling:
+  note: >
+    commons.DateTime lands as a STRUCT with unix_time_millis. Convert with
+    timestamp_millis(col.unix_time_millis). Bronze tables are usually partitioned
+    by a `dt` (date string) column — filter on dt for pruning.
+  to_timestamp: "timestamp_millis(header.event_timestamp.unix_time_millis)"
+  partition_hint: "most bronze.internal tables partition by `dt` (yyyy-MM-dd)"
+
+# ---------------------------------------------------------------------------
+# BACKEND events — keyed on search_request_id
+# ---------------------------------------------------------------------------
+messages:
+  - proto: car_hire_quote_search.CarHireQuoteSearchEvent
+    bronze: prod_trusted_bronze.internal.car_hire_quote_search_event
+    also_bronze:
+      - prod_trusted_bronze.internal.car_hire_quotes           # exploded quotes? # CONFIRM
+      - prod_trusted_bronze.internal.car_hire_response_quote
+    nested: { quotes: "ARRAY<STRUCT> -> LATERAL VIEW explode(quotes) or explode()" }
+    note: repeated `quotes` is a nested array; explode before per-quote analysis.
+
+  - proto: car_hire_indicative_price.CarHireIndicativePriceSearchEvent
+    bronze: prod_trusted_bronze.internal.car_hire_indicative_price_search_event
+    also_bronze:
+      - prod_trusted_bronze.internal.indicative_carhire_search_event   # # CONFIRM which is canonical
+    curated:
+      - prod_trusted_silver.indicative_price.carhire_indicative_prices
+      - prod_trusted_silver.indicative_price.carhire_geo_indicative_prices
+      - prod_trusted_silver.carhire_indicative_price.carhire_compacted_quote
+    note: prefer silver indicative_price.* for analysis; bronze for raw event fields.
+
+  - proto: car_hire_no_quote_request_blocking.CarHireNoQuoteRequestBlocking
+    bronze: prod_trusted_bronze.internal.car_hire_no_quote_request_blocking
+    related_bronze:
+      - prod_trusted_bronze.internal.car_hire_no_quote_sample
+    note: remember to filter is_holdout_dataset = false for block-rate metrics.
+
+  # backend pipeline events from car_hire.proto
+  - proto: car_hire.CarHireDroppedQuotes
+    bronze:
+      - prod_trusted_bronze.internal.car_hire_bumblebee_dropped_quotes
+      - prod_trusted_bronze.internal.car_hire_bumblebee_worker_dropped_quotes
+  - proto: car_hire.CarHireRanking
+    bronze: prod_trusted_bronze.internal.car_hire_bumblebee_ranking
+  - proto: car_hire.CarHireRankingResult
+    bronze: prod_trusted_bronze.internal.car_hire_bumblebee_ranking_result
+  - proto: car_hire.CarHireFilterResult
+    bronze: prod_trusted_bronze.internal.car_hire_filter_result
+  - proto: car_hire.CarHireResponseQuotes
+    bronze: prod_trusted_bronze.internal.car_hire_response_quote
+  - proto: car_hire.CarHireOfficeSearch
+    bronze: prod_trusted_bronze.internal.car_hire_office_search
+  - proto: car_hire.CarHireNoQuoteSample
+    bronze: prod_trusted_bronze.internal.car_hire_no_quote_sample
+  - proto: car_hire.CarHireScheduledSearch
+    bronze: prod_trusted_bronze.internal.car_hire_scheduled_search
+  - proto: car_hire.CarhireVendorMappingSearch
+    bronze: prod_trusted_bronze.internal.car_hire_vendor_mapping_search
+  - proto: car_hire.CarHireMcpcQueryEvent
+    bronze: prod_trusted_bronze.internal.car_hire_mcpc_query_event
+
+# ---------------------------------------------------------------------------
+# FRONTEND events — keyed on search_guid (+ mini_search_guid)
+# NOTE: split by platform; UNION the platform tables for cross-platform analysis
+# ---------------------------------------------------------------------------
+  - proto: car_hire.CarHireQuoteSelected
+    bronze:
+      - prod_trusted_bronze.internal.carhire_homepage_funnel_events_car_hire_carhirequoteselected
+    note: frontend quote selection event.
+
+  - proto: car_hire.CarGroupCardEvent
+    bronze:
+      - prod_trusted_bronze.internal.carhire_homepage_cargroupcardevent
+    curated:
+      - prod_trusted_silver.user_behaviour.v_car_hire_inventory_impression   # VIEWED impressions
+      - prod_trusted_silver.user_behaviour.v_car_hire_inventory_interaction   # clicks/interactions
+    note: >
+      For impression/interaction metrics prefer the silver user_behaviour views
+      (already split impression vs interaction) over raw card events.
+
+  - proto: car_hire.CarHireMiniSearch
+    bronze: prod_trusted_bronze.internal.carhire_homepage_carhireminisearch
+  - proto: car_hire.CarHireSeoEvent
+    bronze:
+      - prod_trusted_bronze.internal.public_carhire_homepage_funnel_events_car_hire_carhireseoevent
+      - prod_trusted_bronze.internal.public_carhire_landing_pages_funnel_events_car_hire_carhireseoevent
+      - prod_trusted_bronze.internal.falcon_funnel_events_car_hire_carhireseoevent
+    curated:
+      - prod_trusted_silver.user_behaviour.v_seo_car_hire_impression
+      - prod_trusted_silver.user_behaviour.v_seo_car_hire_interaction
+  - proto: car_hire.CarHireNoResults
+    bronze: prod_trusted_bronze.internal.public_carhire_homepage_funnel_events_car_hire_carhirenoresults
+  - proto: car_hire.CarHireSearchControlChanged
+    bronze: prod_trusted_bronze.internal.public_carhire_homepage_funnel_events_car_hire_carhiresearchcontrolchanged
+  - proto: car_hire.CarHireAutosuggestItemAction
+    bronze: prod_trusted_bronze.internal.public_carhire_homepage_funnel_events_car_hire_carhireautosuggestitemaction
+  - proto: car_hire.UIEvent
+    bronze:
+      - prod_trusted_bronze.internal.public_carhire_homepage_funnel_events_car_hire_uievent
+      - prod_trusted_bronze.internal.roadtrips_funnel_events_car_hire_uievent
+  - proto: car_hire.MarkerCardEvent
+    bronze: prod_trusted_bronze.internal.carhire_homepage_car_hire_markercard
+  - proto: car_hire.CarHireAdCardAction
+    bronze: prod_trusted_bronze.internal.public_acorn_carhire_action_car_hire_carhireadcardaction
+  - proto: car_hire.CarhireChatEvent
+    bronze: prod_trusted_bronze.internal.prod_carhire_chatbot_funnel_events_car_hire_carhirechatevent
+  - proto: car_hire.CarhireFeedbackEvent
+    bronze: prod_trusted_bronze.internal.prod_carhire_chatbot_funnel_events_car_hire_carhirefeedbackevent
+
+  # car_hire_app.proto events — split android / ios
+  - proto: car_hire_app.UserAction
+    bronze:
+      - prod_trusted_bronze.internal.android_mini_car_hire_app_useraction
+      - prod_trusted_bronze.internal.ios_mini_car_hire_app_useraction
+    note: UNION android + ios for all-platform app interactions.
+  - proto: car_hire_app.MapEvent
+    bronze:
+      - prod_trusted_bronze.internal.android_mini_car_hire_app_mapevent
+      - prod_trusted_bronze.internal.ios_mini_car_hire_app_mapevent
+  - proto: car_hire_app.ViewHistoryEvent
+    bronze:
+      - prod_trusted_bronze.internal.public_android_mini_car_hire_app_viewhistoryevent
+      - prod_trusted_bronze.internal.public_ios_mini_car_hire_app_viewhistoryevent
+
+# ---------------------------------------------------------------------------
+# THE BRIDGE (USS) — carries uss_search_id + session_id + search_guid together
+# ---------------------------------------------------------------------------
+  - proto: unified_search_service.CreateSearchRequest
+    bronze: prod_trusted_bronze.internal.unified_search_service_create_search_request
+    note: ★ join hub between backend search_request_id world and frontend search_guid.
+  - proto: unified_search_service.CreateExploreRequest
+    bronze: prod_trusted_bronze.internal.unified_search_service_create_explore_request
+  - proto: unified_search_service.PollSearchRequest
+    bronze: prod_trusted_bronze.internal.unified_search_service_poll_search_request
+  - proto: quote_search.QuoteSearchSession   # session id linking candidate
+    bronze: prod_trusted_bronze.internal.quote_search_session_event
+
+# ---------------------------------------------------------------------------
+# CONVERSION TAIL — redirect -> booking
+# ---------------------------------------------------------------------------
+  - proto: redirects.Redirect
+    bronze: prod_trusted_bronze.internal.redirects
+    curated:
+      - prod_trusted_silver.redirect.car_hire_redirect          # ★ car-hire-only redirects
+      - prod_trusted_gold.product_analytics_skyscanner_core.v_redirect_car_hire
+    note: prefer silver.redirect.car_hire_redirect for car-hire redirect analysis.
+
+  - proto: booking.BookingEvent
+    bronze:
+      - prod_trusted_bronze.internal.car_hire_confirmed_booking_event
+      - prod_trusted_bronze.internal.car_hire_pending_booking_event
+      - prod_trusted_bronze.internal.car_hire_cancelled_booking_event
+      - prod_trusted_bronze.internal.car_hire_failed_booking_event
+    curated:
+      - prod_trusted_silver.booking.car_hire_booking               # ★ governed booking dataset
+      - prod_trusted_silver.booking.car_hire_partner_booking_calculated_revenue
+      - prod_trusted_gold.product_analytics_skyscanner_core.v_booking_car_hire
+    note: >
+      Car-hire booking is NOT booking.BookingEvent in bronze — it lands as
+      dedicated car_hire_*_booking_event tables by status. For revenue/conversion
+      use silver.booking.car_hire_booking (governed) or the gold v_booking_car_hire view.
+
+# ---------------------------------------------------------------------------
+# ANALYST-FACING GOLD VIEWS (start here for common questions)
+# ---------------------------------------------------------------------------
+gold_entrypoints:
+  search:   prod_trusted_gold.product_analytics_skyscanner_core.v_search_car_hire
+  redirect: prod_trusted_gold.product_analytics_skyscanner_core.v_redirect_car_hire
+  booking:  prod_trusted_gold.product_analytics_skyscanner_core.v_booking_car_hire
+  searches_std: prod_trusted_gold.bar_understand.car_hire_searches       # BAR production standard
+  session_metrics: prod_trusted_gold.session.v_car_hire_session_metrics_v2
+  ttv:      prod_trusted_gold.bar_understand.car_hire_ttv
+
+open_confirmations:
+  - "enum_storage: 确认 bronze 各枚举列是 int 还是 string。"
+  - "car_hire_indicative_price_search_event vs indicative_carhire_search_event 哪个是权威源。"
+  - "car_hire_quotes / car_hire_response_quote 是否为 quotes 展开表。"
+  - "redirect/booking 与 search_guid 的实际 join 列名。"

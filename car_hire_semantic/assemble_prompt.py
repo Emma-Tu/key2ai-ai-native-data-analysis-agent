@@ -540,16 +540,40 @@ def assemble_structured(question, top_k=6, dialect=None):
         for t in tables:                              # fallback: first mapped table
             if _phys_tbl(t):
                 chosen = t; break
+
+    # A default GROUP BY dimension per event table so the scaffold is a real
+    # AGGREGATE (charts nicely) rather than a raw SELECT * dump. COUNT(*) only —
+    # cheap (no big-array read), fast, and business-meaningful (by market).
+    DEFAULT_GROUP_BY = {
+        "car_hire_quote_search.CarHireQuoteSearchEvent": "traveller_context.market",
+        "car_hire_indicative_price.CarHireIndicativePriceSearchEvent": "traveller_context.market",
+        "car_hire_no_quote_request_blocking.CarHireNoQuoteRequestBlocking": "market",
+        "car_hire.CarHireNoQuoteSample": "market",
+        "car_hire.CarHireDroppedQuotes": "pick_up_location",
+        "car_hire.CarHireMcpcQueryEvent": "dimension_source_values.market",
+    }
     starter_sql = ""
     if chosen:
-        starter_sql = (
-            f"-- 起始脚手架（真实表+近期分区，可直接执行；改成你要的聚合即可）\n"
-            f"-- {chosen['package']}.{chosen['message']}\n"
-            f"SELECT *\n"
-            f"FROM {_phys_tbl(chosen)}\n"
-            f"WHERE dt = '{recent}'\n"
-            f"LIMIT 100"
-        )
+        tbl = _phys_tbl(chosen)
+        gb = DEFAULT_GROUP_BY.get(chosen["key"])
+        if gb:
+            starter_sql = (
+                f"-- 起始脚手架：按维度聚合（可直接执行→出图表）。改成你要的口径即可\n"
+                f"-- {chosen['package']}.{chosen['message']}\n"
+                f"SELECT {gb} AS dim,\n"
+                f"       COUNT(*) AS cnt\n"
+                f"FROM {tbl}\n"
+                f"WHERE dt = '{recent}'\n"
+                f"GROUP BY {gb}\n"
+                f"ORDER BY cnt DESC\n"
+                f"LIMIT 20"
+            )
+        else:
+            starter_sql = (
+                f"-- 起始脚手架（真实表+近期分区，可直接执行）\n"
+                f"-- {chosen['package']}.{chosen['message']}\n"
+                f"SELECT *\nFROM {tbl}\nWHERE dt = '{recent}'\nLIMIT 100"
+            )
 
     return {
         "question": question,

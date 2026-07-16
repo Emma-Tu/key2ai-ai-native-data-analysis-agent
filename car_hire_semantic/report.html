@@ -6,98 +6,177 @@
 <title>分析报告 · Car Hire</title>
 <style>
   :root{
-    --bg:#0b1020; --panel:#141d33; --panel-2:#0f1728; --line:#233052; --line-soft:#1b2540;
-    --text:#e8eefc; --muted:#8fa0c4; --faint:#5f6f92; --brand:#2ec5ff; --brand-2:#1d8fe0; --brand-ink:#04121f;
-    --green:#37d39b; --amber:#ffcf6b; --violet:#b78cff;
-    --viz-surface:#141d33; --viz-ink:#e8eefc; --viz-ink2:#c3c2b7; --viz-muted:#898781;
+    --bg:#0a0e1a; --panel:#131c31; --panel-2:#0f1728; --line:#243150; --line-soft:#1a2440;
+    --text:#eaf0fc; --muted:#93a3c6; --faint:#5f6f92; --brand:#2ec5ff; --brand-2:#1d8fe0; --brand-ink:#04121f;
+    --green:#37d39b; --amber:#ffcf6b; --violet:#b78cff; --pink:#ff8fb3;
+    --viz-surface:#131c31; --viz-ink:#eaf0fc; --viz-ink2:#c3c2b7; --viz-muted:#8b97b5;
     --seq-3:#3987e5;
     --cat-1:#3987e5; --cat-2:#199e70; --cat-3:#c98500; --cat-4:#008300; --cat-5:#9085e9; --cat-6:#e66767; --cat-7:#d55181; --cat-8:#d95926;
     --mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Roboto,sans-serif;
+    --shadow:0 12px 44px rgba(0,0,0,.4);
   }
   *{box-sizing:border-box}
-  body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,rgba(46,197,255,.10),transparent 60%),var(--bg);
-    color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.55}
-  .wrap{max-width:1120px;margin:0 auto;padding:36px 40px 80px}
-  .top{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-  .logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:grid;place-items:center;color:var(--brand-ink);font-weight:800;font-size:18px}
-  h1{font-size:22px;margin:0;font-weight:750}
-  .q{color:var(--muted);font-size:15px;margin:10px 0 2px}
-  .meta{color:var(--faint);font-size:12px;margin-bottom:22px;display:flex;gap:14px;flex-wrap:wrap}
-  .stat{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:12px 16px;min-width:130px}
-  .stat .k{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.5px}
-  .stat .v{font-size:22px;font-weight:750;margin-top:3px;font-variant-numeric:tabular-nums}
-  .kpirow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:26px}
-  .sec{margin-bottom:26px}
-  .sec h2{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
-  .sec h2 .dot{width:7px;height:7px;border-radius:50%;background:var(--brand)}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-  @media(max-width:900px){.two{grid-template-columns:1fr}}
-  pre.sql{background:#070c17;border:1px solid var(--line);border-radius:10px;padding:14px;font-family:var(--mono);font-size:12px;color:#c7d3ee;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:0}
-  .loading{display:flex;gap:11px;align-items:center;color:var(--muted);padding:50px;justify-content:center}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  ::selection{background:rgba(46,197,255,.3)}
+  .page{max-width:1080px;margin:0 auto;padding:0 40px 90px}
+
+  /* hero band */
+  .hero{background:linear-gradient(160deg,#16233f 0%,#0e1830 55%,#0a0e1a 100%);
+    border-bottom:1px solid var(--line-soft);padding:34px 0 30px;margin-bottom:0}
+  .hero-in{max-width:1080px;margin:0 auto;padding:0 40px}
+  .topbar{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    display:grid;place-items:center;color:var(--brand-ink);font-weight:800;font-size:18px;box-shadow:0 6px 18px rgba(46,197,255,.35)}
+  .topbar .name{font-weight:700;font-size:14px}
+  .topbar .name small{display:block;color:var(--faint);font-size:11px;font-weight:500}
+  .back{margin-left:auto;color:var(--brand);text-decoration:none;font-size:12.5px;padding:7px 13px;border:1px solid var(--line);border-radius:100px}
+  .back:hover{background:rgba(46,197,255,.08)}
+  .eyebrow{color:var(--brand);font-size:11.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+  .qtitle{font-size:27px;font-weight:760;margin:0 0 14px;letter-spacing:.2px;line-height:1.3}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(--line);
+    border-radius:100px;padding:5px 12px;font-size:12px;color:var(--muted)}
+  .chip b{color:var(--text);font-weight:650}
+  .chip .d{width:6px;height:6px;border-radius:50%}
+
+  .page{padding-top:28px}
+  /* KPI cards */
+  .kpirow{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:30px}
+  .kpi{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;position:relative;overflow:hidden}
+  .kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent,var(--brand))}
+  .kpi .k{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+  .kpi .v{font-size:28px;font-weight:770;font-variant-numeric:tabular-nums;line-height:1}
+  .kpi .sub{font-size:11px;color:var(--faint);margin-top:6px}
+
+  /* sections */
+  .sec{margin-bottom:30px}
+  .sechead{display:flex;align-items:baseline;gap:10px;margin:0 0 14px}
+  .secno{font-family:var(--mono);color:var(--brand);font-size:12px;font-weight:700}
+  .sectitle{font-size:15.5px;font-weight:700;letter-spacing:.2px}
+  .secsub{color:var(--faint);font-size:12px;margin-left:auto}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 24px;box-shadow:var(--shadow)}
+  .two{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:start}
+  @media(max-width:880px){.two{grid-template-columns:1fr}}
+  .statgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .ministat{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:12px;padding:14px 16px}
+  .ministat .k{font-size:11px;color:var(--faint);margin-bottom:4px}
+  .ministat .v{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+
+  pre.sql{background:#070c17;border:1px solid var(--line);border-radius:12px;padding:16px 18px;font-family:var(--mono);
+    font-size:12px;color:#c7d3ee;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:0;line-height:1.65}
+  table.dt{border-collapse:collapse;width:100%}
+  table.dt th{text-align:left;padding:9px 14px;border-bottom:2px solid var(--line);color:var(--muted);font-size:11.5px;
+    white-space:nowrap;position:sticky;top:0;background:var(--panel)}
+  table.dt td{padding:8px 14px;border-bottom:1px solid var(--line-soft);font-family:var(--mono);font-size:12px;
+    color:var(--text);white-space:nowrap;font-variant-numeric:tabular-nums}
+  table.dt tr:hover td{background:rgba(255,255,255,.02)}
+  .tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px;max-height:560px}
+
+  .loading{display:flex;gap:11px;align-items:center;color:var(--muted);padding:60px;justify-content:center}
   .spin{width:20px;height:20px;border:2.5px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:sp .7s linear infinite}
   @keyframes sp{to{transform:rotate(360deg)}}
-  .err{background:rgba(255,143,179,.12);border:1px solid rgba(255,143,179,.3);color:#ff8fb3;border-radius:9px;padding:14px 16px}
-  .back{color:var(--brand);text-decoration:none;font-size:12.5px;margin-left:auto}
+  .err{background:rgba(255,143,179,.12);border:1px solid rgba(255,143,179,.3);color:var(--pink);border-radius:12px;padding:16px 18px}
+  .foot{color:var(--faint);font-size:11.5px;text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid var(--line-soft)}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="top"><div class="logo">C</div><h1>分析报告</h1><a class="back" href="/">← 返回操作台</a></div>
-  <div id="root"><div class="loading"><div class="spin"></div>加载报告…</div></div>
-</div>
+<div id="root"><div class="loading"><div class="spin"></div>加载报告…</div></div>
 <script src="/charts.js"></script>
 <script>
 const $=s=>document.querySelector(s);
-const params=new URLSearchParams(location.search);
-const id=params.get('id');
+const id=new URLSearchParams(location.search).get('id');
+const FORM_LABEL={kpi:'关键指标',bar:'排名对比',pie:'占比构成',line:'时间趋势',smallmult:'多指标对比',multiline:'多指标趋势',table:'明细表'};
 
 async function load(){
-  if(!id){$('#root').innerHTML='<div class="err">缺少报告 id</div>';return;}
+  if(!id){$('#root').innerHTML='<div class="page"><div class="err">缺少报告 id</div></div>';return;}
   let rep;
   try{rep=await (await fetch('/api/report?id='+encodeURIComponent(id))).json();}
-  catch(e){$('#root').innerHTML='<div class="err">加载失败：'+esc(e.message)+'</div>';return;}
-  if(rep.error){$('#root').innerHTML='<div class="err">'+esc(rep.error)+'</div>';return;}
+  catch(e){$('#root').innerHTML='<div class="page"><div class="err">加载失败：'+esc(e.message)+'</div></div>';return;}
+  if(rep.error){$('#root').innerHTML='<div class="page"><div class="err">'+esc(rep.error)+'</div></div>';return;}
   render(rep);
 }
 
+function num2(v){return num(v);}
 function render(rep){
   const d=rep.result||{};
   const cols=(d.data&&d.data.columns)||[], rows=(d.data&&d.data.rows)||[];
   const {dims,meas,skip}=classify(cols,rows);
   const form=pickForm(dims,meas,rows,skip);
-  let h='';
-  // question + meta
-  if(rep.question)h+=`<div class="q">问题：${esc(rep.question)}</div>`;
-  h+=`<div class="meta"><span>✅ ${d.row_count||rows.length} 行</span><span>⏱ ${d.execution_time_ms||0}ms</span><span>方言 databricks</span><span>自动识别：${esc(form)}</span></div>`;
+  const now=new Date().toLocaleString('zh-CN',{hour12:false});
 
-  if(!rows.length){h+='<div class="err">查询无结果行（可能该分区无数据或超时）。</div>';$('#root').innerHTML=h;return;}
+  // ---- hero ----
+  let h=`<div class="hero"><div class="hero-in">
+    <div class="topbar"><div class="logo">C</div>
+      <div class="name">Car Hire<small>AI-Native Data Analysis</small></div>
+      <a class="back" href="/">← 返回操作台</a></div>
+    <div class="eyebrow">分析报告 · Analysis Report</div>
+    <h1 class="qtitle">${esc(rep.question||'查询结果')}</h1>
+    <div class="chips">
+      <span class="chip"><span class="d" style="background:var(--green)"></span>${d.row_count||rows.length} 行</span>
+      <span class="chip">⏱ ${d.execution_time_ms||0} ms</span>
+      <span class="chip"><b>databricks</b></span>
+      <span class="chip">视图 <b>${FORM_LABEL[form]||form}</b></span>
+      <span class="chip">${esc(now)}</span>
+    </div></div></div>`;
 
-  // KPI summary: row count + stats for each numeric measure
-  h+='<div class="kpirow"><div class="stat"><div class="k">结果行数</div><div class="v" style="color:var(--brand)">'+(d.row_count||rows.length)+'</div></div>';
-  meas.slice(0,4).forEach(m=>{const s=stats(rows,m);if(s)h+=`<div class="stat"><div class="k">${esc(m.name)} · 合计</div><div class="v" style="color:var(--green)">${fmt(s.sum)}</div></div>`;});
-  h+='</div>';
+  h+='<div class="page">';
 
-  // primary chart
-  h+='<div class="sec"><h2><span class="dot"></span>主图（'+esc(form)+'）</h2><div class="card">'+buildChart(form,cols,rows,dims,meas)+'</div></div>';
-
-  // secondary view: for a single dim + single measure, also show composition (pie) + a stats detail
-  if(form==='bar'&&dims.filter(x=>x.role==='cat').length>=1&&meas.length===1){
-    h+='<div class="two"><div class="sec"><h2><span class="dot" style="background:var(--cat-2)"></span>占比构成</h2><div class="card">'+buildChart('pie',cols,rows,dims,meas)+'</div></div>';
-    const m=meas[0],s=stats(rows,m);
-    h+='<div class="sec"><h2><span class="dot" style="background:var(--violet)"></span>'+esc(m.name)+' 分布统计</h2><div class="card">'+
-      (s?`<div class="kpirow" style="margin:0"><div class="stat"><div class="k">合计</div><div class="v">${fmt(s.sum)}</div></div><div class="stat"><div class="k">均值</div><div class="v">${fmt(s.avg)}</div></div><div class="stat"><div class="k">最大</div><div class="v">${fmt(s.max)}</div></div><div class="stat"><div class="k">最小</div><div class="v">${fmt(s.min)}</div></div></div>`:'—')
-      +'</div></div></div>';
+  if(!rows.length){
+    h+='<div class="err">查询无结果行（该分区无数据或已超时）。回操作台调整 SQL 后重试。</div></div>';
+    $('#root').innerHTML=h;return;
   }
 
-  // full data table
-  h+='<div class="sec"><h2><span class="dot" style="background:var(--faint)"></span>明细数据（'+rows.length+' 行）</h2>'+dataTable(cols,rows)+'</div>';
+  // ---- KPI row ----
+  const accents=['--green','--brand','--violet','--amber'];
+  h+='<div class="kpirow">';
+  h+=`<div class="kpi" style="--accent:var(--brand)"><div class="k">结果行数</div><div class="v" style="color:var(--brand)">${(d.row_count||rows.length).toLocaleString()}</div><div class="sub">${cols.length} 列</div></div>`;
+  meas.slice(0,3).forEach((m,idx)=>{const s=stats(rows,m);if(!s)return;
+    h+=`<div class="kpi" style="--accent:var(${accents[(idx+1)%4]})"><div class="k">${esc(m.name)} · 合计</div><div class="v" style="color:var(${accents[(idx+1)%4]})">${fmt(s.sum)}</div><div class="sub">均值 ${fmt(s.avg)} · 峰值 ${fmt(s.max)}</div></div>`;});
+  h+='</div>';
 
-  // SQL
-  h+='<div class="sec"><h2><span class="dot" style="background:var(--amber)"></span>查询 SQL</h2><pre class="sql">'+esc(rep.sql||'')+'</pre></div>';
+  // ---- primary chart ----
+  h+=`<div class="sec"><div class="sechead"><span class="secno">01</span><span class="sectitle">概览 · ${FORM_LABEL[form]||form}</span><span class="secsub">自动按数据结构选型</span></div>
+      <div class="card">${buildChart(form,cols,rows,dims,meas)}</div></div>`;
 
+  // ---- breakdown: composition + distribution (only when a categorical dim + single measure) ----
+  const catDim=dims.filter(x=>x.role==='cat');
+  if(form==='bar'&&catDim.length>=1&&meas.length===1){
+    const m=meas[0],s=stats(rows,m);
+    h+=`<div class="sec"><div class="two">
+      <div><div class="sechead"><span class="secno">02</span><span class="sectitle">占比构成</span></div><div class="card">${buildChart('pie',cols,rows,dims,meas)}</div></div>
+      <div><div class="sechead"><span class="secno">03</span><span class="sectitle">${esc(m.name)} 分布</span></div>
+        <div class="card"><div class="statgrid">
+          <div class="ministat"><div class="k">合计</div><div class="v" style="color:var(--green)">${fmt(s.sum)}</div></div>
+          <div class="ministat"><div class="k">均值</div><div class="v">${fmt(s.avg)}</div></div>
+          <div class="ministat"><div class="k">最大</div><div class="v" style="color:var(--brand)">${fmt(s.max)}</div></div>
+          <div class="ministat"><div class="k">最小</div><div class="v">${fmt(s.min)}</div></div>
+          <div class="ministat"><div class="k">类别数</div><div class="v">${rows.length}</div></div>
+          <div class="ministat"><div class="k">Top1 占比</div><div class="v">${topShare(rows,catDim[0],m)}%</div></div>
+        </div></div></div>
+    </div></div>`;
+  }
+
+  // ---- data table ----
+  const secn=(form==='bar'&&catDim.length>=1&&meas.length===1)?'04':'02';
+  h+=`<div class="sec"><div class="sechead"><span class="secno">${secn}</span><span class="sectitle">明细数据</span><span class="secsub">${rows.length} 行 · ${cols.length} 列</span></div>
+      <div class="tablewrap"><table class="dt"><thead><tr>${cols.map(c=>`<th>${esc(c.name)} <span style="color:var(--faint);font-weight:400">${esc(c.type||'')}</span></th>`).join('')}</tr></thead>
+      <tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${esc(typeof r[c.name]==='object'?JSON.stringify(r[c.name]):r[c.name])}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
+
+  // ---- SQL ----
+  h+=`<div class="sec"><div class="sechead"><span class="secno">${String(+secn+1).padStart(2,'0')}</span><span class="sectitle">查询 SQL</span><span class="secsub">只读 · Databricks</span></div>
+      <pre class="sql">${esc(rep.sql||'')}</pre></div>`;
+
+  h+='<div class="foot">Car Hire Semantic Layer · 数据来自 Databricks (prod_trusted) · 报告由查询结果自动生成</div>';
+  h+='</div>';
   $('#root').innerHTML=h;
+}
+function topShare(rows,dim,m){
+  const vals=rows.map(r=>num(r[m.name])).filter(x=>x!=null);
+  const total=vals.reduce((a,b)=>a+b,0)||1;
+  return ((Math.max(...vals)/total)*100).toFixed(1);
 }
 load();
 </script>
